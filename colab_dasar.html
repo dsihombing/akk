@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Praktikum Dasar: Pengenalan Ekosistem & IDE | Analisis Komputasional</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- VARIABEL TEMA ALMAMATER --- */
+        :root {
+            --primary: #004a8f; 
+            --primary-light: #0066cc;
+            --primary-dark: #002c5c;
+            --accent: #f26522; 
+            --bg-body: #f8fafc; 
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-light: #e2e8f0;
+            --code-bg: #0f172a;
+        }
+
+        /* --- RESET & TATA LETAK UTAMA --- */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- BAGIAN KEPALA (HEADER) --- */
+        header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-title { font-size: 1.2rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 10px;}
+        .btn-home { color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 8px 15px; border-radius: 6px; background: rgba(255,255,255,0.1); transition: all 0.3s;}
+        .btn-home:hover { background: var(--accent); }
+
+        /* --- PEMBAGIAN TATA LETAK --- */
+        .main-wrapper {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* --- PANEL NAVIGASI (SIDEBAR) --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            background: #f8fafc;
+        }
+        .badge-modul { display: inline-block; background: var(--primary); color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 8px;}
+        .sidebar-title { font-size: 1rem; font-weight: 700; color: var(--primary-dark); line-height: 1.3;}
+
+        .sidebar-menu {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            background: transparent; border: none; text-align: left;
+            padding: 14px 15px; font-size: 0.95rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; border-radius: 8px;
+            transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+            width: 100%; border: 1px solid transparent;
+        }
+        .tab-btn i { width: 24px; text-align: center; font-size: 1.1rem; opacity: 0.7;}
+        .tab-btn:hover { background: #f1f5f9; color: var(--primary); }
+        .tab-btn.active { background: var(--primary-light); color: white; box-shadow: 0 4px 10px rgba(0,102,204,0.3); }
+        .tab-btn.active i { opacity: 1; color: #fff; }
+
+        /* --- AREA KONTEN UTAMA --- */
+        .content-area {
+            flex-grow: 1;
+            padding: 3rem;
+            background-color: var(--bg-body);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .content-container { max-width: 800px; margin: 0 auto; padding-bottom: 4rem;}
+
+        .page-header h1 { color: var(--primary-dark); margin: 0 0 1rem 0; font-size: 2.2rem; font-weight: 900;}
+        .page-header p { color: var(--text-muted); margin: 0 0 2.5rem 0; font-size: 1.1rem; line-height: 1.6;}
+
+        /* Animasi Transisi */
+        .tab-pane { display: none; animation: slideUp 0.3s ease forwards; opacity: 0; transform: translateY(15px); }
+        .tab-pane.active { display: block; }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ELEMEN KARTU & KOTAK INFORMASI --- */
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
+        .card h2 { color: var(--primary-dark); margin-top: 0; font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;}
+        
+        .info-box { background-color: #f0f9ff; border-left: 4px solid var(--primary-light); padding: 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0; display: flex; gap: 15px; align-items: flex-start; }
+        .info-box i { font-size: 1.5rem; color: var(--primary-light); margin-top: 3px;}
+        .info-box.warning { background-color: #fff7ed; border-left-color: var(--accent); }
+        .info-box.warning i { color: var(--accent); }
+        .info-content h4 { margin: 0 0 5px 0; color: var(--text-main); font-size: 1.05rem;}
+        .info-content p { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;}
+        
+        /* --- TABEL --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        th { background-color: var(--primary-light); color: white; padding: 12px 15px; text-align: left; font-size: 0.95rem;}
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border-light); background: var(--bg-card); font-size: 0.9rem;}
+        tr:last-child td { border-bottom: none; }
+        code { background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: var(--primary-dark); font-family: monospace;}
+
+        /* --- SIMULATOR KODE INTERAKTIF --- */
+        .playground { background: var(--code-bg); border-radius: 10px; overflow: hidden; margin: 2rem 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        .playground-header { background: #1e293b; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; flex-wrap: wrap; gap: 10px;}
+        .lang-badge { background: #334155; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; font-family: monospace;}
+        
+        .btn-group { display: flex; gap: 8px; }
+        .btn-run { background: #22c55e; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: background 0.2s; }
+        .btn-run:hover { background: #16a34a; }
+        .btn-reset { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-reset:hover { background: #334155; color: white; }
+        .btn-copy { background: transparent; border: 1px solid var(--primary-light); color: var(--primary-light); padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-copy:hover { background: var(--primary-light); color: white; }
+        .btn-copy.copied { background: #10b981; border-color: #10b981; color: white; }
+
+        .code-editor {
+            width: 100%; background: transparent; color: #e2e8f0; padding: 1.5rem; margin: 0;
+            font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;
+            border: none; resize: vertical; min-height: 200px; outline: none;
+        }
+        .output-area { background: #000; color: #a3e635; padding: 1.5rem; font-family: 'Consolas', monospace; font-size: 0.9rem; border-top: 1px dashed #334155; display: none; line-height: 1.6; white-space: pre-wrap;}
+
+        /* --- TUGAS UI --- */
+        .task-box { border: 2px dashed var(--accent); padding: 2rem; border-radius: 12px; background: #f8fafc; }
+        .task-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; margin-bottom: 20px;}
+        .task-weight { background: var(--accent); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;}
+        .task-list { padding-left: 20px; color: var(--text-main); line-height: 1.8;}
+        
+        .cp-box { background: white; border: 1px solid var(--border-light); padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .cp-title { font-size: 0.9rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .cp-list { margin: 0; padding-left: 20px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;}
+
+        /* --- ANTARMUKA EVALUASI (KUIS) --- */
+        .quiz-question { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px dashed var(--border-light); }
+        .quiz-question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .quiz-title { font-size: 1.1rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 1.2rem; line-height: 1.5;}
+        
+        .quiz-option { padding: 1rem 1.2rem; border: 2px solid var(--border-light); border-radius: 10px; cursor: pointer; background: var(--bg-card); margin-bottom: 0.8rem; transition: all 0.2s; font-weight: 500; display: flex; align-items: center; gap: 15px; line-height: 1.5;}
+        .quiz-option:hover { border-color: var(--primary-light); background: #f0f9ff; }
+        .quiz-option.correct { background-color: #f0fdf4; border-color: #22c55e; color: #166534; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        .quiz-option.disabled { pointer-events: none; opacity: 0.6; }
+        .quiz-icon { width: 24px; text-align: center; font-size: 1.1rem;}
+        .quiz-feedback { margin-top: 1rem; display: none; padding: 1.2rem; border-radius: 10px; font-weight: 500; line-height: 1.6;}
+
+        /* --- RESPONSIVITAS PERANGKAT BERGERAK --- */
+        @media (max-width: 768px) {
+            body { height: auto; overflow: auto; }
+            .main-wrapper { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
+            .sidebar-header { display: none; }
+            .sidebar-menu { flex-direction: row; overflow-x: auto; padding: 10px; gap: 10px; white-space: nowrap; }
+            .tab-btn { width: auto; padding: 10px 15px; margin-bottom: 0; }
+            .content-area { padding: 1.5rem; }
+            .page-header h1 { font-size: 1.8rem; }
+            .btn-group { flex-wrap: wrap; justify-content: flex-end; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2 class="header-title"><i class="fas fa-laptop-code"></i> Analisis Komputasional Komunikasi</h2>
+        <a href="index.html" class="btn-home"><i class="fas fa-home"></i> Beranda Utama</a>
+    </header>
+
+    <div class="main-wrapper">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="badge-modul">PRAKTIKUM DASAR</span>
+                <div class="sidebar-title">Pengenalan Ekosistem IDE & Logika</div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <button class="tab-btn active" onclick="openTab(event, 'tab-ekosistem')">
+                    <i class="fas fa-cloud"></i> Ekosistem Komputasi
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-ide')">
+                    <i class="fas fa-desktop"></i> Lingkungan IDE Lokal
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-colab')">
+                    <i class="fab fa-google"></i> Google Colaboratory
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-logika')">
+                    <i class="fas fa-project-diagram"></i> Translasi Logika
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-kode')">
+                    <i class="fas fa-terminal"></i> Simulasi Sintaksis
+                </button>
+                <button class="tab-btn" style="color: var(--accent); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;" onclick="openTab(event, 'tab-tugas')">
+                    <i class="fas fa-laptop"></i> Persiapan Perangkat
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-quiz')">
+                    <i class="fas fa-tasks"></i> Evaluasi Kompetensi
+                </button>
+            </div>
+        </aside>
+
+        <main class="content-area" id="main-content">
+            <div class="content-container">
+                
+                <div class="page-header">
+                    <h1>Pengenalan Ekosistem IDE dan Logika Pemrograman</h1>
+                    <p>Orientasi fundamental mengenai infrastruktur <em>Cloud Computing</em>, arsitektur <em>Integrated Development Environment</em> (RStudio & Editor Python), komparasi bahasa R dan Python, serta prinsip dasar translasi logika manusia ke dalam sintaksis mesin.</p>
+                </div>
+
+                <div id="tab-ekosistem" class="tab-pane active">
+                    <div class="card">
+                        <h2>Ekosistem Ilmu Data: R dan Python</h2>
+                        <p>Analisis Komputasional Komunikasi (CCS) beroperasi di atas dua pilar bahasa pemrograman yang telah menjadi <em>lingua franca</em> dalam sains data global: <strong>R</strong> dan <strong>Python</strong>.</p>
+                        
+                        <div class="info-box">
+                            <i class="fab fa-r-project"></i>
+                            <div class="info-content">
+                                <h4>Bahasa Pemrograman R</h4>
+                                <p>Diciptakan secara spesifik oleh dan untuk ahli statistik. R memiliki superioritas absolut dalam komputasi matematis yang rigid, analisis model kausalitas (efek media), dan visualisasi data yang elegan (melalui paket seperti <code>ggplot2</code>). Mayoritas periset ilmu sosial akademis mengandalkan ekosistem ini untuk riset berbasis hipotesis.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <i class="fab fa-python"></i>
+                            <div class="info-content">
+                                <h4>Bahasa Pemrograman Python</h4>
+                                <p>Bahasa pemrograman multi-tujuan (<em>general-purpose</em>) yang mendominasi industri teknologi. Python memiliki keunggulan performa dalam merekayasa algoritma <em>Machine Learning</em>, Kecerdasan Buatan (AI), ekstraksi <em>Web Scraping</em>, dan otomatisasi infrastruktur data berskala masif (<em>Big Data</em>).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-ide" class="tab-pane">
+                    <div class="card">
+                        <h2>Lingkungan Pengembangan Lokal (<em>Desktop IDE</em>)</h2>
+                        <p>Guna mengeksekusi skrip R atau Python di komputer pribadi (tanpa internet), peneliti lazimnya tidak mengetik pada konsol bawaan yang kaku, melainkan menggunakan <strong>Integrated Development Environment (IDE)</strong>. IDE adalah perangkat lunak antarmuka yang dirancang khusus untuk menyunting, mendiagnosis, dan memvisualisasikan kode secara interaktif.</p>
+
+                        <h3 style="margin-top: 2rem; color: var(--primary-dark);">RStudio: Standar Emas untuk Ekosistem R</h3>
+                        <p>Bagi periset yang menggunakan bahasa R, <strong>RStudio</strong> merepresentasikan standar industri absolut. Arsitekturnya membagi layar menjadi empat kuadran krusial:</p>
+                        <ul style="color: var(--text-muted); line-height: 1.6; margin-bottom: 20px;">
+                            <li><strong>Script Editor:</strong> Lembar kerja utama untuk merangkai algoritma.</li>
+                            <li><strong>Console:</strong> Terminal untuk mengeksekusi perintah instan dan melihat kalkulasi sistem.</li>
+                            <li><strong>Environment / Workspace:</strong> Memantau secara visual (<em>real-time</em>) variabel, matriks data, dan <em>dataset</em> apa saja yang sedang tersimpan di memori.</li>
+                            <li><strong>Plots & Packages:</strong> Jendela untuk menampilkan hasil visualisasi grafik dan memanajemen pustaka perangkat lunak.</li>
+                        </ul>
+
+                        <h3 style="margin-top: 2rem; color: var(--primary-dark);">Ragam Editor untuk Ekosistem Python</h3>
+                        <p>Berbeda dengan R, Python bersifat <em>open-source</em> yang didukung oleh komunitas pemrograman universal, sehingga memunculkan diversitas pilihan editor:</p>
+                        <div class="info-box warning">
+                            <i class="fas fa-book-open"></i>
+                            <div class="info-content">
+                                <h4>1. Jupyter Notebook</h4>
+                                <p>Antarmuka berbasis peramban (<em>browser</em>) lokal yang mengusung paradigma <strong>komputasi per sel</strong>. Sangat ideal untuk sains data karena memungkinkan integrasi narasi teoretis (Markdown) dengan blok kode yang dapat dieksekusi secara terpisah.</p>
+                            </div>
+                        </div>
+                        <div class="info-box warning">
+                            <i class="fas fa-code"></i>
+                            <div class="info-content">
+                                <h4>2. Visual Studio Code (VS Code)</h4>
+                                <p>IDE lintas bahasa buatan Microsoft yang merajai industri rekayasa perangkat lunak modern. Melalui instalasi ekstensi (<em>plugin</em>), VS Code dapat dimodifikasi menjadi editor Python dan <em>Jupyter</em> yang sangat tangguh.</p>
+                            </div>
+                        </div>
+                        <div class="info-box warning">
+                            <i class="fas fa-spider"></i>
+                            <div class="info-content">
+                                <h4>3. Spyder</h4>
+                                <p>IDE saintifik bawaan dari distribusi Anaconda. Antarmukanya didesain menyerupai panel empat kuadran milik RStudio, sehingga sangat intuitif bagi periset yang bermigrasi dari R ke Python.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-colab" class="tab-pane">
+                    <div class="card">
+                        <h2>Komputasi Awan: Google Colaboratory</h2>
+                        <p>Secara historis, analisis <em>Big Data</em> menuntut spesifikasi perangkat keras (RAM/CPU) komputer yang sangat mahal. Saat ini, paradigma tersebut didekonstruksi oleh <strong>Cloud Computing</strong>. Kita dapat "meminjam" superkomputer milik Google untuk mengeksekusi analisis melalui <strong>Google Colaboratory (Colab)</strong> tanpa instalasi lokal apa pun.</p>
+
+                        <p>Colab mengadaptasi arsitektur <em>Jupyter Notebook</em> yang mengizinkan periset untuk mengintegrasikan skrip kode komputasi, teks deskriptif, serta visualisasi grafis ke dalam satu dokumen interaktif tunggal.</p>
+
+                        <div class="info-box">
+                            <i class="fas fa-layer-group"></i>
+                            <div class="info-content">
+                                <h4>Dikotomi Sel (<em>Cell Dichotomy</em>)</h4>
+                                <p>Dokumen Colab tersusun atas blok-blok modular yang disebut <strong>Sel (<em>Cells</em>)</strong>:</p>
+                                <ul style="margin-top: 5px; color: var(--text-muted); line-height: 1.6;">
+                                    <li><strong>Sel Kode (<em>Code Cells</em>):</strong> Wadah tempat Anda mengetikkan instruksi sintaksis R atau Python. Di sebelah kiri sel ini terdapat ikon eksekusi (<em>Play button</em>).</li>
+                                    <li><strong>Sel Teks (<em>Markdown Cells</em>):</strong> Wadah untuk menulis narasi teoretis, interpretasi data, atau elaborasi metodologi menggunakan format pemodelan teks HTML/Markdown.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p style="margin-top: 15px;">Setiap kali Anda menekan tombol eksekusi pada sebuah Sel Kode, instruksi tersebut dikirimkan via koneksi internet ke peladen (<em>Runtime Server</em>) Google, dikalkulasi, dan hasil luarannya (<em>output</em>) dikembalikan serta ditampilkan secara instan tepat di bawah sel tersebut.</p>
+                    </div>
+                </div>
+
+                <div id="tab-logika" class="tab-pane">
+                    <div class="card">
+                        <h2>Translasi Logika Pemrograman</h2>
+                        <p>Menulis kode bukanlah aktivitas menghafal kosa kata bahasa asing, melainkan mentranslasikan pola pikir logis manusia ke dalam struktur instruksi berurutan yang deterministik. Ini disebut sebagai <strong>Computational Thinking</strong>.</p>
+                        
+                        <h3 style="margin-top: 1.5rem; color: var(--primary-dark);">Konstruksi <em>Pseudocode</em> (Kode Semu)</h3>
+                        <p>Sebelum menulis sintaks aktual di dalam IDE atau Colab, periset dianjurkan menstrukturkan logika menggunakan bahasa manusia sehari-hari yang disebut <em>Pseudocode</em>. Perhatikan demonstrasi alur abstraksi berikut:</p>
+                        
+                        <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-dark); font-family: monospace; font-size: 0.95rem; line-height: 1.6; color: var(--text-main);">
+                            <strong>Logika Manusia (Pseudocode):</strong><br>
+                            SIMPAN daftar usia responden = 20, 25, 21<br>
+                            HITUNG total usia dibagi jumlah responden<br>
+                            TAMPILKAN "Rata-rata usia adalah: " diikuti hasil hitungan<br>
+                            <br>
+                            <strong>Translasi Sintaks R:</strong><br>
+                            <span style="color: #059669;">usia &lt;- c(20, 25, 21)</span><br>
+                            <span style="color: #059669;">rata_rata &lt;- mean(usia)</span><br>
+                            <span style="color: #059669;">print(paste("Rata-rata usia adalah:", rata_rata))</span>
+                        </div>
+
+                        <p style="margin-top: 15px;">Sebagaimana divisualisasikan pada komparasi di atas, bahasa pemrograman sekadar bertindak sebagai medium translasi atas instruksi prosedural yang telah diformulasikan sebelumnya secara kognitif oleh periset.</p>
+                    </div>
+                </div>
+
+                <div id="tab-kode" class="tab-pane">
+                    <div class="card">
+                        <h2>Simulasi: Eksekusi Sel Kode Perdana</h2>
+                        <p>Simulasi antarmuka di bawah ini mereplikasi fungsionalitas <strong>Sel Kode (<em>Code Cell</em>)</strong> pada ekosistem IDE maupun platform Colab. Modifikasi struktur aritmatika dasar atau teks <em>string</em> pada editor di bawah ini, kemudian tekan <strong>Jalankan Kode</strong> untuk mengamati respons keluaran (<em>output</em>) dari kompilator.</p>
+
+                        <div class="playground">
+                            <div class="playground-header">
+                                <span class="lang-badge">Sel Kode: Python / R Environment</span>
+                                <div class="btn-group">
+                                    <button class="btn-copy" onclick="copyEditorCode(this, 'colabEditor')"><i class="far fa-copy"></i> Salin Kode</button>
+                                    <button class="btn-reset" onclick="resetCode()"><i class="fas fa-undo"></i> Atur Ulang</button>
+                                    <button class="btn-run" onclick="runSimulatedColab()"><i class="fas fa-play"></i> Jalankan</button>
+                                </div>
+                            </div>
+                            
+                            <textarea id="colabEditor" class="code-editor" spellcheck="false">
+# Baris yang diawali dengan tanda pagar (#) adalah "Komentar" (Comment).
+# Komentar tidak akan dieksekusi oleh mesin, melainkan sekadar catatan bagi manusia.
+
+# 1. Alokasi data ke dalam variabel
+nama_mahasiswa = "Budi Ilmu Komunikasi"
+nilai_tugas_1 = 85
+nilai_tugas_2 = 90
+
+# 2. Kalkulasi aritmatika
+total_nilai = nilai_tugas_1 + nilai_tugas_2
+
+# 3. Menampilkan output (Keluaran)
+print("Sistem komputasi berhasil mendeteksi identitas:")
+print(nama_mahasiswa)
+print("Akumulasi total nilai Anda adalah:")
+print(total_nilai)
+                            </textarea>
+
+                            <div class="output-area" id="output-colab"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-tugas" class="tab-pane">
+                    <div class="card">
+                        <div class="task-header">
+                            <h2 style="margin: 0; border: none; padding: 0;"><i class="fas fa-cogs" style="color: var(--accent); margin-right: 10px;"></i> Persiapan Perangkat Kerja</h2>
+                            <span class="task-weight">Prasyarat Wajib</span>
+                        </div>
+                        
+                        <div class="task-box">
+                            <div class="cp-box">
+                                <div class="cp-title"><i class="fas fa-bullseye" style="color: var(--accent); margin-right: 5px;"></i> Capaian Praktikum</div>
+                                <ul class="cp-list">
+                                    <li>Mahasiswa memahami dikotomi arsitektur antara komputasi <em>Cloud</em> dan IDE Lokal.</li>
+                                    <li>Mahasiswa berhasil menginisialisasi lingkungan Google Colab berbasis bahasa pemrograman R secara presisi guna mendukung analisis komputasi di minggu selanjutnya.</li>
+                                </ul>
+                            </div>
+
+                            <p style="margin-top: 0;">Sebagai fondasi operasional pada mata kuliah ini, Anda diwajibkan untuk mengaktifkan dan mengonfigurasi dokumen Jupyter Notebook pada ekosistem Google Drive masing-masing. Opsional: Anda juga diizinkan menginstal IDE lokal jika spesifikasi perangkat memadai.</p>
+                            
+                            <h4 style="color: var(--primary-dark);">Opsi A: Inisialisasi Cloud (Google Colab - Wajib)</h4>
+                            <ol class="task-list">
+                                <li>Masuk (<em>log-in</em>) menggunakan akun Google (Gmail) Anda.</li>
+                                <li>Akses tautan khusus ini untuk menciptakan <em>Notebook</em> dengan Kernel R: <br> <a href="https://colab.research.google.com/#create=true&language=r" target="_blank" style="color: var(--primary-light); font-weight: bold; text-decoration: underline;">Buat Google Colab Berbasis R</a></li>
+                                <li>Ubah nama dokumen di pojok kiri atas menjadi: <code>AKK_Modul0_NamaLengkap.ipynb</code></li>
+                                <li>Buat satu <strong>Sel Teks (Markdown)</strong>, dan tuliskan identitas Anda.</li>
+                                <li>Buat satu <strong>Sel Kode</strong>, dan ketikkan sintaks: <code>print("Halo Dunia, saya siap menganalisis data!")</code> lalu eksekusi (tekan logo <em>play</em>).</li>
+                                <li>Klik menu <strong>File > Save a copy in Drive</strong> untuk memvalidasi penyimpanan.</li>
+                            </ol>
+
+                            <h4 style="color: var(--primary-dark); margin-top: 1.5rem;">Opsi B: Instalasi IDE Lokal (Opsional)</h4>
+                            <ul class="task-list" style="list-style-type: square;">
+                                <li>Untuk R: Unduh dan instal <i>R Base</i> dari CRAN, kemudian instal perangkat lunak <strong>RStudio Desktop</strong>.</li>
+                                <li>Untuk Python: Unduh distribusi <strong>Anaconda</strong> yang secara otomatis menyertakan Python, Jupyter Notebook, dan Spyder dalam satu paket ekosistem.</li>
+                            </ul>
+
+                            <h4 style="color: var(--primary-dark); margin-top: 1.5rem;">Kriteria Pengumpulan:</h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">Khusus untuk pengguna Colab, klik tombol <strong>"Share"</strong> pada pojok kanan atas, ubah akses visibilitas menjadi <em>"Anyone with the link"</em>, salin tautan tersebut, dan unggah pada penugasan "Praktikum 0" di platform Moodle E-Learning UAJ.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-quiz" class="tab-pane">
+                    <div class="card">
+                        <h2>Evaluasi Orientasi Ekosistem</h2>
+                        <p style="margin-bottom: 2.5rem; color: var(--text-muted);">Selesaikan instrumen evaluasi berikut untuk memverifikasi pemahaman teknis Anda terhadap arsitektur IDE lokal, Google Colab, dan prinsip pemrograman dasar.</p>
+
+                        <div class="quiz-question" id="q1">
+                            <div class="quiz-title">1. Apakah keunggulan fundamental (rasionalisasi utama) mengapa peneliti komunikasi modern memanfaatkan platform komputasi awan (<em>Cloud Computing</em>) seperti Google Colab?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Karena perangkat lunak IDE lokal (seperti RStudio Desktop) tidak memiliki kemampuan untuk memvisualisasikan grafik (plot) data.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Karena Google Colab secara otomatis akan mendeteksi dan mengoreksi (<em>auto-correct</em>) jika teori ilmu komunikasi yang kita gunakan salah.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Untuk mendemokratisasi daya komputasi; periset dapat mengeksekusi algoritma pemrosesan mahadata pada peladen (server) berkinerja tinggi milik Google tanpa terhambat oleh keterbatasan perangkat keras memori/RAM laptop pribadi mereka.</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                        <div class="quiz-question" id="q2">
+                            <div class="quiz-title">2. Pada antarmuka RStudio maupun Jupyter Notebook, terdapat pemisahan fungsionalitas modular. Di manakah Anda harus mengetikkan narasi interpretasi teoretis, tinjauan pustaka, atau elaborasi metodologi menggunakan format linguistik manusia tanpa menyebabkan galat (<em>error</em>) kompilasi?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Pada <em>Text Cell</em> (Sel Markdown)</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Pada <em>Code Cell</em> (Sel Runtime / Konsol Eksekusi)</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Pada <em>Environment Variables Panel</em></div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                        <div class="quiz-question" id="q3">
+                            <div class="quiz-title">3. Baik di dalam ekosistem R maupun Python, apabila sebuah baris instruksi diawali dengan simbol tanda pagar (<code>#</code>), instruksi tersebut diklasifikasikan sebagai "Komentar" (<em>Comment</em>). Apa implikasi teknis dari anotasi tersebut?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Mesin kompilator akan mengabaikannya secara mutlak (tidak dieksekusi); baris ini didedikasikan secara eksklusif sebagai anotasi atau catatan penjelas bagi manusia yang membaca skrip tersebut guna menjamin reproduksibilitas.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Mesin akan mengidentifikasinya sebagai prioritas eksekusi tertinggi yang melampaui hirarki fungsi algoritma matematika lainnya.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Simbol tersebut merupakan perintah absolut (<em>override</em>) yang mendikte mesin untuk menghapus seluruh korpus memori secara permanen.</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- LOGIKA NAVIGASI TAB ---
+        function openTab(evt, tabId) {
+            const panes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < panes.length; i++) panes[i].classList.remove("active");
+            
+            const btns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            document.getElementById("main-content").scrollTop = 0;
+        }
+
+        // --- LOGIKA SIMULATOR COLAB DAN SALIN KODE ---
+        const defaultCode = `# Baris yang diawali dengan tanda pagar (#) adalah "Komentar" (Comment).\n# Komentar tidak akan dieksekusi oleh mesin, melainkan sekadar catatan bagi manusia.\n\n# 1. Alokasi data ke dalam variabel\nnama_mahasiswa = "Budi Ilmu Komunikasi"\nnilai_tugas_1 = 85\nnilai_tugas_2 = 90\n\n# 2. Kalkulasi aritmatika\ntotal_nilai = nilai_tugas_1 + nilai_tugas_2\n\n# 3. Menampilkan output (Keluaran)\nprint("Sistem komputasi berhasil mendeteksi identitas:")\nprint(nama_mahasiswa)\nprint("Akumulasi total nilai Anda adalah:")\nprint(total_nilai)`;
+
+        function resetCode() {
+            document.getElementById('colabEditor').value = defaultCode.trim();
+            document.getElementById('output-colab').style.display = "none";
+        }
+        
+        function copyEditorCode(buttonElement, editorId) {
+            const editor = document.getElementById(editorId);
+            navigator.clipboard.writeText(editor.value).then(() => {
+                const originalHTML = buttonElement.innerHTML;
+                buttonElement.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                buttonElement.classList.add("copied");
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalHTML;
+                    buttonElement.classList.remove("copied");
+                }, 2000);
+            }).catch(err => {
+                console.error('Gagal menyalin teks: ', err);
+            });
+        }
+
+        function runSimulatedColab() {
+            const outputBox = document.getElementById("output-colab");
+            const codeInput = document.getElementById("colabEditor").value;
+            
+            outputBox.style.display = "block";
+            outputBox.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Mengeksekusi kompilasi di lingkungan peladen lokal / awan...';
+            
+            setTimeout(() => {
+                let outputText = "";
+                
+                // Ekstraksi nilai
+                const nameMatch = codeInput.match(/nama_mahasiswa\s*(<-|=)\s*(["'])(.*?)\2/);
+                const val1Match = codeInput.match(/nilai_tugas_1\s*(<-|=)\s*([\d.]+)/);
+                const val2Match = codeInput.match(/nilai_tugas_2\s*(<-|=)\s*([\d.]+)/);
+                
+                let studentName = nameMatch ? nameMatch[3] : "Unknown";
+                let val1 = val1Match ? parseFloat(val1Match[2]) : 0;
+                let val2 = val2Match ? parseFloat(val2Match[2]) : 0;
+                let total = val1 + val2;
+
+                if(codeInput.includes("print(")) {
+                    outputText = `Sistem komputasi berhasil mendeteksi identitas:\n${studentName}\nAkumulasi total nilai Anda adalah:\n${total}`;
+                } else {
+                    outputText = `<span style="color:#94a3b8;">(Variabel sukses diregistrasi pada arsitektur memori IDE/Peladen, namun fungsi kompilator print() tidak diinisialisasi sehingga output visual tidak dirender)</span>`;
+                }
+
+                outputBox.innerHTML = outputText + `\n\n<span style="color: #64748b;">> Terminasi iterasi sel komputasi tervalidasi.</span>`;
+            }, 1000);
+        }
+
+        // --- LOGIKA EVALUASI KOMPETENSI ---
+        const quizStatus = { q1: false, q2: false, q3: false };
+
+        function checkMultiQuiz(questionId, element, isCorrect) {
+            if (quizStatus[questionId]) return;
+            
+            const questionContainer = document.getElementById(questionId);
+            const options = questionContainer.getElementsByClassName("quiz-option");
+            const feedback = questionContainer.querySelector(".quiz-feedback");
+            
+            for(let opt of options) { 
+                opt.classList.add("disabled");
+                opt.querySelector('.quiz-icon').innerHTML = '<i class="far fa-circle"></i>';
+            }
+
+            const explanations = {
+                q1: "<strong>Validitas Dikonfirmasi!</strong> Arsitektur <em>Cloud Computing</em> mendemokratisasi penelitian sains data. Ia memitigasi ketergantungan pada spesifikasi perangkat keras individual dengan mengalihkan beban komputasi analitik mahadata ke fasilitas peladen (server) infrastruktur pihak ketiga secara instan.",
+                q2: "<strong>Validitas Dikonfirmasi!</strong> Dokumentasi ilmiah yang holistik mensyaratkan integrasi narasi dan komputasi. <em>Markdown/Text Cells</em> dirancang secara fungsional untuk mengartikulasikan argumentasi akademis, tinjauan kepustakaan, dan penafsiran metodologis tanpa memicu gangguan sintaksis pada mesin kompilator.",
+                q3: "<strong>Validitas Dikonfirmasi!</strong> Anotasi <em>Comment</em> merupakan manifes fundamental dalam dokumentasi kode (<em>Code Documentation</em>). Praktik penyertaan komentar (dimulai dengan tanda #) sangat krusial guna menjamin keterbacaan (<em>readability</em>) dan transparansi prosedur analitik bagi periset lain yang hendak mereplikasi eksperimen."
+            };
+
+            if (isCorrect) {
+                element.classList.remove("disabled");
+                element.classList.add("correct");
+                element.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-check-circle"></i>';
+                
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> ' + explanations[questionId];
+                feedback.style.color = "#166534";
+                feedback.style.backgroundColor = "#d1fae5";
+                feedback.style.border = "1px solid #22c55e";
+            } else {
+                element.classList.remove("disabled");
+                element.classList.add("wrong");
+                element.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-times-circle"></i>';
+                
+                for(let opt of options) {
+                    if(opt.getAttribute("onclick").includes("true")) {
+                        opt.classList.remove("disabled");
+                        opt.classList.add("correct");
+                        opt.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-check-circle"></i>';
+                    }
+                }
+                
+                feedback.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Verifikasi Gagal.</strong> ' + explanations[questionId].replace("Validitas Dikonfirmasi!", "Analisis Komprehensif:");
+                feedback.style.color = "#991b1b";
+                feedback.style.backgroundColor = "#fee2e2";
+                feedback.style.border = "1px solid #ef4444";
+            }
+            
+            feedback.style.display = "block";
+            quizStatus[questionId] = true;
+        }
+    </script>
+</body>
+</html>
