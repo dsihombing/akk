@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 2: Dasar Pemrograman | Denny J. C. Sihombing</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004a8f; 
+            --primary-light: #0066cc;
+            --primary-dark: #002c5c;
+            --accent: #f26522; 
+            --bg-body: #f4f7fa; 
+            --bg-card: #ffffff; 
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-light: #e2e8f0;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .course-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .instructor { font-size: 0.9rem; color: var(--text-muted); font-weight: 500;}
+
+        /* --- Container --- */
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+        
+        .page-header { margin-bottom: 2rem; border-left: 5px solid var(--accent); padding-left: 1.5rem;}
+        .page-header h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 2.2rem;}
+        .page-header p { color: var(--text-muted); margin-top: 0; font-size: 1.1rem;}
+
+        /* --- Tabs Navigation --- */
+        .tab-nav {
+            display: flex; gap: 1rem;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 2rem; overflow-x: auto;
+        }
+        .tab-btn {
+            background: none; border: none;
+            padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover, .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+
+        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Cards --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px; padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg-body); padding-bottom: 0.5rem;}
+        .card h3 { color: var(--primary-dark); margin-top: 1.5rem;}
+        
+        /* --- Alert/Highlight Box --- */
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 1.5rem; border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+        .info-box.warning {
+            background-color: #fff7ed;
+            border-left-color: var(--accent);
+        }
+
+        /* --- Code Blocks --- */
+        .code-wrapper { position: relative; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; }
+        pre { background-color: var(--code-bg); color: #d4d4d4; padding: 1.5rem; margin: 0; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;}
+        
+        .copy-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn.copied { background: #10b981; border-color: #10b981; }
+
+        .btn-colab {
+            display: inline-block; background-color: #f9ab00; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 1rem 0; transition: background 0.3s;
+        }
+        .btn-colab:hover { background-color: #d99000; }
+
+        /* --- Kuis --- */
+        .quiz-container { border-left: 4px solid var(--accent); padding: 2rem; background-color: #fffafeb; border-radius: 0 8px 8px 0; }
+        .quiz-option { padding: 1rem 1.5rem; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; background: var(--bg-card); margin-bottom: 1rem; transition: all 0.2s; font-weight: 500;}
+        .quiz-option:hover { border-color: var(--accent); background-color: #fff7ed;}
+        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        #quiz-feedback { font-weight: bold; margin-top: 1rem; display: none; padding: 1rem; border-radius: 8px;}
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 3rem; background: var(--bg-card);}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <div class="course-title">Analisis Komputasional Komunikasi</div>
+            <div class="instructor">Modul 2 | Dosen: Denny J. C. Sihombing</div>
+        </div>
+        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> Beranda</a>
+    </header>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1>Dasar Pemrograman (R & Python)</h1>
+            <p>Membangun fondasi logika komputasional, memahami variabel, struktur data sederhana, dan menulis skrip analitis pertama Anda.</p>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-logika')"><i class="fas fa-brain"></i> 1. Logika Dasar</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-variabel')"><i class="fas fa-cube"></i> 2. Variabel & Tipe Data</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-struktur')"><i class="fas fa-table"></i> 3. Struktur Data</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-praktik')"><i class="fas fa-laptop-code"></i> 4. Praktik Colab</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-quiz')"><i class="fas fa-check-circle"></i> 5. Kuis</button>
+        </div>
+
+        <div id="tab-logika" class="tab-pane active">
+            <div class="card">
+                <h2>Berpikir Seperti Komputer (Computational Thinking)</h2>
+                <p>Sebagai peneliti komunikasi, Anda terbiasa membaca nuansa, konteks, dan emosi dalam sebuah teks. Namun, komputer tidak memiliki empati. Ia hanya memahami <strong>instruksi yang sangat spesifik dan logis</strong>. Dasar dari instruksi tersebut bertumpu pada tiga logika utama (<em>Control Flow</em>):</p>
+
+                <div class="info-box">
+                    <h4>1. Sequence (Urutan)</h4>
+                    <p>Komputer membaca kode dari atas ke bawah, baris demi baris. Jika Anda meminta komputer memvisualisasikan grafik sebelum Anda memerintahkannya mengunduh data, program akan <em>error</em>.</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>2. Selection (Pemilihan / Kondisi If-Else)</h4>
+                    <p>Membuat keputusan berdasarkan kondisi tertentu. <br>
+                    <em>Contoh Komunikasi:</em> <strong>JIKA (IF)</strong> sebuah <em>tweet</em> mengandung kata "kecewa", <strong>MAKA</strong> tandai <em>tweet</em> tersebut sebagai sentimen "Negatif". <strong>SELAIN ITU (ELSE)</strong>, tandai sebagai "Positif/Netral".</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>3. Iteration (Perulangan / Loops)</h4>
+                    <p>Inilah kekuatan utama pemrograman! Alih-alih menghitung frekuensi kata pada 10.000 artikel secara manual, Anda bisa menggunakan perintah <strong>FOR</strong> atau <strong>WHILE</strong> untuk mengulang instruksi yang sama pada seluruh dokumen dalam hitungan detik.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-variabel" class="tab-pane">
+            <div class="card">
+                <h2>Variabel dan Tipe Data</h2>
+                <p><strong>Variabel</strong> adalah "wadah" atau kotak penyimpanan di dalam memori komputer. Setiap kotak harus memiliki nama, dan isi dari kotak tersebut ditentukan oleh <strong>Tipe Data</strong>.</p>
+                
+                <p>Dalam riset komunikasi, kita sering berhadapan dengan tipe data berikut:</p>
+
+                <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                    <tr style="background-color: var(--primary); color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">Tipe Data</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Keterangan</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Contoh di R / Python</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">String / Character</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Teks. Selalu diapit tanda kutip (" ").</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><code>tweet_teks = "Berita hari ini sangat mengejutkan!"</code></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Integer</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Angka bulat (tanpa desimal). Sering digunakan untuk metrik sosial.</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><code>jumlah_retweet = 1500</code></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Float / Numeric</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Angka desimal.</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><code>engagement_rate = 4.56</code></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Boolean / Logical</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Hanya memiliki 2 nilai: Benar (TRUE) atau Salah (FALSE).</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><code>is_viral = TRUE</code></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-struktur" class="tab-pane">
+            <div class="card">
+                <h2>Struktur Data Sederhana</h2>
+                <p>Dalam penelitian, kita hampir tidak pernah menganalisis hanya satu buah data tunggal (seperti satu <em>tweet</em> saja). Kita menganalisis ribuan data sekaligus. Karena itu, variabel-variabel di atas harus dikumpulkan ke dalam <strong>Struktur Data</strong>.</p>
+
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;"><i class="fas fa-list"></i> 1. Vector (di R) / List (di Python)</h4>
+                    <p>Kumpulan data satu dimensi (deret). Bayangkan seperti satu kolom di dalam Excel.<br>
+                    Contoh Kumpulan Umur: <code>c(20, 25, 22, 19, 30)</code></p>
+                </div>
+
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;"><i class="fas fa-table"></i> 2. DataFrame (Tabel)</h4>
+                    <p>Ini adalah struktur data paling penting dalam riset ilmu sosial kuantitatif! <em>DataFrame</em> adalah gabungan dari beberapa Vector yang membentuk tabel 2 dimensi (memiliki baris dan kolom).</p>
+                    <ul style="margin-top: 5px;">
+                        <li><strong>Baris (Rows)</strong> merepresentasikan <em>Observasi/Kasus</em> (Misal: 1 baris = 1 akun pengguna).</li>
+                        <li><strong>Kolom (Columns)</strong> merepresentasikan <em>Variabel</em> (Misal: kolom Umur, kolom Pekerjaan, kolom Sentimen).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-praktik" class="tab-pane">
+            <div class="card">
+                <h2>Praktik: Menulis Script di Google Colab</h2>
+                <p>Kita akan menggunakan <strong>Google Colab</strong>, sebuah lingkungan berbasis web (<em>cloud</em>) gratis dari Google. Keunggulannya, Anda tidak perlu repot menginstal <em>software</em> berat seperti RStudio atau Anaconda di laptop Anda.</p>
+                
+                <div style="text-align: center; margin: 2rem 0;">
+                    <a href="https://colab.research.google.com/#create=true&language=r" target="_blank" class="btn-colab"><i class="fas fa-external-link-alt"></i> Buka Google Colab (Environment R)</a>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">*Pastikan Anda sudah login ke akun Google.</p>
+                </div>
+
+                <h3>Cobalah Kode R Berikut Ini:</h3>
+                <p>Salin blok kode di bawah ini, tempelkan ke dalam <em>Cell</em> di Google Colab Anda, dan tekan ikon <strong>Play</strong> (atau <code>Shift + Enter</code>).</p>
+
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-r"># 1. MEMBUAT VARIABEL DAN TIPE DATA
+judul_berita <- "Pemilu 2024: Dinamika Komunikasi Politik di Media Sosial"
+jumlah_komentar <- 450
+is_hoax <- FALSE
+
+# Mencetak isi variabel ke layar
+print(judul_berita)
+
+# 2. MEMBUAT DATA FRAME (TABEL RISET)
+# Pertama, kita buat Vector (kolom)
+nama_akun <- c("UserA", "UserB", "UserC")
+sentimen_tweet <- c("Positif", "Negatif", "Netral")
+jumlah_likes <- c(120, 15, 45)
+
+# Kedua, kita gabungkan menjadi Tabel (DataFrame)
+data_medsos <- data.frame(
+  Akun = nama_akun,
+  Sentimen = sentimen_tweet,
+  Likes = jumlah_likes
+)
+
+# Menampilkan tabel
+print(data_medsos)
+
+# 3. MENGGUNAKAN FUNGSI SEDERHANA
+# Menghitung rata-rata (mean) dari kolom Likes di dalam data_medsos
+rata_rata_likes <- mean(data_medsos$Likes)
+cat("Rata-rata likes dari seluruh akun adalah:", rata_rata_likes)
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-quiz" class="tab-pane">
+            <div class="card quiz-container">
+                <h2 style="color: var(--accent); margin-top: 0;"><i class="fas fa-question-circle"></i> Uji Pemahaman</h2>
+                <p>Anda telah melakukan <em>web scraping</em> dan mendapatkan data yang berisi teks komentar, jumlah <em>likes</em>, dan tanggal posting dari 1.000 video YouTube. Jika Anda ingin menyusun dan menganalisis data ini di R atau Python sehingga bentuknya menyerupai lembar kerja (<em>spreadsheet</em>) Excel yang rapi, struktur data apa yang paling tepat untuk digunakan?</p>
+                
+                <div class="quiz-option" onclick="checkAnswer(this, false)">A. Integer (Angka Bulat)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">B. Boolean / Logical</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">C. String (Karakter Teks)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, true)">D. DataFrame (Tabel Data)</div>
+
+                <div id="quiz-feedback"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <strong>Analisis Komputasional Komunikasi</strong><br>
+        &copy; 2026 Denny J. C. Sihombing<br>
+        Universitas Katolik Indonesia Atma Jaya
+    </footer>
+
+    <script>
+        function openTab(evt, tabId) {
+            const panes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < panes.length; i++) {
+                panes[i].classList.remove("active");
+            }
+            
+            const btns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling.innerText;
+            navigator.clipboard.writeText(codeBlock).then(() => {
+                button.innerText = "Tersalin!";
+                button.classList.add("copied");
+                setTimeout(() => {
+                    button.innerText = "Salin Kode";
+                    button.classList.remove("copied");
+                }, 2000);
+            });
+        }
+
+        let quizAnswered = false;
+        function checkAnswer(element, isCorrect) {
+            if (quizAnswered) return;
+            
+            const options = document.getElementsByClassName("quiz-option");
+            const feedback = document.getElementById("quiz-feedback");
+            
+            for(let opt of options) { opt.style.pointerEvents = "none"; }
+
+            if (isCorrect) {
+                element.classList.add("correct");
+                feedback.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <strong>Tepat Sekali!</strong> <em>DataFrame</em> adalah struktur dua dimensi (baris dan kolom) yang dirancang khusus untuk menyimpan berbagai tipe variabel dalam format tabular yang menyerupai Excel.';
+                feedback.style.color = "#065f46";
+                feedback.style.backgroundColor = "#d1fae5";
+            } else {
+                element.classList.add("wrong");
+                options[3].classList.add("correct"); 
+                feedback.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <strong>Kurang Tepat.</strong> Jawaban yang benar adalah D. Integer, Boolean, dan String adalah "tipe data tunggal", sedangkan untuk menyimpan 1.000 data dengan berbagai variabel, kita membutuhkan struktur "DataFrame".';
+                feedback.style.color = "#991b1b";
+                feedback.style.backgroundColor = "#fee2e2";
+            }
+            
+            feedback.style.display = "block";
+            quizAnswered = true;
+        }
+    </script>
+</body>
+</html>
