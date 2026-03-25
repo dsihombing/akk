@@ -3,307 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modul 1: Pengantar & Etika Komputasional | Denny J. C. Sihombing</title>
+    <title>Modul 1: Pengantar dan Etika | Analisis Komputasional Komunikasi</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* --- VARIABEL TEMA ALMAMATER --- */
         :root {
             --primary: #004a8f; 
             --primary-light: #0066cc;
             --primary-dark: #002c5c;
             --accent: #f26522; 
-            --bg-body: #f4f7fa; 
+            --bg-body: #f8fafc; 
+            --bg-sidebar: #ffffff;
             --bg-card: #ffffff; 
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             --border-light: #e2e8f0;
+            --code-bg: #0f172a;
         }
 
+        /* --- RESET & TATA LETAK UTAMA --- */
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0; padding: 0;
             background-color: var(--bg-body);
             color: var(--text-main);
-            line-height: 1.7;
-        }
-
-        /* --- Header --- */
-        header {
-            background-color: var(--bg-card);
-            border-bottom: 4px solid var(--accent);
-            padding: 1.5rem 2rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0; z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .course-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-        .instructor { font-size: 0.9rem; color: var(--text-muted); font-weight: 500;}
-
-        /* --- Container --- */
-        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
-        
-        .page-header { margin-bottom: 2rem; border-left: 5px solid var(--accent); padding-left: 1.5rem;}
-        .page-header h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 2.2rem;}
-        .page-header p { color: var(--text-muted); margin-top: 0; font-size: 1.1rem;}
-
-        /* --- Tabs Navigation --- */
-        .tab-nav {
-            display: flex; gap: 1rem;
-            border-bottom: 2px solid var(--border-light);
-            margin-bottom: 2rem; overflow-x: auto;
+        /* --- BAGIAN KEPALA (HEADER) --- */
+        header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .header-title { font-size: 1.2rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 10px;}
+        .btn-home { color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 8px 15px; border-radius: 6px; background: rgba(255,255,255,0.1); transition: all 0.3s;}
+        .btn-home:hover { background: var(--accent); }
+
+        /* --- PEMBAGIAN TATA LETAK (SIDEBAR & KONTEN) --- */
+        .main-wrapper {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* --- PANEL NAVIGASI (SIDEBAR) --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            background: #f8fafc;
+        }
+        .badge-modul { display: inline-block; background: var(--accent); color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 8px;}
+        .sidebar-title { font-size: 1rem; font-weight: 700; color: var(--primary-dark); line-height: 1.3;}
+
+        .sidebar-menu {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
         .tab-btn {
-            background: none; border: none;
-            padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600;
-            color: var(--text-muted); cursor: pointer;
-            border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
-            transition: all 0.3s;
+            background: transparent; border: none; text-align: left;
+            padding: 14px 15px; font-size: 0.95rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; border-radius: 8px;
+            transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+            width: 100%; border: 1px solid transparent;
         }
-        .tab-btn:hover, .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+        .tab-btn i { width: 24px; text-align: center; font-size: 1.1rem; opacity: 0.7;}
+        .tab-btn:hover { background: #f1f5f9; color: var(--primary); }
+        .tab-btn.active { background: var(--primary-light); color: white; box-shadow: 0 4px 10px rgba(0,102,204,0.3); }
+        .tab-btn.active i { opacity: 1; color: #fff; }
 
-        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        /* --- AREA KONTEN UTAMA --- */
+        .content-area {
+            flex-grow: 1;
+            padding: 3rem;
+            background-color: var(--bg-body);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .content-container { max-width: 800px; margin: 0 auto; padding-bottom: 4rem;}
+
+        .page-header h1 { color: var(--primary-dark); margin: 0 0 1rem 0; font-size: 2.2rem; font-weight: 900;}
+        .page-header p { color: var(--text-muted); margin: 0 0 2.5rem 0; font-size: 1.1rem; line-height: 1.6;}
+
+        /* Animasi Transisi */
+        .tab-pane { display: none; animation: slideUp 0.3s ease forwards; opacity: 0; transform: translateY(15px); }
         .tab-pane.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Cards --- */
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: 10px; padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .card h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg-body); padding-bottom: 0.5rem;}
-        .card h3 { color: var(--primary-dark); margin-top: 1.5rem;}
+        /* --- ELEMEN KARTU & KOTAK INFORMASI --- */
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
+        .card h2 { color: var(--primary-dark); margin-top: 0; font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;}
         
-        /* --- Alert/Highlight Box --- */
-        .info-box {
-            background-color: #eff6ff;
-            border-left: 4px solid var(--primary-light);
-            padding: 1.5rem; border-radius: 0 8px 8px 0;
-            margin: 1.5rem 0;
-        }
-        .info-box.warning {
-            background-color: #fff7ed;
-            border-left-color: var(--accent);
-        }
+        .info-box { background-color: #f0f9ff; border-left: 4px solid var(--primary-light); padding: 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0; display: flex; gap: 15px; align-items: flex-start; }
+        .info-box i { font-size: 1.5rem; color: var(--primary-light); margin-top: 3px;}
+        .info-box.warning { background-color: #fff7ed; border-left-color: var(--accent); }
+        .info-box.warning i { color: var(--accent); }
+        .info-content h4 { margin: 0 0 5px 0; color: var(--text-main); font-size: 1.05rem;}
+        .info-content p { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;}
         
-        /* --- Timeline / Steps --- */
-        .step-list { list-style: none; padding: 0; }
-        .step-list li {
-            position: relative; padding-left: 40px; margin-bottom: 1.5rem;
-        }
-        .step-list li::before {
-            content: "\f058"; font-family: "Font Awesome 5 Free"; font-weight: 900;
-            position: absolute; left: 0; top: 2px; color: var(--accent); font-size: 1.5rem;
-        }
+        .citation { font-size: 0.9rem; color: var(--text-muted); font-style: italic; border-left: 3px solid var(--border-light); padding-left: 15px; margin-top: 15px; margin-bottom: 15px; }
 
-        /* --- Kuis --- */
-        .quiz-container { border-left: 4px solid var(--accent); padding: 2rem; background-color: #fffafeb; border-radius: 0 8px 8px 0; }
-        .quiz-option { padding: 1rem 1.5rem; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; background: var(--bg-card); margin-bottom: 1rem; transition: all 0.2s; font-weight: 500;}
-        .quiz-option:hover { border-color: var(--accent); background-color: #fff7ed;}
-        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; pointer-events: none;}
-        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
-        #quiz-feedback { font-weight: bold; margin-top: 1rem; display: none; padding: 1rem; border-radius: 8px;}
+        /* --- SIMULATOR KODE INTERAKTIF --- */
+        .playground { background: var(--code-bg); border-radius: 10px; overflow: hidden; margin: 2rem 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        .playground-header { background: #1e293b; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; flex-wrap: wrap; gap: 10px; }
+        .lang-badge { background: #334155; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; font-family: monospace;}
+        
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap;}
+        
+        /* Tombol-tombol Editor */
+        .btn-run { background: #22c55e; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: background 0.2s; }
+        .btn-run:hover { background: #16a34a; }
+        
+        .btn-reset { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-reset:hover { background: #334155; color: white; }
 
-        /* --- Footer --- */
-        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 3rem; background: var(--bg-card);}
+        .btn-copy { background: transparent; border: 1px solid var(--primary-light); color: var(--primary-light); padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-copy:hover { background: var(--primary-light); color: white; }
+        .btn-copy.copied { background: #10b981; border-color: #10b981; color: white; }
+
+        .code-editor {
+            width: 100%; background: transparent; color: #e2e8f0; padding: 1.5rem; margin: 0;
+            font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;
+            border: none; resize: vertical; min-height: 180px; outline: none;
+        }
+        .output-area { background: #000; color: #a3e635; padding: 1.5rem; font-family: 'Consolas', monospace; font-size: 0.9rem; border-top: 1px dashed #334155; display: none; line-height: 1.6;}
+
+        /* --- ANTARMUKA EVALUASI (KUIS) --- */
+        .quiz-question { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px dashed var(--border-light); }
+        .quiz-question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .quiz-title { font-size: 1.1rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 1.2rem; line-height: 1.5;}
+        
+        .quiz-option { padding: 1rem 1.2rem; border: 2px solid var(--border-light); border-radius: 10px; cursor: pointer; background: var(--bg-card); margin-bottom: 0.8rem; transition: all 0.2s; font-weight: 500; display: flex; align-items: center; gap: 15px; line-height: 1.5;}
+        .quiz-option:hover { border-color: var(--primary-light); background: #f0f9ff; }
+        .quiz-option.correct { background-color: #f0fdf4; border-color: #22c55e; color: #166534; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        .quiz-option.disabled { pointer-events: none; opacity: 0.6; }
+        .quiz-icon { width: 24px; text-align: center; font-size: 1.1rem;}
+        .quiz-feedback { margin-top: 1rem; display: none; padding: 1.2rem; border-radius: 10px; font-weight: 500; line-height: 1.6;}
+
+        /* --- RESPONSIVITAS PERANGKAT BERGERAK --- */
+        @media (max-width: 768px) {
+            body { height: auto; overflow: auto; }
+            .main-wrapper { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
+            .sidebar-header { display: none; }
+            .sidebar-menu { flex-direction: row; overflow-x: auto; padding: 10px; gap: 10px; white-space: nowrap; }
+            .tab-btn { width: auto; padding: 10px 15px; margin-bottom: 0; }
+            .content-area { padding: 1.5rem; }
+            .page-header h1 { font-size: 1.8rem; }
+            .btn-group { width: 100%; justify-content: flex-end; } /* Tombol editor menyesuaikan di HP */
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <div>
-            <div class="course-title">Analisis Komputasional Komunikasi</div>
-            <div class="instructor">Modul 1 | Dosen: Denny J. C. Sihombing</div>
-        </div>
-        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> Beranda</a>
+        <h2 class="header-title"><i class="fas fa-laptop-code"></i> Analisis Komputasional Komunikasi</h2>
+        <a href="index.html" class="btn-home"><i class="fas fa-home"></i> Beranda Utama</a>
     </header>
 
-    <div class="container">
+    <div class="main-wrapper">
         
-        <div class="page-header">
-            <h1>Pengantar & Etika Komputasional</h1>
-            <p>Memahami pergeseran paradigma riset komunikasi, evolusi teori di era Big Data, dan batasan etika dalam perlindungan privasi digital.</p>
-        </div>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="badge-modul">MODUL 1</span>
+                <div class="sidebar-title">Pengantar dan Etika Riset Komputasional</div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <button class="tab-btn active" onclick="openTab(event, 'tab-teori')">
+                    <i class="fas fa-book-reader"></i> Pergeseran Paradigma
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-karakter')">
+                    <i class="fas fa-database"></i> Karakteristik Data
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-alur')">
+                    <i class="fas fa-project-diagram"></i> Alur Riset Integratif
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-etika')">
+                    <i class="fas fa-shield-alt"></i> Etika dan Privasi
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-kode')">
+                    <i class="fas fa-terminal"></i> Simulasi Pemrograman
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-quiz')">
+                    <i class="fas fa-tasks"></i> Evaluasi Kompetensi
+                </button>
+            </div>
+        </aside>
 
-        <div class="tab-nav">
-            <button class="tab-btn active" onclick="openTab(event, 'tab-teori')"><i class="fas fa-brain"></i> 1. Evolusi Teori</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-karakter')"><i class="fas fa-tachometer-alt"></i> 2. Karakteristik Metode</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-langkah')"><i class="fas fa-project-diagram"></i> 3. Langkah Analisis</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-etika')"><i class="fas fa-shield-alt"></i> 4. Etika & Privasi</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-quiz')"><i class="fas fa-check-circle"></i> 5. Kuis</button>
-        </div>
-
-        <div id="tab-teori" class="tab-pane active">
-            <div class="card">
-                <h2>Ilmu Komunikasi Komputasional (CCS)</h2>
-                <p><strong>Computational Communication Science (CCS)</strong> adalah sub-disiplin yang memadukan teori komunikasi manusia dengan kekuatan ilmu komputer dan statistika. Kita menggunakan algoritma komputasi untuk meneliti masalah-masalah sosial dan media secara berskala masif yang sebelumnya mustahil dilakukan secara manual.</p>
+        <main class="content-area" id="main-content">
+            <div class="content-container">
                 
-                <h3>Bagaimana Teori Klasik Bekerja di Era Digital?</h3>
-                <p>Metode komputasional tidak membuang teori komunikasi lama, melainkan memberinya "napas baru" melalui kacamata <em>Big Data</em>. Berikut adalah contoh transformasinya:</p>
-
-                <div class="info-box">
-                    <h4><i class="fas fa-newspaper"></i> Agenda Setting</h4>
-                    <p><strong>Dulu:</strong> Peneliti menghitung secara manual berapa kali isu tertentu muncul di halaman depan koran selama sebulan.<br>
-                    <strong>Sekarang (Komputasional):</strong> Peneliti menggunakan algoritma <em>Topic Modeling</em> untuk memindai 100.000 artikel berita <em>online</em> dan jutaan <em>tweet</em> dalam hitungan jam untuk melihat bagaimana agenda media massa beresonansi menjadi <em>Trending Topic</em> di media sosial.</p>
+                <div class="page-header">
+                    <h1>Pengantar dan Etika Riset Komputasional</h1>
+                    <p>Mengkaji landasan filosofis <em>"The Computational Turn"</em>, karakteristik data jejak digital (<em>digital traces</em>), arsitektur alur penelitian, serta urgensi etika perlindungan privasi dalam era Mahadata (<em>Big Data</em>).</p>
                 </div>
 
-                <div class="info-box">
-                    <h4><i class="fas fa-project-diagram"></i> Diffusion of Innovations</h4>
-                    <p><strong>Dulu:</strong> Survei panjang untuk mengetahui siapa yang memengaruhi siapa dalam mengadopsi teknologi baru.<br>
-                    <strong>Sekarang (Komputasional):</strong> Menggunakan <em>Social Network Analysis (SNA)</em> untuk memetakan jaringan jutaan pengguna X (Twitter) secara visual, guna menemukan akun mana yang bertindak sebagai <em>Opinion Leader (Hubs)</em> dalam menyebarkan sebuah gagasan.</p>
+                <div id="tab-teori" class="tab-pane active">
+                    <div class="card">
+                        <h2>Pergeseran Komputasional (<em>The Computational Turn</em>)</h2>
+                        <p>Disiplin Ilmu Komunikasi pada abad ke-21 tengah mengalami transformasi fundamental yang dikenal sebagai <strong>Pergeseran Komputasional (<em>The Computational Turn</em>)</strong>. Fenomena ini didorong oleh ketersediaan data digital yang eksponensial serta kemajuan kapasitas algoritma komputasi terotomatisasi. Integrasi ini melahirkan subdisiplin interdisipliner baru yang disebut <strong>Ilmu Komunikasi Komputasional (<em>Computational Communication Science/CCS</em>)</strong>.</p>
+                        
+                        <div class="citation">"CCS merupakan konvergensi epistemologis yang memadukan teori fundamental komunikasi manusia dengan ketangguhan algoritma ilmu komputer dan inferensi probabilitas statistika."</div>
+                        
+                        <h3 style="margin-top: 2rem; color: var(--primary);">Transformasi Metodologis Teori Klasik</h3>
+                        <p>Pendekatan komputasional tidak menegasikan teori komunikasi preseden, melainkan merevitalisasinya melalui kapasitas analitik skala masif:</p>
+                        
+                        <div class="info-box">
+                            <i class="fas fa-newspaper"></i>
+                            <div class="info-content">
+                                <h4>Agenda Setting & Teori Pembingkaian (<em>Framing</em>)</h4>
+                                <p><strong>Konvensional:</strong> Peneliti mengeksekusi analisis isi (<em>content analysis</em>) secara manual pada korpus data cetak yang terbatas.<br>
+                                <strong>Komputasional:</strong> Mengimplementasikan algoritma Pemodelan Topik (<em>Topic Modeling</em>) dan Analisis Konten Terotomatisasi untuk memindai jutaan artikel warta daring secara simultan guna mengidentifikasi konstruksi bingkai (<em>frame</em>) media secara komprehensif.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <i class="fas fa-share-nodes"></i>
+                            <div class="info-content">
+                                <h4>Difusi Inovasi (<em>Diffusion of Innovations</em>)</h4>
+                                <p><strong>Konvensional:</strong> Mengandalkan instrumen kuesioner pelaporan diri (<em>self-report</em>) untuk mendeteksi agen pemengaruh dalam suatu komunitas.<br>
+                                <strong>Komputasional:</strong> Memanfaatkan Analisis Jejaring Sosial (<em>Social Network Analysis/SNA</em>) untuk merekonstruksi topologi jaringan interaksi jutaan entitas digital secara empiris guna melokalisasi Pemuka Pendapat (<em>Opinion Leaders/Hubs</em>).</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <div id="tab-karakter" class="tab-pane">
+                    <div class="card">
+                        <h2>Karakteristik Data Komputasional</h2>
+                        <p>Signifikansi metodologi komputasional bagi diskursus riset ilmu komunikasi terletak pada sifat intrinsik korpus data yang dianalisis:</p>
+
+                        <div class="info-box">
+                            <i class="fas fa-database"></i>
+                            <div class="info-content">
+                                <h4>1. Jejak Digital (<em>Digital Traces</em>) vs. Instrumen Survei</h4>
+                                <p>Instrumen survei tradisional cenderung rentan terhadap bias pelaporan diri (<em>self-report bias</em>). Sebaliknya, <strong>Jejak Digital</strong> merekam presipitasi perilaku aktual pengguna secara objektif (misalnya: riwayat navigasi web, telemetri lokasi, dan metrik atensi). Paradigma kelimpahan data ini diartikulasikan sebagai postulat <em>"Data is the New Oil"</em>.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-box">
+                            <i class="fas fa-photo-video"></i>
+                            <div class="info-content">
+                                <h4>2. Multimodalitas dan Visio-Komputasi (<em>Image as Data</em>)</h4>
+                                <p>Ekosistem komunikasi digital kontemporer tidak lagi monolitik berbasis teks. Riset mutakhir mengadopsi kapabilitas Visi Komputer (<em>Computer Vision</em>), seperti <em>Convolutional Neural Networks (CNNs)</em>, untuk mengonversi gambar dan video menjadi matriks data kuantitatif. Implementasinya mencakup pendeteksian afeksi wajah tokoh politik secara otomatis pada platform visual.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <i class="fas fa-sync"></i>
+                            <div class="info-content">
+                                <h4>3. Keterulangan Epistemologis (<em>Reproducibility</em>)</h4>
+                                <p>Validitas penelitian dijamin melalui transparansi algoritmik. Skrip pemrograman (<em>source code</em>) yang dipublikasikan memungkinkan komunitas saintifik untuk mereplikasi, memverifikasi, dan mengkalibrasi ulang temuan empiris pada pangkalan data yang identik, sehingga meminimalisasi distorsi subjektivitas manusia.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-alur" class="tab-pane">
+                    <div class="card">
+                        <h2>Arsitektur Riset CCS Integratif</h2>
+                        <p>Berdasarkan konsensus literatur mutakhir, investigasi komunikasi komputasional menuntut protokol metodologis yang koheren. Desain riset tidak berhenti pada ekstraksi data belaka, melainkan bermuara pada pengujian efek media secara empiris:</p>
+                        
+                        <div style="border-left: 3px solid var(--border-light); padding-left: 25px; margin-top: 20px;">
+                            <h4 style="color: var(--primary-dark); font-size: 1.1rem;"><i class="fas fa-check-circle" style="color: var(--accent); margin-right: 12px; margin-left: -37px; background: white;"></i> 1. Perumusan Masalah Berbasis Teori (<em>Theory-Driven Formulation</em>)</h4>
+                            <p style="margin-top: -5px; margin-bottom: 25px; color: var(--text-muted);">Komputasi adalah instrumen, bukan tujuan akhir. Desain penelitian wajib dikonstruksi di atas landasan teoretis ilmu komunikasi yang solid (misalnya: postulat <em>Agenda Setting</em> atau Mekanisme Persuasi).</p>
+
+                            <h4 style="color: var(--primary-dark); font-size: 1.1rem;"><i class="fas fa-check-circle" style="color: var(--accent); margin-right: 12px; margin-left: -37px; background: white;"></i> 2. Akuisisi Jejak Digital (<em>Data Collection</em>)</h4>
+                            <p style="margin-top: -5px; margin-bottom: 5px; color: var(--text-muted);">Proses ekstraksi data multimodal dieksekusi melalui berbagai teknik spesifik:</p>
+                            <ul style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">
+                                <li><strong>API & Web Scraping:</strong> Penarikan korpus data publik secara algoritmik dari peladen (<em>server</em>) platform.</li>
+                                <li><strong>Donasi Data (<em>Data Donation</em>):</strong> Pendekatan partisipatoris di mana subjek menyumbangkan berkas arsip riwayat digital mereka berdasarkan persetujuan etik.</li>
+                                <li><strong>Pelacakan Layar (<em>Screen Tracking</em>):</strong> Perekaman waktu paparan (<em>screen time</em>) dan navigasi layar secara presisi.</li>
+                            </ul>
+
+                            <h4 style="color: var(--primary-dark); font-size: 1.1rem;"><i class="fas fa-check-circle" style="color: var(--accent); margin-right: 12px; margin-left: -37px; background: white;"></i> 3. Analisis Konten Terotomatisasi (<em>Automated Content Analysis</em>)</h4>
+                            <p style="margin-top: -5px; margin-bottom: 5px; color: var(--text-muted);">Mengekstraksi variabel laten, dimensi semantik, atau polaritas emosional dari data mentah. Tahapan ini wajib diiringi oleh prosedur <strong>Validasi Manusia (<em>Human Validation</em>)</strong> guna mengukur reliabilitas algoritma:</p>
+                            <ul style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">
+                                <li><strong>Analisis Tekstual:</strong> Implementasi Pemrosesan Bahasa Alami (NLP) untuk Analisis Sentimen dan Pemodelan Topik.</li>
+                                <li><strong>Analisis Visual:</strong> Implementasi Visi Komputer (CNNs) untuk deteksi presensi objek atau afeksi wajah.</li>
+                            </ul>
+
+                            <h4 style="color: var(--primary-dark); font-size: 1.1rem;"><i class="fas fa-check-circle" style="color: var(--accent); margin-right: 12px; margin-left: -37px; background: white;"></i> 4. Integrasi dan Pengujian Efek Media (<em>Linking to Outcomes</em>)</h4>
+                            <p style="margin-top: -5px; margin-bottom: 25px; color: var(--text-muted);">Kulminasi dari riset CCS: Mengkorelasikan variabel independen (fitur konten hasil komputasi) dengan variabel dependen berupa dampak kognitif, afektif, atau konatif pada subjek. Sebagai contoh, menyandingkan <strong>metrik paparan sentimen wacana kampanye</strong> dengan <strong>hasil survei preferensi elektoral responden</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-etika" class="tab-pane">
+                    <div class="card">
+                        <h2>Etika Penelitian di Era "Post-API"</h2>
+                        <p>Mengikuti serangkaian insiden pelanggaran data berskala global, korporasi penyedia platform digital kini menerapkan restriksi masif terhadap antarmuka akses data mereka. Periode pengetatan ini diklasifikasikan sebagai <strong>Era Post-API</strong>, yang menuntut penerapan standar etika keilmuan yang lebih absolut.</p>
+                        
+                        <div class="info-box warning">
+                            <i class="fas fa-user-secret"></i>
+                            <div class="info-content">
+                                <h4>1. Prinsip De-identifikasi (Anonimisasi)</h4>
+                                <p>Terdapat asimetri kesadaran di mana mayoritas agregat publik tidak mengantisipasi bahwa data wicara digital mereka dianalisis untuk kepentingan akademis. Peneliti <strong>berkewajiban secara imperatif</strong> untuk meredaksi identitas nominal, nama pengguna, presensi visual, serta lokus spasial sebelum mendiseminasikan temuan riset.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box warning">
+                            <i class="fas fa-handshake"></i>
+                            <div class="info-content">
+                                <h4>2. Persetujuan Berbasis Informasi (<em>Informed Consent</em>) & Donasi Data</h4>
+                                <p>Menghindari praktik ekstraksi paksa menggunakan automasi (<em>bot</em>) yang mereduksi performa peladen serta melanggar Ketentuan Layanan (<em>Terms of Service</em>). Transisi etis dalam diskursus CCS diarahkan pada paradigma <strong>Donasi Data</strong>, sebuah pendekatan berbasis otonomi di mana subjek memberikan afirmasi persetujuan secara eksplisit.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box warning">
+                            <i class="fas fa-balance-scale"></i>
+                            <div class="info-content">
+                                <h4>3. Reduksi Bias Representasi</h4>
+                                <p>Skala Mahadata (<em>Big Data</em>) tidak secara otomatis berkorelasi dengan presisi representasi populasi. Basis demografis sebuah platform bersifat partikular. Konsekuensinya, upaya menggeneralisasi temuan analitik (misalnya: mengekstrapolasi opini pengguna Twitter sebagai konsensus nasional) dikategorikan sebagai sesat pikir metodologis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-kode" class="tab-pane">
+                    <div class="card">
+                        <h2>Simulasi: Eksekusi Pemrograman Dasar</h2>
+                        <p>Guna memitigasi hambatan kognitif terhadap bahasa pemrograman, silakan menyunting teks bertanda kutip ganda <code>"..."</code> pada baris pertama di bawah ini. Anda dapat menyalin kode ini ke dalam editor RStudio/Colab Anda atau menekan tombol <strong>Jalankan Kode</strong> untuk menginstruksikan modul mensimulasikan komputasi.</p>
+
+                        <div class="playground">
+                            <div class="playground-header">
+                                <span class="lang-badge">Editor Skrip R</span>
+                                <div class="btn-group">
+                                    <button class="btn-copy" onclick="copyEditorCode(this, 'rEditor')"><i class="far fa-copy"></i> Salin Kode</button>
+                                    <button class="btn-reset" onclick="resetCode()"><i class="fas fa-undo"></i> Atur Ulang</button>
+                                    <button class="btn-run" onclick="runSimulatedR()"><i class="fas fa-play"></i> Jalankan</button>
+                                </div>
+                            </div>
+                            
+                            <textarea id="rEditor" class="code-editor" spellcheck="false">
+# 1. Alokasi string teks ke dalam variabel
+pesan <- "Salam akademis! Saya siap mengeksplorasi ilmu komunikasi komputasional."
+
+# 2. Eksekusi fungsi kalkulasi nchar (jumlah karakter)
+panjang_pesan <- nchar(pesan)
+
+# 3. Terminasi keluaran (output) ke antarmuka konsol
+print(pesan)
+cat("Kalkulasi jumlah karakter pada teks tersebut adalah:", panjang_pesan)
+                            </textarea>
+
+                            <div class="output-area" id="output-r"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-quiz" class="tab-pane">
+                    <div class="card">
+                        <h2>Evaluasi Kompetensi Akademis</h2>
+                        <p style="margin-bottom: 2.5rem; color: var(--text-muted);">Jawablah instrumentasi evaluasi berikut guna memvalidasi asimilasi kognitif Anda terhadap fondasi teoretis Modul 1.</p>
+
+                        <div class="quiz-question" id="q1">
+                            <div class="quiz-title">1. Ditinjau dari kerangka validitas metodologis, apakah keunggulan fundamental dari penggunaan metrik Jejak Digital (<em>Digital Traces</em>) dibandingkan instrumen kuesioner konvensional dalam riset efek media?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Kapasitasnya dalam merekam log presipitasi perilaku aktual subjek secara objektif, sehingga memitigasi distorsi bias pelaporan diri (<em>self-report bias</em>).</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Garansi matematis bahwa jejak digital selalu merepresentasikan 100% parameter populasi nasional secara proporsional.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Kemudahan ekstraksi agregat data secara absolut tanpa terikat oleh protokol yurisdiksi privasi.</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                        <div class="quiz-question" id="q2">
+                            <div class="quiz-title">2. Memasuki era "Post-API" di mana korporasi platform membatasi diseminasi data, paradigma akuisisi data manakah yang paling direkomendasikan secara etis lantaran mengedepankan hak otonomi (<em>Informed Consent</em>) partisipan?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Mengerahkan skrip <em>Web Scraping</em> secara masif menggunakan proksi peladen anonim.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Donasi Data (Memfasilitasi partisipan untuk mengunduh dan mengekspor arsip riwayat digital personal mereka secara sukarela).</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Akuisisi sekunder melalui transaksi komersial dengan pihak ketiga (<em>Data Brokers</em>).</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                        <div class="quiz-question" id="q3">
+                            <div style="background: #f8fafc; padding: 15px; border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.95rem; line-height: 1.6;">
+                                <strong>Studi Kasus Pelanggaran Etik:</strong><br>Seorang akademisi berhasil mengekstraksi puluhan ribu entri ulasan dari basis data portal fasilitas kesehatan. Demi memenuhi tuntutan transparansi riset, akademisi tersebut mendiseminasikan <em>dataset</em> empiris mentah—yang secara eksplisit memuat identitas nominal pasien dan klasifikasi patologisnya—ke dalam repositori arsip publik (<em>Open Source</em>).
+                            </div>
+                            <div class="quiz-title">3. Tindakan akademisi pada studi kasus di atas merepresentasikan kegagalan implementasi protokol etika komputasional dalam dimensi apa?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Kegagalan optimalisasi pada fase Pra-pemrosesan (<em>Data Cleaning</em>) sintaksis.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Pelanggaran imperatif terhadap prinsip De-identifikasi (Anonimisasi) atas atribut data konfidensial.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Kemunculan sesat pikir akibat Bias Representasi Algoritmik spasial.</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-        </div>
-
-        <div id="tab-karakter" class="tab-pane">
-            <div class="card">
-                <h2>Karakteristik Riset Komputasional</h2>
-                <p>Mengapa kita meninggalkan (atau melengkapi) metode tradisional seperti analisis isi manual (<em>manual content analysis</em>) dan beralih ke bahasa pemrograman seperti R atau Python?</p>
-
-                <ul class="step-list">
-                    <li>
-                        <strong>Skalabilitas Ekstrem (Volume & Velocity)</strong><br>
-                        Mampu memproses, membaca, dan mengkategorikan ratusan ribu dokumen teks (artikel, transkrip, komentar) hanya dalam beberapa detik. Manusia akan kelelahan, algoritma tidak.
-                    </li>
-                    <li>
-                        <strong>Otomatisasi & Keterulangan (Reproducibility)</strong><br>
-                        Peneliti hanya perlu menulis satu set instruksi kode (<em>script</em>). Kode ini dapat dibagikan kepada peneliti lain, sehingga mereka bisa menguji ulang (mereproduksi) hasil temuan Anda dengan data yang sama persis tanpa distorsi subjektivitas.
-                    </li>
-                    <li>
-                        <strong>Data yang Natural (Unobtrusive)</strong><br>
-                        Berbeda dengan kuesioner di mana responden sering berbohong atau merasa diawasi (<em>Hawthorne effect</em>), data komputasional diambil dari jejak digital natural. Orang mengekspresikan opini aslinya di kolom komentar YouTube atau portal berita tanpa sadar sedang diteliti.
-                    </li>
-                    <li>
-                        <strong>Interdisipliner</strong><br>
-                        Riset tidak lagi bisa berdiri sendiri. Pakar komunikasi bertugas menyusun <strong>teori dan pertanyaan kritis</strong>, sementara teknik penyelesaiannya meminjam pisau analisis dari <strong>ilmu komputer</strong> (algoritma) dan <strong>statistika</strong> (probabilitas).
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="tab-langkah" class="tab-pane">
-            <div class="card">
-                <h2>Alur Kerja (Workflow) Komputasional</h2>
-                <p>Riset komputasional bukanlah proses acak (<em>trial and error</em>) mengetik kode. Ada prosedur saintifik dan strategis yang ketat:</p>
-
-                <div class="info-box">
-                    <h4>1. Perumusan Masalah & Teori (Berpikir Kritis)</h4>
-                    <p>Algoritma secanggih apa pun tidak akan berguna jika pertanyaannya salah. Mulailah dari teori. <em>Contoh: "Bagaimana framing media daring memengaruhi sentimen publik terhadap kebijakan pajak baru?"</em></p>
-                </div>
-
-                <div class="info-box">
-                    <h4>2. Akuisisi Data (Data Collection)</h4>
-                    <p>Mengumpulkan jejak digital menggunakan teknik <em>Web Scraping</em> (menyapu data dari situs web) atau melalui API resmi yang disediakan oleh platform (seperti Google, Reddit, dsb).</p>
-                </div>
-
-                <div class="info-box">
-                    <h4>3. Pra-Pemrosesan (Data Cleaning / Wrangling)</h4>
-                    <p>Data mentah dari internet sangat kotor. Langkah ini melibatkan pembuangan emoji, tautan rusak (URL), huruf kapital, dan kata sambung (<em>stop-words</em>) agar mesin bisa fokus pada kata kunci penting.</p>
-                </div>
-
-                <div class="info-box">
-                    <h4>4. Analisis Komputasional</h4>
-                    <p>Menerapkan model matematis. Apakah kita ingin mengetahui emosi teks (<em>Sentiment Analysis</em>), menemukan topik tersembunyi (<em>Topic Modeling / LDA</em>), atau mencari aktor kunci (<em>Network Analysis</em>)?</p>
-                </div>
-
-                <div class="info-box">
-                    <h4>5. Interpretasi & Visualisasi</h4>
-                    <p>Mengubah deretan angka statistik menjadi grafik jaringan, <em>wordcloud</em>, atau peta interaktif yang dapat dipahami oleh masyarakat umum dan pembuat kebijakan.</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-etika" class="tab-pane">
-            <div class="card">
-                <h2>Etika dan Perlindungan Data Pribadi</h2>
-                <p>Hanya karena sebuah data "tersedia gratis dan terbuka" (<em>publicly available</em>) di internet, bukan berarti data tersebut bebas dieksploitasi. Peneliti komunikasi memiliki tanggung jawab moral dan hukum.</p>
-                
-                <div class="info-box warning">
-                    <h4 style="color: #c2410c;"><i class="fas fa-user-secret"></i> 1. Prinsip Anonimisasi (De-identification)</h4>
-                    <p>Banyak pengguna medsos tidak sadar kicauannya bisa dijadikan bahan penelitian. Sebelum mempublikasikan hasil riset (terutama kutipan langsung dari komentar), peneliti <strong>wajib</strong> menyensor nama asli, <em>username</em>, foto profil, dan data sensitif lainnya yang bisa melacak balik ke individu tersebut.</p>
-                </div>
-
-                <div class="info-box warning">
-                    <h4 style="color: #c2410c;"><i class="fas fa-file-contract"></i> 2. Kepatuhan Ketentuan Layanan (Terms of Service)</h4>
-                    <p>Platform seperti Meta (IG/FB) atau X memiliki aturan ketat terkait <em>scraping</em>. Memaksa mengambil jutaan data menggunakan <em>bot</em> ilegal yang menyebabkan peladen (<em>server</em>) mereka melambat adalah bentuk pelanggaran etika akademik. Gunakan jalur API resmi yang diperbolehkan.</p>
-                </div>
-
-                <div class="info-box warning">
-                    <h4 style="color: #c2410c;"><i class="fas fa-balance-scale"></i> 3. Bias Representasi (Algorithmic Bias)</h4>
-                    <p>Peneliti harus sadar secara kritis bahwa <strong>data platform tidak mewakili seluruh populasi negara</strong>. Menyimpulkan "Inilah pendapat mayoritas rakyat Indonesia" hanya dari analisis data X (Twitter) adalah sebuah sesat pikir akademis, karena pengguna X hanya mewakili demografi tertentu (urban, melek digital, kelas menengah).</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-quiz" class="tab-pane">
-            <div class="card quiz-container">
-                <h2 style="color: var(--accent); margin-top: 0;"><i class="fas fa-question-circle"></i> Uji Pemahaman</h2>
-                <p>Seorang mahasiswa berhasil melakukan <em>web scraping</em> terhadap 50.000 ulasan pasien dari situs web sebuah rumah sakit swasta untuk melihat sentimen kepuasan layanan. Mahasiswa tersebut langsung mempublikasikan dataset mentah lengkap dengan nama pasien dan penyakit yang dideritanya ke repositori GitHub terbuka agar bisa direproduksi orang lain.</p>
-                <p>Tindakan mahasiswa ini melanggar prinsip etika komputasional yang mana?</p>
-                
-                <div class="quiz-option" onclick="checkAnswer(this, false)">A. Kepatuhan Ketentuan Layanan (Terms of Service)</div>
-                <div class="quiz-option" onclick="checkAnswer(this, false)">B. Bias Representasi Algoritma</div>
-                <div class="quiz-option" onclick="checkAnswer(this, true)">C. Prinsip Anonimisasi dan Perlindungan Data Sensitif</div>
-                <div class="quiz-option" onclick="checkAnswer(this, false)">D. Validitas Perumusan Masalah Teoretis</div>
-
-                <div id="quiz-feedback"></div>
-            </div>
-        </div>
-
+        </main>
     </div>
 
-    <footer>
-        <strong>Analisis Komputasional Komunikasi</strong><br>
-        &copy; 2026 Denny J. C. Sihombing<br>
-        Universitas Katolik Indonesia Atma Jaya
-    </footer>
-
     <script>
+        // --- LOGIKA NAVIGASI TAB ---
         function openTab(evt, tabId) {
             const panes = document.getElementsByClassName("tab-pane");
-            for (let i = 0; i < panes.length; i++) {
-                panes[i].classList.remove("active");
-            }
+            for (let i = 0; i < panes.length; i++) panes[i].classList.remove("active");
             
             const btns = document.getElementsByClassName("tab-btn");
-            for (let i = 0; i < btns.length; i++) {
-                btns[i].classList.remove("active");
-            }
+            for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
             
             document.getElementById(tabId).classList.add("active");
             evt.currentTarget.classList.add("active");
+            document.getElementById("main-content").scrollTop = 0;
         }
 
-        let quizAnswered = false;
-        function checkAnswer(element, isCorrect) {
-            if (quizAnswered) return;
+        // --- LOGIKA SIMULATOR R DAN SALIN KODE ---
+        const defaultCode = `# 1. Alokasi string teks ke dalam variabel\npesan <- "Salam akademis! Saya siap mengeksplorasi ilmu komunikasi komputasional."\n\n# 2. Eksekusi fungsi kalkulasi nchar (jumlah karakter)\npanjang_pesan <- nchar(pesan)\n\n# 3. Terminasi keluaran (output) ke antarmuka konsol\nprint(pesan)\ncat("Kalkulasi jumlah karakter pada teks tersebut adalah:", panjang_pesan)`;
+
+        function resetCode() {
+            document.getElementById('rEditor').value = defaultCode.trim();
+            document.getElementById('output-r').style.display = "none";
+        }
+        
+        // Fungsi baru untuk menyalin kode ke Clipboard
+        function copyEditorCode(buttonElement, editorId) {
+            const editor = document.getElementById(editorId);
+            navigator.clipboard.writeText(editor.value).then(() => {
+                const originalHTML = buttonElement.innerHTML;
+                buttonElement.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                buttonElement.classList.add("copied");
+                
+                // Kembalikan tombol seperti semula setelah 2 detik
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalHTML;
+                    buttonElement.classList.remove("copied");
+                }, 2000);
+            }).catch(err => {
+                console.error('Gagal menyalin teks: ', err);
+            });
+        }
+
+        function runSimulatedR() {
+            const outputBox = document.getElementById("output-r");
+            const codeInput = document.getElementById("rEditor").value;
             
-            const options = document.getElementsByClassName("quiz-option");
-            const feedback = document.getElementById("quiz-feedback");
+            outputBox.style.display = "block";
+            outputBox.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Mengompilasi dan mengeksekusi instruksi komputasi...';
             
-            for(let opt of options) { opt.style.pointerEvents = "none"; }
+            setTimeout(() => {
+                let outputText = "";
+                const pesanMatch = codeInput.match(/pesan\s*(<-|=)\s*(["'])(.*?)\2/);
+                
+                if (pesanMatch && pesanMatch[3] !== undefined) {
+                    const isiPesan = pesanMatch[3];
+                    const jumlahKarakter = isiPesan.length; 
+                    
+                    let printOutput = codeInput.includes("print(pesan)") ? `[1] "${isiPesan}"<br>` : "";
+                    let catOutput = codeInput.includes("cat(") || codeInput.includes("panjang_pesan") ? `Kalkulasi jumlah karakter pada teks tersebut adalah: ${jumlahKarakter}<br>` : "";
+                    
+                    outputText = printOutput + catOutput;
+                    if(outputText === "") outputText = `<span style="color:#94a3b8;">(Variabel berhasil dialokasikan pada memori sistem, namun tidak terdapat instruksi pemanggilan fungsi print() untuk menampilkan hasil)</span><br>`;
+                } else {
+                    outputText = `<span style="color: #fbbf24;">[Galat] Simulator komputasi tidak dapat mendeteksi variabel leksikal 'pesan' atau menjumpai anomali pada tanda baca. Silakan inisialisasi ulang melalui tombol 'Atur Ulang'.</span><br>`;
+                }
+                outputBox.innerHTML = outputText + `<br><span style="color: #64748b;">> Proses eksekusi terselesaikan secara normal.</span>`;
+            }, 1000);
+        }
+
+        // --- LOGIKA EVALUASI KOMPETENSI ---
+        const quizStatus = { q1: false, q2: false, q3: false };
+
+        function checkMultiQuiz(questionId, element, isCorrect) {
+            if (quizStatus[questionId]) return;
+            
+            const questionContainer = document.getElementById(questionId);
+            const options = questionContainer.getElementsByClassName("quiz-option");
+            const feedback = questionContainer.querySelector(".quiz-feedback");
+            
+            for(let opt of options) { 
+                opt.classList.add("disabled");
+                opt.querySelector('.quiz-icon').innerHTML = '<i class="far fa-circle"></i>';
+            }
+
+            const explanations = {
+                q1: "<strong>Validitas Dikonfirmasi!</strong> Karakteristik esensial dari jejak digital adalah kemampuannya mengeleminasi <em>Self-Report Bias</em> yang lazim mendistorsi validitas kuesioner konvensional, karena data ini merupakan manifestasi log aktivitas faktual pengguna.",
+                q2: "<strong>Validitas Dikonfirmasi!</strong> Paradigma <em>Data Donation</em> dinilai sebagai protokol etis paling superior saat ini. Metode ini menjamin agensi subjek penelitian secara absolut dengan memberikan otonomi penuh untuk menyerahkan atau membatasi data mereka.",
+                q3: "<strong>Validitas Dikonfirmasi!</strong> Akademisi tersebut mengabaikan prasyarat mutlak riset; yakni meniadakan entitas identifikasi (De-identifikasi) sebelum mendistribusikan berkas data klinis ke ranah publik."
+            };
 
             if (isCorrect) {
+                element.classList.remove("disabled");
                 element.classList.add("correct");
-                feedback.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <strong>Tepat Sekali!</strong> Data medis dan nama adalah informasi sangat sensitif. Mahasiswa tersebut gagal melakukan anonimisasi sebelum membagikan dataset secara publik, yang berpotensi membahayakan privasi subjek.';
-                feedback.style.color = "#065f46";
+                element.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-check-circle"></i>';
+                
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> ' + explanations[questionId];
+                feedback.style.color = "#166534";
                 feedback.style.backgroundColor = "#d1fae5";
+                feedback.style.border = "1px solid #22c55e";
             } else {
+                element.classList.remove("disabled");
                 element.classList.add("wrong");
-                options[2].classList.add("correct"); 
-                feedback.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <strong>Kurang Tepat.</strong> Jawaban yang benar adalah C. Mengunggah nama pasien dan riwayat medis secara terbuka adalah pelanggaran berat terhadap prinsip anonimisasi dan privasi.';
+                element.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-times-circle"></i>';
+                
+                for(let opt of options) {
+                    if(opt.getAttribute("onclick").includes("true")) {
+                        opt.classList.remove("disabled");
+                        opt.classList.add("correct");
+                        opt.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-check-circle"></i>';
+                    }
+                }
+                
+                feedback.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Verifikasi Gagal.</strong> ' + explanations[questionId].replace("Validitas Dikonfirmasi!", "Analisis Komprehensif:");
                 feedback.style.color = "#991b1b";
                 feedback.style.backgroundColor = "#fee2e2";
+                feedback.style.border = "1px solid #ef4444";
             }
             
             feedback.style.display = "block";
-            quizAnswered = true;
+            quizStatus[questionId] = true;
         }
     </script>
 </body>

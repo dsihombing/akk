@@ -3,341 +3,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modul 3: Data Komunikasi Komputasional | Denny J. C. Sihombing</title>
+    <title>Modul 3: Manajemen Data Komunikasi | Analisis Komputasional</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* --- VARIABEL TEMA ALMAMATER --- */
         :root {
             --primary: #004a8f; 
             --primary-light: #0066cc;
             --primary-dark: #002c5c;
             --accent: #f26522; 
-            --bg-body: #f4f7fa; 
+            --bg-body: #f8fafc; 
+            --bg-sidebar: #ffffff;
             --bg-card: #ffffff; 
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             --border-light: #e2e8f0;
-            --code-bg: #1e1e1e;
+            --code-bg: #0f172a;
         }
 
+        /* --- RESET & TATA LETAK UTAMA --- */
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0; padding: 0;
             background-color: var(--bg-body);
             color: var(--text-main);
-            line-height: 1.7;
-        }
-
-        /* --- Header --- */
-        header {
-            background-color: var(--bg-card);
-            border-bottom: 4px solid var(--accent);
-            padding: 1.5rem 2rem;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0; z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .course-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-        .instructor { font-size: 0.9rem; color: var(--text-muted); font-weight: 500;}
-
-        /* --- Container --- */
-        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
-        
-        .page-header { margin-bottom: 2rem; border-left: 5px solid var(--accent); padding-left: 1.5rem;}
-        .page-header h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 2.2rem;}
-        .page-header p { color: var(--text-muted); margin-top: 0; font-size: 1.1rem;}
-
-        /* --- Tabs Navigation --- */
-        .tab-nav {
-            display: flex; gap: 1rem;
-            border-bottom: 2px solid var(--border-light);
-            margin-bottom: 2rem; overflow-x: auto;
+        /* --- BAGIAN KEPALA (HEADER) --- */
+        header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .header-title { font-size: 1.2rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 10px;}
+        .btn-home { color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 8px 15px; border-radius: 6px; background: rgba(255,255,255,0.1); transition: all 0.3s;}
+        .btn-home:hover { background: var(--accent); }
+
+        /* --- PEMBAGIAN TATA LETAK --- */
+        .main-wrapper {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* --- PANEL NAVIGASI (SIDEBAR) --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            background: #f8fafc;
+        }
+        .badge-modul { display: inline-block; background: var(--accent); color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 8px;}
+        .sidebar-title { font-size: 1rem; font-weight: 700; color: var(--primary-dark); line-height: 1.3;}
+
+        .sidebar-menu {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
         .tab-btn {
-            background: none; border: none;
-            padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600;
-            color: var(--text-muted); cursor: pointer;
-            border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
-            transition: all 0.3s;
+            background: transparent; border: none; text-align: left;
+            padding: 14px 15px; font-size: 0.95rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; border-radius: 8px;
+            transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+            width: 100%; border: 1px solid transparent;
         }
-        .tab-btn:hover, .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+        .tab-btn i { width: 24px; text-align: center; font-size: 1.1rem; opacity: 0.7;}
+        .tab-btn:hover { background: #f1f5f9; color: var(--primary); }
+        .tab-btn.active { background: var(--primary-light); color: white; box-shadow: 0 4px 10px rgba(0,102,204,0.3); }
+        .tab-btn.active i { opacity: 1; color: #fff; }
 
-        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        /* --- AREA KONTEN UTAMA --- */
+        .content-area {
+            flex-grow: 1;
+            padding: 3rem;
+            background-color: var(--bg-body);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .content-container { max-width: 800px; margin: 0 auto; padding-bottom: 4rem;}
+
+        .page-header h1 { color: var(--primary-dark); margin: 0 0 1rem 0; font-size: 2.2rem; font-weight: 900;}
+        .page-header p { color: var(--text-muted); margin: 0 0 2.5rem 0; font-size: 1.1rem; line-height: 1.6;}
+
+        /* Animasi Transisi */
+        .tab-pane { display: none; animation: slideUp 0.3s ease forwards; opacity: 0; transform: translateY(15px); }
         .tab-pane.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Cards --- */
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: 10px; padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .card h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg-body); padding-bottom: 0.5rem;}
-        .card h3 { color: var(--primary-dark); margin-top: 1.5rem;}
+        /* --- ELEMEN KARTU & KOTAK INFORMASI --- */
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
+        .card h2 { color: var(--primary-dark); margin-top: 0; font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;}
         
-        /* --- Alert/Highlight Box --- */
-        .info-box {
-            background-color: #eff6ff;
-            border-left: 4px solid var(--primary-light);
-            padding: 1.5rem; border-radius: 0 8px 8px 0;
-            margin: 1.5rem 0;
-        }
-        .info-box.warning {
-            background-color: #fff7ed;
-            border-left-color: var(--accent);
-        }
-
-        /* --- Code Blocks --- */
-        .code-wrapper { position: relative; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; }
-        pre { background-color: var(--code-bg); color: #d4d4d4; padding: 1.5rem; margin: 0; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;}
+        .info-box { background-color: #f0f9ff; border-left: 4px solid var(--primary-light); padding: 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0; display: flex; gap: 15px; align-items: flex-start; }
+        .info-box i { font-size: 1.5rem; color: var(--primary-light); margin-top: 3px;}
+        .info-box.warning { background-color: #fff7ed; border-left-color: var(--accent); }
+        .info-box.warning i { color: var(--accent); }
+        .info-content h4 { margin: 0 0 5px 0; color: var(--text-main); font-size: 1.05rem;}
+        .info-content p { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;}
         
-        .copy-btn {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+        .citation { font-size: 0.9rem; color: var(--text-muted); font-style: italic; border-left: 3px solid var(--border-light); padding-left: 15px; margin-top: 15px; margin-bottom: 15px; }
+
+        /* --- TABEL --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        th { background-color: var(--primary-light); color: white; padding: 12px 15px; text-align: left; font-size: 0.95rem;}
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border-light); background: var(--bg-card); font-size: 0.9rem;}
+        tr:last-child td { border-bottom: none; }
+        code { background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: var(--primary-dark); font-family: monospace;}
+
+        /* --- SIMULATOR KODE INTERAKTIF --- */
+        .playground { background: var(--code-bg); border-radius: 10px; overflow: hidden; margin: 2rem 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        .playground-header { background: #1e293b; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
+        .lang-badge { background: #334155; color: #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; font-family: monospace;}
+        
+        .btn-group { display: flex; gap: 8px; }
+        .btn-run { background: #22c55e; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: background 0.2s; }
+        .btn-run:hover { background: #16a34a; }
+        .btn-reset { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-reset:hover { background: #334155; color: white; }
+        .btn-copy { background: transparent; border: 1px solid var(--primary-light); color: var(--primary-light); padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-copy:hover { background: var(--primary-light); color: white; }
+        .btn-copy.copied { background: #10b981; border-color: #10b981; color: white; }
+
+        .code-editor {
+            width: 100%; background: transparent; color: #e2e8f0; padding: 1.5rem; margin: 0;
+            font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;
+            border: none; resize: vertical; min-height: 220px; outline: none;
         }
-        .copy-btn:hover { background: rgba(255,255,255,0.2); }
-        .copy-btn.copied { background: #10b981; border-color: #10b981; }
+        .output-area { background: #000; color: #a3e635; padding: 1.5rem; font-family: 'Consolas', monospace; font-size: 0.9rem; border-top: 1px dashed #334155; display: none; line-height: 1.6; white-space: pre-wrap;}
 
-        /* --- Kuis --- */
-        .quiz-container { border-left: 4px solid var(--accent); padding: 2rem; background-color: #fffafeb; border-radius: 0 8px 8px 0; }
-        .quiz-option { padding: 1rem 1.5rem; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; background: var(--bg-card); margin-bottom: 1rem; transition: all 0.2s; font-weight: 500;}
-        .quiz-option:hover { border-color: var(--accent); background-color: #fff7ed;}
-        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; pointer-events: none;}
-        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
-        #quiz-feedback { font-weight: bold; margin-top: 1rem; display: none; padding: 1rem; border-radius: 8px;}
+        /* --- ANTARMUKA EVALUASI (KUIS) --- */
+        .quiz-question { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px dashed var(--border-light); }
+        .quiz-question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .quiz-title { font-size: 1.1rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 1.2rem; line-height: 1.5;}
+        
+        .quiz-option { padding: 1rem 1.2rem; border: 2px solid var(--border-light); border-radius: 10px; cursor: pointer; background: var(--bg-card); margin-bottom: 0.8rem; transition: all 0.2s; font-weight: 500; display: flex; align-items: center; gap: 15px; line-height: 1.5;}
+        .quiz-option:hover { border-color: var(--primary-light); background: #f0f9ff; }
+        .quiz-option.correct { background-color: #f0fdf4; border-color: #22c55e; color: #166534; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        .quiz-option.disabled { pointer-events: none; opacity: 0.6; }
+        .quiz-icon { width: 24px; text-align: center; font-size: 1.1rem;}
+        .quiz-feedback { margin-top: 1rem; display: none; padding: 1.2rem; border-radius: 10px; font-weight: 500; line-height: 1.6;}
 
-        /* --- Footer --- */
-        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 3rem; background: var(--bg-card);}
+        /* --- RESPONSIVITAS PERANGKAT BERGERAK --- */
+        @media (max-width: 768px) {
+            body { height: auto; overflow: auto; }
+            .main-wrapper { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
+            .sidebar-header { display: none; }
+            .sidebar-menu { flex-direction: row; overflow-x: auto; padding: 10px; gap: 10px; white-space: nowrap; }
+            .tab-btn { width: auto; padding: 10px 15px; margin-bottom: 0; }
+            .content-area { padding: 1.5rem; }
+            .page-header h1 { font-size: 1.8rem; }
+            .btn-group { flex-wrap: wrap; justify-content: flex-end; width: 100%; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <div>
-            <div class="course-title">Analisis Komputasional Komunikasi</div>
-            <div class="instructor">Modul 3 | Dosen: Denny J. C. Sihombing</div>
-        </div>
-        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> Beranda</a>
+        <h2 class="header-title"><i class="fas fa-laptop-code"></i> Analisis Komputasional Komunikasi</h2>
+        <a href="index.html" class="btn-home"><i class="fas fa-home"></i> Beranda Utama</a>
     </header>
 
-    <div class="container">
+    <div class="main-wrapper">
         
-        <div class="page-header">
-            <h1>Data dalam Studi Komunikasi Komputasional</h1>
-            <p>Mengenal anatomi jejak digital, format pertukaran data, dan teknik dasar mengeksplorasi dataset menggunakan R dan Python.</p>
-        </div>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="badge-modul">MODUL 3</span>
+                <div class="sidebar-title">Manajemen Data Komunikasi</div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <button class="tab-btn active" onclick="openTab(event, 'tab-anatomi')">
+                    <i class="fas fa-database"></i> Anatomi Jejak Digital
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-format')">
+                    <i class="fas fa-file-code"></i> Format Penyimpanan
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-bias')">
+                    <i class="fas fa-exclamation-triangle"></i> Bias dan Keterbatasan
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-eksplorasi')">
+                    <i class="fas fa-search-plus"></i> Eksplorasi Data (EDA)
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-kode')">
+                    <i class="fas fa-terminal"></i> Simulasi Interaktif
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-quiz')">
+                    <i class="fas fa-tasks"></i> Evaluasi Kompetensi
+                </button>
+            </div>
+        </aside>
 
-        <div class="tab-nav">
-            <button class="tab-btn active" onclick="openTab(event, 'tab-jenis')"><i class="fas fa-database"></i> 1. Jenis Data</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-format')"><i class="fas fa-file-code"></i> 2. Format Data</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-import')"><i class="fas fa-download"></i> 3. Import Data</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-eksplorasi')"><i class="fas fa-search"></i> 4. Eksplorasi Data (EDA)</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-quiz')"><i class="fas fa-check-circle"></i> 5. Kuis</button>
-        </div>
-
-        <div id="tab-jenis" class="tab-pane active">
-            <div class="card">
-                <h2>Memahami Jejak Digital (Digital Traces)</h2>
-                <p>Dalam metode kuantitatif tradisional, peneliti menggunakan kuesioner yang menghasilkan data angka (skala Likert, dll). Dalam riset komputasional, kita meneliti <strong>jejak digital</strong> yang ditinggalkan pengguna secara sadar maupun tidak sadar di internet. Jejak ini secara umum terbagi menjadi dua kelompok besar:</p>
+        <main class="content-area" id="main-content">
+            <div class="content-container">
                 
-                <div class="info-box">
-                    <h4><i class="fas fa-table"></i> 1. Data Terstruktur (Structured Data)</h4>
-                    <p>Data yang sangat terorganisir, memiliki model yang tetap, dan mudah dimasukkan ke dalam basis data relasional atau tabel Excel. Komputer sangat menyukai data jenis ini karena mudah dihitung.</p>
-                    <p><strong>Contoh dalam Komunikasi:</strong> Jumlah <em>followers</em>, jumlah <em>likes</em>, <em>retweets</em>, tanggal pembuatan akun, dan durasi menonton video.</p>
+                <div class="page-header">
+                    <h1>Manajemen Data Komunikasi</h1>
+                    <p>Mengkaji klasifikasi fundamental jejak digital, mendiagnosis bias <em>invisible engagement</em>, memahami arsitektur JSON/CSV, serta mengaplikasikan teknik Analisis Data Eksploratif (EDA).</p>
                 </div>
 
-                <div class="info-box warning">
-                    <h4 style="color: #c2410c;"><i class="fas fa-align-left"></i> 2. Data Tidak Terstruktur (Unstructured Data)</h4>
-                    <p>Data yang tidak memiliki format baku, tidak bisa langsung dimasukkan ke dalam kolom angka Excel, dan membutuhkan pemrosesan bahasa alami (<em>Natural Language Processing</em>) atau <em>Computer Vision</em> agar bisa dianalisis.</p>
-                    <p><strong>Contoh dalam Komunikasi:</strong> Teks <em>caption</em> Instagram, artikel portal berita, foto meme politik, rekaman <em>podcast</em>, dan video TikTok.</p>
+                <div id="tab-anatomi" class="tab-pane active">
+                    <div class="card">
+                        <h2>Anatomi Jejak Digital (<em>Digital Traces</em>)</h2>
+                        <p>Dalam paradigma Ilmu Komunikasi Komputasional (CCS), basis empiris bergeser dari data yang sengaja dirancang (<em>made data</em>)—seperti kuesioner eksperimental—menuju korpus <strong>Jejak Digital (<em>Digital Trace Data</em>)</strong> atau data yang ditemukan (<em>found data</em>) secara organik di lanskap siber. Jejak ini merekam residu aktivitas pasif saat individu berinteraksi dengan infrastruktur digital.</p>
+                        
+                        
+
+                        <h3 style="margin-top: 2rem; color: var(--primary);">Klasifikasi Fundamental Data Digital</h3>
+                        
+                        <div class="info-box">
+                            <i class="fas fa-table"></i>
+                            <div class="info-content">
+                                <h4>1. Data Terstruktur (<em>Structured Data</em>)</h4>
+                                <p>Korpus data yang terorganisasi secara rigid dalam skema relasional tabular. Komputer dapat mengeksekusi komputasi pada data ini secara instan.<br>
+                                <strong>Manifestasi Media:</strong> Jumlah pengikut (<em>followers</em>), akumulasi <em>likes</em>, metrik <em>retweets</em>, dan stempel waktu kronologis (<em>timestamps</em>).</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box warning">
+                            <i class="fas fa-align-left"></i>
+                            <div class="info-content">
+                                <h4>2. Data Tidak Terstruktur (<em>Unstructured Data</em>)</h4>
+                                <p>Data heterogen yang nirkonstruksi format baku. Ranah CCS modern mendemonstrasikan bahwa ekosistem komunikasi digital tidak lagi monolitik berbasis teks; ia melingkupi modalitas visual (<em>Image as Data</em>) yang mendikte pemaknaan afektif.<br>
+                                <strong>Manifestasi:</strong> Korpus teks pada takarir opini, potret visual Instagram, serta grafis meme politis yang membutuhkan ekstraksi algoritmik (seperti <em>Natural Language Processing</em> atau <em>Convolutional Neural Networks</em>).</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <p><em>Catatan:</em> Data komunikasi modern hampir selalu bersifat <strong>Semi-Terstruktur</strong>. Sebuah postingan di platform X (Twitter) memuat teks opini (tidak terstruktur) yang menempel pada data jumlah retweets dan tanggal unggah (terstruktur).</p>
+
+                <div id="tab-format" class="tab-pane">
+                    <div class="card">
+                        <h2>Format Pertukaran dan Penyimpanan Data</h2>
+                        <p>Prosedur ekstraksi data (baik melalui antarmuka API resmi maupun algoritma <em>Web Scraping</em>) mentransfer informasi mentah ke dalam format enkripsi spesifik. Memahami topologi format ini merupakan prasyarat mutlak proses pra-pemrosesan.</p>
+
+                        <div class="info-box">
+                            <i class="fas fa-brackets-curly"></i>
+                            <div class="info-content">
+                                <h4>JSON (<em>JavaScript Object Notation</em>)</h4>
+                                <p>JSON ditetapkan sebagai <strong>protokol standar emas industri</strong> untuk transmisi data via API platform media sosial terkemuka. JSON mengorganisasi informasi menggunakan arsitektur berbasis pasangan kunci-nilai (<em>key-value pairs</em>). Keunggulan fundamentalnya terletak pada kapabilitas merepresentasikan metadata bersarang (<em>nested data</em>)—seperti balasan komentar di dalam komentar utama—tanpa merusak integritas hierarki struktural.</p>
+                            </div>
+                        </div>
+                        
+
+                        <div class="info-box">
+                            <i class="fas fa-file-csv"></i>
+                            <div class="info-content">
+                                <h4>CSV (<em>Comma-Separated Values</em>)</h4>
+                                <p>Format penyimpanan teks polos (<em>plain-text</em>) yang merekonstruksi matriks data tabular secara efisien. Setiap observasi direpresentasikan melalui baris, sementara atribut variabel dipisahkan oleh karakter delimitasi (lazimnya tanda koma <code>,</code>). CSV diutilisasi secara universal akibat kompatibilitas absolutnya dengan pustaka <code>pandas</code> (Python) maupun <code>tidyverse</code> (R).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-bias" class="tab-pane">
+                    <div class="card">
+                        <h2>Bias Jejak Digital: Keterlibatan Tak Kasat Mata</h2>
+                        <p>Validitas metodologis merupakan perdebatan krusial dalam ranah CCS. Mengingat sebagian besar analisis komputasional berbasis pada "data yang ditemukan" (*found data*) alih-alih dirancang secara presisi, peneliti wajib mewaspadai bias representasi intrinsik.</p>
+                        
+                        <div class="info-box warning">
+                            <i class="fas fa-eye-slash"></i>
+                            <div class="info-content">
+                                <h4>Dilema <em>Invisible Engagement</em> (Keterlibatan Tak Kasat Mata)</h4>
+                                <p>Mayoritas algoritma pengumpulan data hanya mengekstraksi metrik <strong>keterlibatan yang terlihat (<em>visible engagement</em>)</strong>, seperti publikasi komentar, proliferasi *retweets*, atau manifestasi *likes*. Namun, fenomena ini mendistorsi realitas; sebagian besar interaksi politik dan sosial daring didominasi oleh "publik yang tak kasat mata" (<em>the invisible public</em>)—yakni audiens yang secara intensif membaca dan mengonsumsi wacana secara pasif tanpa meninggalkan jejak terstruktur. Mengekstrapolasi wacana agregat murni dari aktor vokal yang meninggalkan *likes/replies* berpotensi menghasilkan interpretasi polarisasi yang bias.</p>
+                            </div>
+                        </div>
+
+                        <p>Sebagai implikasi epistemologis, peneliti mutlak mengartikulasikan bahwa sampel mahadata (*Big Data*) dari satu platform (misalnya data ekstraksi API X/Twitter) tidak merepresentasikan totalitas opini konseptual masyarakat.</p>
+                    </div>
+                </div>
+
+                <div id="tab-eksplorasi" class="tab-pane">
+                    <div class="card">
+                        <h2>Analisis Data Eksploratif (<em>Exploratory Data Analysis / EDA</em>)</h2>
+                        <p>Berdasarkan postulat komputasi <em>Garbage In, Garbage Out</em> (GIGO), pemodelan inferensial analitik tidak boleh diinisiasi sebelum peneliti memverifikasi integritas arsitektur matriks data. Fase asesmen krusial ini dikonseptualisasikan sebagai <strong>Analisis Data Eksploratif (EDA)</strong>.</p>
+                        
+                        
+                        <p>Tujuan absolut EDA melingkupi identifikasi anomali, pendeteksian eksistensi nilai kosong (<em>Missing Values / NA</em>), serta validasi kesesuaian tipe data pada tiap vektor atribut.</p>
+
+                        <h3 style="margin-top: 1.5rem; color: var(--primary-dark);">Fungsi Eksplorasi Fundamental pada R</h3>
+                        <table>
+                            <tr>
+                                <th>Fungsi R</th>
+                                <th>Objektif Eksplorasi Metodologis</th>
+                            </tr>
+                            <tr>
+                                <td><code>head(data, n = 5)</code></td>
+                                <td>Mengekstraksi observasi empiris pada 5 baris perdana guna memvalidasi keberhasilan kompilasi impor <em>DataFrame</em>.</td>
+                            </tr>
+                            <tr>
+                                <td><code>str(data)</code> / <code>glimpse(data)</code></td>
+                                <td>Mendiagnosis morfologi kerangka data; mendemonstrasikan rasio baris/kolom serta klasifikasi tipe alokasi (misal: verifikasi apakah kolom ID terbaca sebagai <em>Integer</em> atau justru terdistorsi sebagai <em>String</em>).</td>
+                            </tr>
+                            <tr>
+                                <td><code>summary(data)</code></td>
+                                <td>Mengalkulasi deskripsi metrik statistika sentral (Nilai Minimum, Rata-rata, Maksimum, serta mendeteksi agregasi deviasi nilai <code>NA</code>).</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-kode" class="tab-pane">
+                    <div class="card">
+                        <h2>Simulasi: Eksekusi Fungsi EDA pada Matriks Data</h2>
+                        <p>Simulasi berikut mereplikasi proses saat korpus data tabular diinisialisasi ke dalam memori. Tekan <strong>Jalankan Kode</strong> untuk menginstruksikan kompilator mengeksekusi diagnostik <code>str()</code> dan <code>summary()</code> guna mendeteksi karakteristik sentral data simulasi di bawah ini.</p>
+
+                        <div class="playground">
+                            <div class="playground-header">
+                                <span class="lang-badge">Editor Skrip R</span>
+                                <div class="btn-group">
+                                    <button class="btn-copy" onclick="copyEditorCode(this, 'rEditor')"><i class="far fa-copy"></i> Salin Kode</button>
+                                    <button class="btn-reset" onclick="resetCode()"><i class="fas fa-undo"></i> Atur Ulang</button>
+                                    <button class="btn-run" onclick="runSimulatedR()"><i class="fas fa-play"></i> Jalankan</button>
+                                </div>
+                            </div>
+                            
+                            <textarea id="rEditor" class="code-editor" spellcheck="false">
+# 1. Asumsi alokasi impor dataset ke dalam objek DataFrame
+df_komunikasi <- data.frame(
+  ID_Subjek = c(1, 2, 3, 4, 5),
+  Klasifikasi_Konten = c("Warta Berita", "Editorial", "Warta Berita", "Pariwara", "Opini Publik"),
+  Metrik_Engagement = c(450, 12, 890, 5, 112)
+)
+
+# 2. Pemanggilan fungsi diagnostik struktur topologi data
+print("--- HASIL EKSEKUSI FUNGSI str() ---")
+str(df_komunikasi)
+
+# 3. Pemanggilan fungsi sentralisasi statistik
+print("--- HASIL EKSEKUSI FUNGSI summary() ---")
+summary(df_komunikasi)
+                            </textarea>
+
+                            <div class="output-area" id="output-r"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-quiz" class="tab-pane">
+                    <div class="card">
+                        <h2>Evaluasi Kompetensi Akademis</h2>
+                        <p style="margin-bottom: 2.5rem; color: var(--text-muted);">Selesaikan instrumen evaluasi berikut untuk memvalidasi asimilasi kognitif Anda terhadap Manajemen Data Komunikasi Mutakhir.</p>
+
+                        <div class="quiz-question" id="q1">
+                            <div class="quiz-title">1. Merujuk pada protokol arsitektur antarmuka API modern yang dioperasikan oleh dominasi platform sosial, format pertukaran komputasi apakah yang secara aklamasi dinobatkan sebagai standar emas (<em>gold standard</em>) industri?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Format XML (<em>eXtensible Markup Language</em>) due to its simplicity.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Format JSON (<em>JavaScript Object Notation</em>) lantaran kapabilitasnya menampung data atribut bersarang secara terstruktur.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q1', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Format CSV (<em>Comma-Separated Values</em>).</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                        <div class="quiz-question" id="q2">
+                            <div class="quiz-title">2. Mengingat bahwa mayoritas data dalam diskursus CCS bersumber dari korpus "data yang ditemukan" (*found data*), periset harus mewaspadai bias *Invisible Engagement*. Terminologi ini mengacu pada:</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Kegagalan algoritma memproses data berformat visual (gambar dan video).</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Kegagalan metrik interaksi (*likes*, *replies*) dalam merepresentasikan atensi aktual audiens mayoritas yang sekadar mengonsumsi konten secara pasif tanpa meninggalkan jejak terstruktur.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q2', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Aktivitas skrip bot yang sengaja disembunyikan oleh peladen (server) platform sosial.</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                        <div class="quiz-question" id="q3">
+                            <div class="quiz-title">3. Apa rasionalisasi akademis yang mewajibkan peneliti untuk mengeksekusi fungsi diagnostik struktural (seperti <code>str()</code>) pada tahapan Analisis Data Eksploratif (EDA) sebelum menjalankan model inferensial?</div>
+                            
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, true)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>A. Guna memvalidasi integritas struktur, mendeteksi anomali <em>Missing Values</em>, serta memastikan kompatibilitas tipe data vektor sebagai pra-syarat komputasi.</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>B. Guna secara otomatis mengonversi data bahasa alami menjadi analisis jejaring (<em>Network Analysis</em>).</div>
+                            </div>
+                            <div class="quiz-option" onclick="checkMultiQuiz('q3', this, false)">
+                                <div class="quiz-icon"><i class="far fa-circle"></i></div>
+                                <div>C. Guna mengelabui peladen target agar proses penarikan data via Web Scraping tidak dideteksi.</div>
+                            </div>
+                            <div class="quiz-feedback"></div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-        </div>
-
-        <div id="tab-format" class="tab-pane">
-            <div class="card">
-                <h2>Format Penyimpanan dan Pertukaran Data</h2>
-                <p>Ketika Anda mengambil data dari internet (melalui <em>Web Scraping</em> atau API), data tersebut akan diunduh dalam format-format tertentu. Tiga format yang paling sering dijumpai adalah:</p>
-
-                <h3>1. CSV (Comma-Separated Values)</h3>
-                <p>Format <em>plain-text</em> yang paling populer untuk menyimpan tabel data. Nilai pada setiap kolom dipisahkan oleh tanda koma (<code>,</code>). Ukuran filenya sangat kecil dan bisa dibuka langsung menggunakan Microsoft Excel, R, maupun Python.</p>
-                
-                <h3>2. JSON (JavaScript Object Notation)</h3>
-                <p>Format yang menyimpan data dalam bentuk <em>key-value pairs</em> (pasangan kunci dan nilai). Format ini sangat fleksibel untuk menyimpan data bersarang (hierarkis) dan merupakan <strong>standar emas yang digunakan oleh hampir seluruh API web modern</strong> (seperti API YouTube, Reddit, dan platform berita).</p>
-                <div class="code-wrapper" style="margin-top: 10px;">
-<pre><code class="language-json">{
-  "user": "Denny_JC",
-  "followers": 1500,
-  "tweet": {
-    "teks": "Belajar komputasional itu menyenangkan!",
-    "likes": 45
-  }
-}</code></pre>
-                </div>
-
-                <h3>3. XML (eXtensible Markup Language)</h3>
-                <p>Format lama yang menggunakan struktur <em>tag</em> yang mirip dengan HTML. Saat ini perlahan mulai ditinggalkan karena cukup berat dan memakan banyak karakter (<em>verbose</em>), namun masih sering dijumpai jika Anda menarik data dari <strong>RSS Feed portal berita</strong>.</p>
-            </div>
-        </div>
-
-        <div id="tab-import" class="tab-pane">
-            <div class="card">
-                <h2>Praktik: Membaca Data (Importing)</h2>
-                <p>Sebelum bisa dianalisis, data CSV atau JSON yang telah Anda unduh harus dimasukkan ke dalam memori perangkat lunak analitik Anda (menjadi <em>DataFrame</em>).</p>
-
-                <h3>A. Menggunakan R (Tidyverse)</h3>
-                <p>Di ekosistem R, paket <code>readr</code> (bagian dari <code>tidyverse</code>) adalah alat terbaik dan tercepat untuk membaca data tekstual.</p>
-                <div class="code-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
-<pre><code class="language-r"># Memanggil pustaka utama
-library(tidyverse)
-
-# Mengimpor file CSV ke dalam variabel (DataFrame)
-# Kita anggap file bernama "data_berita.csv" ada di folder yang sama
-df_berita <- read_csv("data_berita.csv")
-
-# Mengimpor file CSV langsung dari URL/Internet
-df_covid <- read_csv("https://contoh-dataset.com/tweet_covid.csv")
-</code></pre>
-                </div>
-
-                <h3>B. Menggunakan Python (Pandas)</h3>
-                <p>Di Python, perpustakaan utama untuk mengolah data tabular adalah <code>pandas</code>.</p>
-                <div class="code-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
-<pre><code class="language-python"># Memanggil pustaka pandas
-import pandas as pd
-
-# Mengimpor file CSV
-df_berita = pd.read_csv("data_berita.csv")
-
-# Pandas juga sangat handal untuk membaca file JSON
-df_komentar = pd.read_json("data_komentar.json")
-</code></pre>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-eksplorasi" class="tab-pane">
-            <div class="card">
-                <h2>Exploratory Data Analysis (EDA) Dasar</h2>
-                <p>Setelah data berhasil diimpor, pantang bagi seorang peneliti untuk langsung melakukan analisis sentimen atau visualisasi. Anda harus <strong>"berkenalan"</strong> dengan anatomi data Anda terlebih dahulu untuk memastikan tidak ada kolom yang rusak atau kosong.</p>
-
-                <h3>Sintaks Pemeriksaan Cepat di R</h3>
-                <div class="code-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
-<pre><code class="language-r"># 1. Melihat 6 baris pertama untuk mengintip isi data
-head(df_berita)
-
-# 2. Melihat struktur data (jumlah baris, jumlah kolom, dan tipe data per kolom)
-glimpse(df_berita)
-# atau menggunakan fungsi bawaan dasar: str(df_berita)
-
-# 3. Menghasilkan ringkasan statistik dasar (Nilai Min, Max, Rata-rata)
-summary(df_berita)
-</code></pre>
-                </div>
-
-                <h3>Sintaks Pemeriksaan Cepat di Python</h3>
-                <div class="code-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
-<pre><code class="language-python"># 1. Melihat 5 baris pertama
-print(df_berita.head())
-
-# 2. Melihat informasi ringkas tipe data dan keberadaan nilai kosong (Missing Values)
-print(df_berita.info())
-
-# 3. Menghasilkan ringkasan statistik deskriptif untuk kolom angka
-print(df_berita.describe())
-</code></pre>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-quiz" class="tab-pane">
-            <div class="card quiz-container">
-                <h2 style="color: var(--accent); margin-top: 0;"><i class="fas fa-question-circle"></i> Uji Pemahaman</h2>
-                <p>Anda sedang meneliti gaya komunikasi tokoh publik. Anda mengunduh 10.000 <em>tweet</em> dari akun mereka menggunakan API resmi. Data yang dikembalikan oleh API memuat kolom teks opini, jumlah suka (<em>likes</em>), dan koordinat geolokasi.</p>
-                <p>Berdasarkan karakteristiknya, jenis format pertukaran data apa yang <strong>paling umum</strong> digunakan oleh API media sosial seperti kasus di atas untuk mengirimkan respons datanya kepada Anda?</p>
-                
-                <div class="quiz-option" onclick="checkAnswer(this, false)">A. XML (eXtensible Markup Language)</div>
-                <div class="quiz-option" onclick="checkAnswer(this, true)">B. JSON (JavaScript Object Notation)</div>
-                <div class="quiz-option" onclick="checkAnswer(this, false)">C. CSV (Comma-Separated Values)</div>
-                <div class="quiz-option" onclick="checkAnswer(this, false)">D. PDF (Portable Document Format)</div>
-
-                <div id="quiz-feedback"></div>
-            </div>
-        </div>
-
+        </main>
     </div>
 
-    <footer>
-        <strong>Analisis Komputasional Komunikasi</strong><br>
-        &copy; 2026 Denny J. C. Sihombing<br>
-        Universitas Katolik Indonesia Atma Jaya
-    </footer>
-
     <script>
+        // --- LOGIKA NAVIGASI TAB ---
         function openTab(evt, tabId) {
             const panes = document.getElementsByClassName("tab-pane");
-            for (let i = 0; i < panes.length; i++) {
-                panes[i].classList.remove("active");
-            }
+            for (let i = 0; i < panes.length; i++) panes[i].classList.remove("active");
             
             const btns = document.getElementsByClassName("tab-btn");
-            for (let i = 0; i < btns.length; i++) {
-                btns[i].classList.remove("active");
-            }
+            for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
             
             document.getElementById(tabId).classList.add("active");
             evt.currentTarget.classList.add("active");
+            document.getElementById("main-content").scrollTop = 0;
         }
 
-        function copyCode(button) {
-            const codeBlock = button.nextElementSibling.innerText;
-            navigator.clipboard.writeText(codeBlock).then(() => {
-                button.innerText = "Tersalin!";
-                button.classList.add("copied");
+        // --- LOGIKA SIMULATOR R DAN SALIN KODE ---
+        const defaultCode = `# 1. Asumsi alokasi impor dataset ke dalam objek DataFrame\ndf_komunikasi <- data.frame(\n  ID_Subjek = c(1, 2, 3, 4, 5),\n  Klasifikasi_Konten = c("Warta Berita", "Editorial", "Warta Berita", "Pariwara", "Opini Publik"),\n  Metrik_Engagement = c(450, 12, 890, 5, 112)\n)\n\n# 2. Pemanggilan fungsi diagnostik struktur topologi data\nprint("--- HASIL EKSEKUSI FUNGSI str() ---")\nstr(df_komunikasi)\n\n# 3. Pemanggilan fungsi sentralisasi statistik\nprint("--- HASIL EKSEKUSI FUNGSI summary() ---")\nsummary(df_komunikasi)`;
+
+        function resetCode() {
+            document.getElementById('rEditor').value = defaultCode.trim();
+            document.getElementById('output-r').style.display = "none";
+        }
+        
+        function copyEditorCode(buttonElement, editorId) {
+            const editor = document.getElementById(editorId);
+            navigator.clipboard.writeText(editor.value).then(() => {
+                const originalHTML = buttonElement.innerHTML;
+                buttonElement.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                buttonElement.classList.add("copied");
                 setTimeout(() => {
-                    button.innerText = "Salin Kode";
-                    button.classList.remove("copied");
+                    buttonElement.innerHTML = originalHTML;
+                    buttonElement.classList.remove("copied");
                 }, 2000);
+            }).catch(err => {
+                console.error('Gagal menyalin teks: ', err);
             });
         }
 
-        let quizAnswered = false;
-        function checkAnswer(element, isCorrect) {
-            if (quizAnswered) return;
+        function runSimulatedR() {
+            const outputBox = document.getElementById("output-r");
             
-            const options = document.getElementsByClassName("quiz-option");
-            const feedback = document.getElementById("quiz-feedback");
+            outputBox.style.display = "block";
+            outputBox.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Mengompilasi dan mengeksekusi instruksi diagnostik EDA...';
             
-            for(let opt of options) { opt.style.pointerEvents = "none"; }
+            setTimeout(() => {
+                // Mockup output for str() and summary() specifically for this module
+                let outputText = `[1] "--- HASIL EKSEKUSI FUNGSI str() ---"
+'data.frame':	5 obs. of  3 variables:
+ $ ID_Subjek         : num  1 2 3 4 5
+ $ Klasifikasi_Konten: chr  "Warta Berita" "Editorial" "Warta Berita" "Pariwara" ...
+ $ Metrik_Engagement : num  450 12 890 5 112
+
+[1] "--- HASIL EKSEKUSI FUNGSI summary() ---"
+   ID_Subjek   Klasifikasi_Konten Metrik_Engagement 
+ Min.   :1     Length:5           Min.   :  5.0   
+ 1st Qu.:2     Class :character   1st Qu.: 12.0   
+ Median :3     Mode  :character   Median :112.0   
+ Mean   :3                        Mean   :293.8   
+ 3rd Qu.:4                        3rd Qu.:450.0   
+ Max.   :5                        Max.   :890.0   `;
+
+                outputBox.innerHTML = outputText + `\n<br><span style="color: #64748b;">> Proses eksekusi diagnostik terselesaikan secara normal tanpa anomali NA.</span>`;
+            }, 1200);
+        }
+
+        // --- LOGIKA EVALUASI KOMPETENSI ---
+        const quizStatus = { q1: false, q2: false, q3: false };
+
+        function checkMultiQuiz(questionId, element, isCorrect) {
+            if (quizStatus[questionId]) return;
+            
+            const questionContainer = document.getElementById(questionId);
+            const options = questionContainer.getElementsByClassName("quiz-option");
+            const feedback = questionContainer.querySelector(".quiz-feedback");
+            
+            for(let opt of options) { 
+                opt.classList.add("disabled");
+                opt.querySelector('.quiz-icon').innerHTML = '<i class="far fa-circle"></i>';
+            }
+
+            const explanations = {
+                q1: "<strong>Validitas Dikonfirmasi!</strong> Struktur arsitektur JSON direkayasa secara khusus untuk mengakomodasi pertukaran metadata hierarkis bersarang (<em>nested data</em>) secara optimal, memastikannya beroperasi sebagai protokol komunikasi primer bagi ekosistem antarmuka API kontemporer.",
+                q2: "<strong>Validitas Dikonfirmasi!</strong> <em>Invisible engagement</em> mendemonstrasikan bahwa algoritma ekstraksi data yang sekadar bergantung pada log *likes/replies* menghasilkan kesimpulan yang rentan terhadap distorsi, mengingat minoritas partisipan vokal tidak proporsional mewakili atensi populasi pasif mayoritas.",
+                q3: "<strong>Validitas Dikonfirmasi!</strong> Fundamental analisis merujuk pada prinsip GIGO (<em>Garbage In, Garbage Out</em>). EDA bertindak selaku protokol presisi metodologis untuk memastikan kompatibilitas vektor data dan menjernihkan integritas data sebelum kalkulasi inferensial dilangsungkan."
+            };
 
             if (isCorrect) {
+                element.classList.remove("disabled");
                 element.classList.add("correct");
-                feedback.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <strong>Tepat Sekali!</strong> JSON adalah format standar yang digunakan oleh hampir seluruh API modern saat ini karena strukturnya yang ringan dan fleksibel dalam menangani data bersarang (seperti satu tweet yang memuat metrik, teks, dan data profil pengguna sekaligus).';
-                feedback.style.color = "#065f46";
+                element.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-check-circle"></i>';
+                
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> ' + explanations[questionId];
+                feedback.style.color = "#166534";
                 feedback.style.backgroundColor = "#d1fae5";
+                feedback.style.border = "1px solid #22c55e";
             } else {
+                element.classList.remove("disabled");
                 element.classList.add("wrong");
-                options[1].classList.add("correct"); 
-                feedback.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <strong>Kurang Tepat.</strong> Jawaban yang benar adalah B (JSON). Meskipun CSV populer untuk menyimpan tabel, komunikasi pertukaran data mentah secara langsung melalui antarmuka API umumnya selalu dikirimkan dalam format JSON.';
+                element.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-times-circle"></i>';
+                
+                for(let opt of options) {
+                    if(opt.getAttribute("onclick").includes("true")) {
+                        opt.classList.remove("disabled");
+                        opt.classList.add("correct");
+                        opt.querySelector('.quiz-icon').innerHTML = '<i class="fas fa-check-circle"></i>';
+                    }
+                }
+                
+                feedback.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Verifikasi Gagal.</strong> ' + explanations[questionId].replace("Validitas Dikonfirmasi!", "Analisis Komprehensif:");
                 feedback.style.color = "#991b1b";
                 feedback.style.backgroundColor = "#fee2e2";
+                feedback.style.border = "1px solid #ef4444";
             }
             
             feedback.style.display = "block";
-            quizAnswered = true;
+            quizStatus[questionId] = true;
         }
     </script>
 </body>
