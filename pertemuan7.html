@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 7: Topic Modeling | Denny J. C. Sihombing</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004a8f; 
+            --primary-light: #0066cc;
+            --primary-dark: #002c5c;
+            --accent: #f26522; 
+            --bg-body: #f4f7fa; 
+            --bg-card: #ffffff; 
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-light: #e2e8f0;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .course-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .instructor { font-size: 0.9rem; color: var(--text-muted); font-weight: 500;}
+
+        /* --- Container --- */
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+        
+        .page-header { margin-bottom: 2rem; border-left: 5px solid var(--accent); padding-left: 1.5rem;}
+        .page-header h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 2.2rem;}
+        .page-header p { color: var(--text-muted); margin-top: 0; font-size: 1.1rem;}
+
+        /* --- Tabs Navigation --- */
+        .tab-nav {
+            display: flex; gap: 1rem;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 2rem; overflow-x: auto;
+        }
+        .tab-btn {
+            background: none; border: none;
+            padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover, .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+
+        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Cards --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px; padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg-body); padding-bottom: 0.5rem;}
+        .card h3 { color: var(--primary-dark); margin-top: 1.5rem;}
+        
+        /* --- Alert/Highlight Box --- */
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 1.5rem; border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+        .info-box.warning {
+            background-color: #fff7ed;
+            border-left-color: var(--accent);
+        }
+
+        /* --- Code Blocks --- */
+        .code-wrapper { position: relative; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; }
+        pre { background-color: var(--code-bg); color: #d4d4d4; padding: 1.5rem; margin: 0; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;}
+        
+        .copy-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn.copied { background: #10b981; border-color: #10b981; }
+
+        /* --- Kuis --- */
+        .quiz-container { border-left: 4px solid var(--accent); padding: 2rem; background-color: #fffafeb; border-radius: 0 8px 8px 0; }
+        .quiz-option { padding: 1rem 1.5rem; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; background: var(--bg-card); margin-bottom: 1rem; transition: all 0.2s; font-weight: 500;}
+        .quiz-option:hover { border-color: var(--accent); background-color: #fff7ed;}
+        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        #quiz-feedback { font-weight: bold; margin-top: 1rem; display: none; padding: 1rem; border-radius: 8px;}
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 3rem; background: var(--bg-card);}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <div class="course-title">Analisis Komputasional Komunikasi</div>
+            <div class="instructor">Modul 7 | Dosen: Denny J. C. Sihombing</div>
+        </div>
+        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> Beranda</a>
+    </header>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1>Analisis Teks II: Topic Modeling</h1>
+            <p>Mengekstraksi dan menemukan tema (topik) pembicaraan tersembunyi dari teks skala besar menggunakan metode Latent Dirichlet Allocation (LDA).</p>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-konsep')"><i class="fas fa-lightbulb"></i> 1. Apa itu Topic Modeling?</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-lda')"><i class="fas fa-project-diagram"></i> 2. Cara Kerja LDA</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-r')"><i class="fab fa-r-project"></i> 3. Praktik (R)</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-python')"><i class="fab fa-python"></i> 4. Praktik (Python)</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-quiz')"><i class="fas fa-check-circle"></i> 5. Kuis</button>
+        </div>
+
+        <div id="tab-konsep" class="tab-pane active">
+            <div class="card">
+                <h2>Pembacaan Mesin vs Pembacaan Manusia</h2>
+                <p>Bayangkan Anda diberikan 10.000 artikel berita dan diminta mengelompokkannya ke dalam beberapa tema (misal: "Ekonomi", "Kesehatan", "Politik"). Membacanya satu per satu secara manual akan memakan waktu berbulan-bulan. Di sinilah <strong>Topic Modeling</strong> mengambil peran.</p>
+                
+                <div class="info-box">
+                    <h4>Unsupervised Learning (Pembelajaran Tanpa Pengawasan)</h4>
+                    <p><em>Topic Modeling</em> adalah teknik <em>machine learning</em> di mana kita <strong>tidak perlu</strong> memberi tahu komputer apa label topik dari setiap dokumen. Mesin akan secara otomatis membaca pola kata-kata yang sering muncul bersamaan, lalu mengelompokkan dokumen-dokumen tersebut ke dalam "keranjang-keranjang" topik secara mandiri.</p>
+                </div>
+
+                <h3>Analogi Sederhana:</h3>
+                <p>Jika sebuah artikel sangat sering memuat kata <em>"saham"</em>, <em>"inflasi"</em>, <em>"investasi"</em>, dan <em>"bunga"</em>, algoritma akan menyatukan kata-kata tersebut ke dalam <strong>Topik 1</strong>. Sebagai peneliti komunikasi, tugas Anda nanti adalah melihat isi Topik 1 tersebut dan memberinya label (interpretasi) sebagai tema <strong>"Ekonomi"</strong>.</p>
+            </div>
+        </div>
+
+        <div id="tab-lda" class="tab-pane">
+            <div class="card">
+                <h2>Latent Dirichlet Allocation (LDA)</h2>
+                <p>Meskipun ada banyak algoritma untuk pemodelan topik, <strong>LDA</strong> adalah metode yang paling populer dan diandalkan dalam riset ilmu sosial dan komunikasi.</p>
+
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;">Asumsi Dasar LDA:</h4>
+                    <ol>
+                        <li>Setiap <strong>Dokumen</strong> adalah campuran dari berbagai topik (Misal: 1 artikel berita bisa memuat 70% topik Politik dan 30% topik Ekonomi).</li>
+                        <li>Setiap <strong>Topik</strong> adalah campuran dari berbagai kata (Misal: Topik Politik terdiri dari kata "pemilu", "partai", "kandidat").</li>
+                    </ol>
+                </div>
+
+                <h3>Memahami Istilah:</h3>
+                <ul>
+                    <li><strong>Latent:</strong> Tersembunyi. Struktur topik sebenarnya sudah ada di dalam tumpukan dokumen, hanya saja kita belum melihatnya sampai algoritma ini dijalankan.</li>
+                    <li><strong>Dirichlet:</strong> Nama distribusi probabilitas matematis yang digunakan untuk menghitung porsi topik dalam dokumen dan porsi kata dalam topik.</li>
+                    <li><strong>Allocation:</strong> Proses pengalokasian (distribusi) kata-kata ke dalam topik-topik tertentu secara iteratif hingga ditemukan pola yang paling stabil.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tab-r" class="tab-pane">
+            <div class="card">
+                <h2>Praktik di R: Package `topicmodels`</h2>
+                <p>Untuk menjalankan LDA di R, kita akan mengubah teks yang sudah dibersihkan (menjadi DFM/DTM) lalu memasukkannya ke dalam fungsi <code>LDA()</code> dari <em>package</em> <code>topicmodels</code>.</p>
+
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-r"># Memanggil package yang dibutuhkan
+library(quanteda)
+library(topicmodels)
+
+# 1. Menyiapkan teks (asumsi teks sudah dibersihkan/stopword dihapus)
+teks <- c("harga saham gabungan turun drastis karena inflasi",
+          "partai politik mulai memanaskan mesin kampanye pemilu",
+          "investasi emas dan reksadana menjadi pilihan saat krisis",
+          "debat kandidat presiden akan disiarkan di televisi")
+
+# 2. Membuat Document-Term Matrix (DTM)
+korpus <- corpus(teks)
+toks <- tokens(korpus)
+dfm_teks <- dfm(toks)
+dtm <- convert(dfm_teks, to = "topicmodels") # Konversi format khusus topicmodels
+
+# 3. Menjalankan LDA (Misal: kita tebak ada 2 topik utama)
+# k = 2 berarti kita meminta mesin mencari 2 "keranjang" topik
+lda_model <- LDA(dtm, k = 2, control = list(seed = 1234))
+
+# 4. Melihat kata-kata teratas (terms) penyusun masing-masing topik
+kata_topik <- terms(lda_model, 4) # Tampilkan 4 kata teratas per topik
+print(kata_topik)
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-python" class="tab-pane">
+            <div class="card">
+                <h2>Praktik di Python: Package `gensim`</h2>
+                <p>Di Python, <code>gensim</code> adalah perangkat lunak standar industri yang sangat cepat dan tangguh untuk melakukan pemodelan topik skala masif.</p>
+
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-python"># Memanggil package gensim
+import gensim
+import gensim.corpora as corpora
+
+# 1. Menyiapkan teks yang sudah ditokenisasi
+teks_token = [
+    ["harga", "saham", "turun", "inflasi"],
+    ["partai", "politik", "kampanye", "pemilu"],
+    ["investasi", "emas", "reksadana", "krisis"],
+    ["debat", "kandidat", "presiden", "televisi"]
+]
+
+# 2. Membuat Kamus (Dictionary) dan Corpus
+id2word = corpora.Dictionary(teks_token)
+corpus = [id2word.doc2bow(text) for text in teks_token]
+
+# 3. Menjalankan model LDA (num_topics = 2)
+lda_model = gensim.models.LdaMulticore(corpus=corpus,
+                                       id2word=id2word,
+                                       num_topics=2, 
+                                       random_state=100,
+                                       passes=10)
+
+# 4. Menampilkan topik yang ditemukan beserta probabilitas kata-katanya
+topik = lda_model.print_topics()
+for t in topik:
+    print(t)
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-quiz" class="tab-pane">
+            <div class="card quiz-container">
+                <h2 style="color: var(--accent); margin-top: 0;"><i class="fas fa-question-circle"></i> Uji Pemahaman</h2>
+                <p>Sebagai peneliti, Anda baru saja menarik 5.000 komentar YouTube tentang perpindahan ibu kota baru. Anda tidak tahu sama sekali perdebatan apa saja yang ada di dalam ribuan komentar tersebut. Anda kemudian menjalankan algoritma <strong>Latent Dirichlet Allocation (LDA)</strong>.</p>
+                <p>Berdasarkan cara kerjanya (<em>Unsupervised Learning</em>), apa yang akan dihasilkan oleh model LDA tersebut?</p>
+                
+                <div class="quiz-option" onclick="checkAnswer(this, false)">A. Model akan secara otomatis mengklasifikasikan komentar mana yang "Mendukung" dan mana yang "Menolak" perpindahan ibu kota.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">B. Model akan menghapus komentar-komentar hoaks (berita palsu) secara otomatis.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, true)">C. Model akan mengelompokkan kata-kata yang sering muncul bersamaan ke dalam beberapa klaster, yang nantinya harus Anda (sebagai peneliti) beri label atau nama temanya.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">D. Model akan langsung menghasilkan grafik jaringan interaksi yang menunjukkan siapa aktor utama yang memengaruhi komentar lainnya.</div>
+
+                <div id="quiz-feedback"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <strong>Analisis Komputasional Komunikasi</strong><br>
+        &copy; 2026 Denny J. C. Sihombing<br>
+        Universitas Katolik Indonesia Atma Jaya
+    </footer>
+
+    <script>
+        function openTab(evt, tabId) {
+            const panes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < panes.length; i++) {
+                panes[i].classList.remove("active");
+            }
+            
+            const btns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling.innerText;
+            navigator.clipboard.writeText(codeBlock).then(() => {
+                button.innerText = "Tersalin!";
+                button.classList.add("copied");
+                setTimeout(() => {
+                    button.innerText = "Salin Kode";
+                    button.classList.remove("copied");
+                }, 2000);
+            });
+        }
+
+        let quizAnswered = false;
+        function checkAnswer(element, isCorrect) {
+            if (quizAnswered) return;
+            
+            const options = document.getElementsByClassName("quiz-option");
+            const feedback = document.getElementById("quiz-feedback");
+            
+            for(let opt of options) { opt.style.pointerEvents = "none"; }
+
+            if (isCorrect) {
+                element.classList.add("correct");
+                feedback.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <strong>Tepat Sekali!</strong> LDA adalah <em>unsupervised learning</em>. Mesin tidak tahu apa itu "mendukung" atau "menolak". Ia hanya melihat probabilitas kemunculan kata secara bersamaan dan mengumpulkannya. Tugas manusialah yang memaknai kumpulan kata tersebut.';
+                feedback.style.color = "#065f46";
+                feedback.style.backgroundColor = "#d1fae5";
+            } else {
+                element.classList.add("wrong");
+                options[2].classList.add("correct"); 
+                feedback.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <strong>Kurang Tepat.</strong> Jawaban yang benar adalah C. LDA tidak melakukan analisis sentimen atau deteksi hoaks. Ia hanya mengelompokkan kata (<em>Topic Modeling</em>), dan peneliti yang harus menyimpulkan makna kelompok tersebut.';
+                feedback.style.color = "#991b1b";
+                feedback.style.backgroundColor = "#fee2e2";
+            }
+            
+            feedback.style.display = "block";
+            quizAnswered = true;
+        }
+    </script>
+</body>
+</html>

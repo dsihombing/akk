@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 5: Analisis Frekuensi & Sentimen | Denny J. C. Sihombing</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004a8f; 
+            --primary-light: #0066cc;
+            --primary-dark: #002c5c;
+            --accent: #f26522; 
+            --bg-body: #f4f7fa; 
+            --bg-card: #ffffff; 
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-light: #e2e8f0;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .course-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .instructor { font-size: 0.9rem; color: var(--text-muted); font-weight: 500;}
+
+        /* --- Container --- */
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+        
+        .page-header { margin-bottom: 2rem; border-left: 5px solid var(--accent); padding-left: 1.5rem;}
+        .page-header h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 2.2rem;}
+        .page-header p { color: var(--text-muted); margin-top: 0; font-size: 1.1rem;}
+
+        /* --- Tabs Navigation --- */
+        .tab-nav {
+            display: flex; gap: 1rem;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 2rem; overflow-x: auto;
+        }
+        .tab-btn {
+            background: none; border: none;
+            padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover, .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+
+        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Cards --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px; padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg-body); padding-bottom: 0.5rem;}
+        .card h3 { color: var(--primary-dark); margin-top: 1.5rem;}
+        
+        /* --- Alert/Highlight Box --- */
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 1.5rem; border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+        .info-box.warning {
+            background-color: #fff7ed;
+            border-left-color: var(--accent);
+        }
+
+        /* --- Code Blocks --- */
+        .code-wrapper { position: relative; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; }
+        pre { background-color: var(--code-bg); color: #d4d4d4; padding: 1.5rem; margin: 0; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;}
+        
+        .copy-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn.copied { background: #10b981; border-color: #10b981; }
+
+        /* --- Kuis --- */
+        .quiz-container { border-left: 4px solid var(--accent); padding: 2rem; background-color: #fffafeb; border-radius: 0 8px 8px 0; }
+        .quiz-option { padding: 1rem 1.5rem; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; background: var(--bg-card); margin-bottom: 1rem; transition: all 0.2s; font-weight: 500;}
+        .quiz-option:hover { border-color: var(--accent); background-color: #fff7ed;}
+        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        #quiz-feedback { font-weight: bold; margin-top: 1rem; display: none; padding: 1rem; border-radius: 8px;}
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 3rem; background: var(--bg-card);}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <div class="course-title">Analisis Komputasional Komunikasi</div>
+            <div class="instructor">Modul 5 | Dosen: Denny J. C. Sihombing</div>
+        </div>
+        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> Beranda</a>
+    </header>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1>Analisis Frekuensi & Sentimen</h1>
+            <p>Mengekstraksi makna dari tumpukan teks dengan menghitung bobot kata, menemukan frasa kunci, dan mengukur polaritas emosi publik.</p>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-frekuensi')"><i class="fas fa-chart-bar"></i> 1. Frekuensi & N-Gram</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-tfidf')"><i class="fas fa-balance-scale"></i> 2. Pembobotan TF-IDF</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-sentimen')"><i class="fas fa-smile-beam"></i> 3. Analisis Sentimen</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-praktik')"><i class="fas fa-laptop-code"></i> 4. Praktik Colab</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-quiz')"><i class="fas fa-check-circle"></i> 5. Kuis</button>
+        </div>
+
+        <div id="tab-frekuensi" class="tab-pane active">
+            <div class="card">
+                <h2>Frekuensi Kata Dasar & N-Gram</h2>
+                <p>Setelah teks dibersihkan (pada pertemuan sebelumnya), langkah analitis pertama yang paling fundamental adalah <strong>menghitung frekuensi kemunculan kata (Term Frequency)</strong>. Kata yang paling sering diucapkan oleh seorang politisi atau sebuah merek biasanya mengindikasikan <em>Agenda Setting</em> utama mereka.</p>
+                
+                <div class="info-box">
+                    <h4>Kelemahan Kata Tunggal (Unigram)</h4>
+                    <p>Menghitung kata satu per satu (Unigram) seringkali menghilangkan konteks komunikasi. Contoh, jika kata "tidak" dan "bagus" dipecah dan dihitung sendiri-sendiri, Anda mungkin mengira teks tersebut membahas sesuatu yang "bagus", padahal aslinya adalah "tidak bagus".</p>
+                </div>
+
+                <h3>Solusi: N-Gram</h3>
+                <p><strong>N-Gram</strong> adalah teknik menggabungkan <em>N</em> buah kata yang berurutan untuk menjaga konteks makna.</p>
+                <ul>
+                    <li><strong>Unigram (N=1):</strong> ["komunikasi", "politik", "indonesia"]</li>
+                    <li><strong>Bigram (N=2):</strong> ["komunikasi politik", "politik indonesia"] <em>(Sangat berguna untuk menemukan frasa!)</em></li>
+                    <li><strong>Trigram (N=3):</strong> ["komunikasi politik indonesia"]</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tab-tfidf" class="tab-pane">
+            <div class="card">
+                <h2>Pembobotan TF-IDF</h2>
+                <p>Frekuensi kata biasa memiliki kelemahan: kata-kata yang umum (seperti "saya", "kamu", "hari") akan selalu mendominasi posisi teratas, menutupi kata-kata khusus yang sebenarnya menjadi inti topik pembicaraan.</p>
+                <p>Di sinilah kita menggunakan algoritma <strong>TF-IDF (Term Frequency - Inverse Document Frequency)</strong>.</p>
+
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;">Logika Sederhana TF-IDF:</h4>
+                    <p><em>"Sebuah kata dianggap SANGAT PENTING jika ia sangat sering muncul di <strong>satu dokumen tertentu</strong> (TF tinggi), TAPI sangat jarang digunakan di <strong>dokumen-dokumen lain</strong> (IDF tinggi)."</em></p>
+                </div>
+
+                <p><strong>Contoh Kasus Komunikasi:</strong><br>
+                Anda menganalisis pidato 3 calon presiden. Kata "pembangunan" mungkin diucapkan oleh ketiganya (TF-IDF rendah karena tidak unik). Namun, jika hanya Capres A yang berkali-kali menyebut kata "maritim", maka kata "maritim" akan mendapat skor TF-IDF yang sangat tinggi khusus untuk dokumen Capres A.</p>
+            </div>
+        </div>
+
+        <div id="tab-sentimen" class="tab-pane">
+            <div class="card">
+                <h2>Analisis Sentimen (Sentiment Analysis)</h2>
+                <p>Analisis sentimen bertujuan untuk mengukur polaritas emosi atau opini dari sebuah teks komunikasi: apakah opini publik bersifat <strong>Positif</strong>, <strong>Negatif</strong>, atau <strong>Netral</strong>?</p>
+
+                <h3>Pendekatan Berbasis Kamus (Lexicon-Based)</h3>
+                <p>Ini adalah metode paling dasar namun sangat efektif. Komputer tidak mengerti emosi, jadi kita memberikan komputer sebuah "Kamus Sentimen" (<em>Lexicon</em>). Kamus ini berisi daftar kata yang sudah diberi bobot/nilai matematis oleh ahli bahasa atau psikolog.</p>
+
+                <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                    <tr style="background-color: var(--primary); color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">Kamus Kata (Lexicon)</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Skor / Polaritas</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Sukses, Bangga, Maju, Keren</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>+1 (Positif)</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Gagal, Marah, Kecewa, Buruk</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><strong>-1 (Negatif)</strong></td>
+                    </tr>
+                </table>
+
+                <p style="margin-top: 15px;"><strong>Cara kerja:</strong> Algoritma akan memindai sebuah kalimat (misal: <em>"Pelayanannya sangat buruk dan saya kecewa"</em>). Mesin menemukan kata "buruk" (-1) dan "kecewa" (-1). Total skor kalimat tersebut adalah <strong>-2</strong>, sehingga diklasifikasikan sebagai <strong>Sentimen Negatif</strong>.</p>
+            </div>
+        </div>
+
+        <div id="tab-praktik" class="tab-pane">
+            <div class="card">
+                <h2>Praktik Kode: Frekuensi & TF-IDF</h2>
+                <p>Dalam analisis ini, kita akan mengubah teks yang sudah dibersihkan menjadi bentuk matriks matematis yang disebut <strong>DFM (Document-Feature Matrix)</strong>.</p>
+
+                <h3>Menggunakan R (Package: `quanteda`)</h3>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-r">library(quanteda)
+
+# 1. Menyiapkan teks dan tokenisasi
+teks <- c("doc1" = "pemerintah harus turunkan harga sembako harga beras naik",
+          "doc2" = "harga hp baru sangat mahal dan tidak masuk akal",
+          "doc3" = "beras organik ini sangat bagus untuk kesehatan")
+toks <- tokens(teks, remove_punct = TRUE)
+
+# 2. Membuat Document-Feature Matrix (DFM) = Tabel Frekuensi
+dfm_teks <- dfm(toks)
+
+# 3. Menghitung Frekuensi Tertinggi (Top Features)
+topfeatures(dfm_teks, 5)
+
+# 4. Menerapkan Pembobotan TF-IDF
+dfm_tfidf <- dfm_tfidf(dfm_teks)
+print(dfm_tfidf)
+</code></pre>
+                </div>
+
+                <h3>Menggunakan Python (Package: `scikit-learn`)</h3>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-python">from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+import pandas as pd
+
+teks = [
+    "pemerintah harus turunkan harga sembako harga beras naik",
+    "harga hp baru sangat mahal dan tidak masuk akal",
+    "beras organik ini sangat bagus untuk kesehatan"
+]
+
+# 1. Membuat Matriks Frekuensi (Bigram: ngram_range=(2,2))
+vectorizer = CountVectorizer(ngram_range=(2, 2))
+X_freq = vectorizer.fit_transform(teks)
+print("Daftar Frasa (Bigram):", vectorizer.get_feature_names_out())
+
+# 2. Membuat Matriks TF-IDF
+tfidf_vec = TfidfVectorizer()
+X_tfidf = tfidf_vec.fit_transform(teks)
+
+# Tampilkan ke dalam format DataFrame agar mudah dibaca
+df_tfidf = pd.DataFrame(X_tfidf.toarray(), columns=tfidf_vec.get_feature_names_out())
+print(df_tfidf)
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-quiz" class="tab-pane">
+            <div class="card quiz-container">
+                <h2 style="color: var(--accent); margin-top: 0;"><i class="fas fa-question-circle"></i> Uji Pemahaman</h2>
+                <p>Dalam analisis wacana kampanye Pemilu, Anda menemukan kata "dan" serta "yang" muncul sebanyak 5.000 kali di semua pidato kandidat. Sementara itu, kata "kesejahteraan" muncul 300 kali, tetapi <strong>hanya</strong> diucapkan oleh Kandidat C. Jika Anda menggunakan algoritma <strong>TF-IDF</strong>, kata manakah yang akan mendapatkan bobot / skor paling tinggi untuk dokumen pidato Kandidat C?</p>
+                
+                <div class="quiz-option" onclick="checkAnswer(this, false)">A. Kata "dan" (Karena frekuensi totalnya paling tinggi)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">B. Kata "yang" (Karena frekuensinya tinggi dan muncul di mana-mana)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, true)">C. Kata "kesejahteraan" (Karena TF-nya ada, dan IDF-nya sangat tinggi akibat keunikannya)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">D. Semuanya mendapatkan bobot nol (0)</div>
+
+                <div id="quiz-feedback"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <strong>Analisis Komputasional Komunikasi</strong><br>
+        &copy; 2026 Denny J. C. Sihombing<br>
+        Universitas Katolik Indonesia Atma Jaya
+    </footer>
+
+    <script>
+        function openTab(evt, tabId) {
+            const panes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < panes.length; i++) {
+                panes[i].classList.remove("active");
+            }
+            
+            const btns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling.innerText;
+            navigator.clipboard.writeText(codeBlock).then(() => {
+                button.innerText = "Tersalin!";
+                button.classList.add("copied");
+                setTimeout(() => {
+                    button.innerText = "Salin Kode";
+                    button.classList.remove("copied");
+                }, 2000);
+            });
+        }
+
+        let quizAnswered = false;
+        function checkAnswer(element, isCorrect) {
+            if (quizAnswered) return;
+            
+            const options = document.getElementsByClassName("quiz-option");
+            const feedback = document.getElementById("quiz-feedback");
+            
+            for(let opt of options) { opt.style.pointerEvents = "none"; }
+
+            if (isCorrect) {
+                element.classList.add("correct");
+                feedback.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <strong>Tepat Sekali!</strong> Algoritma TF-IDF akan "menghukum" (memberi skor rendah pada) kata-kata umum yang muncul di semua dokumen seperti "dan" / "yang", lalu "menghargai" (memberi skor tinggi pada) kata unik seperti "kesejahteraan" yang menjadi ciri khas Kandidat C.';
+                feedback.style.color = "#065f46";
+                feedback.style.backgroundColor = "#d1fae5";
+            } else {
+                element.classList.add("wrong");
+                options[2].classList.add("correct"); 
+                feedback.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <strong>Kurang Tepat.</strong> Jawaban yang benar adalah C. Ingat prinsip TF-IDF: kata menjadi penting jika ia sering muncul di satu dokumen, namun jarang digunakan di dokumen lain (unik).';
+                feedback.style.color = "#991b1b";
+                feedback.style.backgroundColor = "#fee2e2";
+            }
+            
+            feedback.style.display = "block";
+            quizAnswered = true;
+        }
+    </script>
+</body>
+</html>
