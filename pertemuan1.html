@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 1: Pengantar & Etika Komputasional | Denny J. C. Sihombing</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004a8f; 
+            --primary-light: #0066cc;
+            --primary-dark: #002c5c;
+            --accent: #f26522; 
+            --bg-body: #f4f7fa; 
+            --bg-card: #ffffff; 
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-light: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .course-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .instructor { font-size: 0.9rem; color: var(--text-muted); font-weight: 500;}
+
+        /* --- Container --- */
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+        
+        .page-header { margin-bottom: 2rem; border-left: 5px solid var(--accent); padding-left: 1.5rem;}
+        .page-header h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 2.2rem;}
+        .page-header p { color: var(--text-muted); margin-top: 0; font-size: 1.1rem;}
+
+        /* --- Tabs Navigation --- */
+        .tab-nav {
+            display: flex; gap: 1rem;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 2rem; overflow-x: auto;
+        }
+        .tab-btn {
+            background: none; border: none;
+            padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover, .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+
+        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Cards --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px; padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg-body); padding-bottom: 0.5rem;}
+        .card h3 { color: var(--primary-dark); margin-top: 1.5rem;}
+        
+        /* --- Alert/Highlight Box --- */
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 1.5rem; border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+        .info-box.warning {
+            background-color: #fff7ed;
+            border-left-color: var(--accent);
+        }
+        
+        /* --- Timeline / Steps --- */
+        .step-list { list-style: none; padding: 0; }
+        .step-list li {
+            position: relative; padding-left: 40px; margin-bottom: 1.5rem;
+        }
+        .step-list li::before {
+            content: "\f058"; font-family: "Font Awesome 5 Free"; font-weight: 900;
+            position: absolute; left: 0; top: 2px; color: var(--accent); font-size: 1.5rem;
+        }
+
+        /* --- Kuis --- */
+        .quiz-container { border-left: 4px solid var(--accent); padding: 2rem; background-color: #fffafeb; border-radius: 0 8px 8px 0; }
+        .quiz-option { padding: 1rem 1.5rem; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; background: var(--bg-card); margin-bottom: 1rem; transition: all 0.2s; font-weight: 500;}
+        .quiz-option:hover { border-color: var(--accent); background-color: #fff7ed;}
+        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        #quiz-feedback { font-weight: bold; margin-top: 1rem; display: none; padding: 1rem; border-radius: 8px;}
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 3rem; background: var(--bg-card);}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <div class="course-title">Analisis Komputasional Komunikasi</div>
+            <div class="instructor">Modul 1 | Dosen: Denny J. C. Sihombing</div>
+        </div>
+        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> Beranda</a>
+    </header>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1>Pengantar & Etika Komputasional</h1>
+            <p>Memahami pergeseran paradigma riset komunikasi, evolusi teori di era Big Data, dan batasan etika dalam perlindungan privasi digital.</p>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-teori')"><i class="fas fa-brain"></i> 1. Evolusi Teori</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-karakter')"><i class="fas fa-tachometer-alt"></i> 2. Karakteristik Metode</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-langkah')"><i class="fas fa-project-diagram"></i> 3. Langkah Analisis</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-etika')"><i class="fas fa-shield-alt"></i> 4. Etika & Privasi</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-quiz')"><i class="fas fa-check-circle"></i> 5. Kuis</button>
+        </div>
+
+        <div id="tab-teori" class="tab-pane active">
+            <div class="card">
+                <h2>Ilmu Komunikasi Komputasional (CCS)</h2>
+                <p><strong>Computational Communication Science (CCS)</strong> adalah sub-disiplin yang memadukan teori komunikasi manusia dengan kekuatan ilmu komputer dan statistika. Kita menggunakan algoritma komputasi untuk meneliti masalah-masalah sosial dan media secara berskala masif yang sebelumnya mustahil dilakukan secara manual.</p>
+                
+                <h3>Bagaimana Teori Klasik Bekerja di Era Digital?</h3>
+                <p>Metode komputasional tidak membuang teori komunikasi lama, melainkan memberinya "napas baru" melalui kacamata <em>Big Data</em>. Berikut adalah contoh transformasinya:</p>
+
+                <div class="info-box">
+                    <h4><i class="fas fa-newspaper"></i> Agenda Setting</h4>
+                    <p><strong>Dulu:</strong> Peneliti menghitung secara manual berapa kali isu tertentu muncul di halaman depan koran selama sebulan.<br>
+                    <strong>Sekarang (Komputasional):</strong> Peneliti menggunakan algoritma <em>Topic Modeling</em> untuk memindai 100.000 artikel berita <em>online</em> dan jutaan <em>tweet</em> dalam hitungan jam untuk melihat bagaimana agenda media massa beresonansi menjadi <em>Trending Topic</em> di media sosial.</p>
+                </div>
+
+                <div class="info-box">
+                    <h4><i class="fas fa-project-diagram"></i> Diffusion of Innovations</h4>
+                    <p><strong>Dulu:</strong> Survei panjang untuk mengetahui siapa yang memengaruhi siapa dalam mengadopsi teknologi baru.<br>
+                    <strong>Sekarang (Komputasional):</strong> Menggunakan <em>Social Network Analysis (SNA)</em> untuk memetakan jaringan jutaan pengguna X (Twitter) secara visual, guna menemukan akun mana yang bertindak sebagai <em>Opinion Leader (Hubs)</em> dalam menyebarkan sebuah gagasan.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-karakter" class="tab-pane">
+            <div class="card">
+                <h2>Karakteristik Riset Komputasional</h2>
+                <p>Mengapa kita meninggalkan (atau melengkapi) metode tradisional seperti analisis isi manual (<em>manual content analysis</em>) dan beralih ke bahasa pemrograman seperti R atau Python?</p>
+
+                <ul class="step-list">
+                    <li>
+                        <strong>Skalabilitas Ekstrem (Volume & Velocity)</strong><br>
+                        Mampu memproses, membaca, dan mengkategorikan ratusan ribu dokumen teks (artikel, transkrip, komentar) hanya dalam beberapa detik. Manusia akan kelelahan, algoritma tidak.
+                    </li>
+                    <li>
+                        <strong>Otomatisasi & Keterulangan (Reproducibility)</strong><br>
+                        Peneliti hanya perlu menulis satu set instruksi kode (<em>script</em>). Kode ini dapat dibagikan kepada peneliti lain, sehingga mereka bisa menguji ulang (mereproduksi) hasil temuan Anda dengan data yang sama persis tanpa distorsi subjektivitas.
+                    </li>
+                    <li>
+                        <strong>Data yang Natural (Unobtrusive)</strong><br>
+                        Berbeda dengan kuesioner di mana responden sering berbohong atau merasa diawasi (<em>Hawthorne effect</em>), data komputasional diambil dari jejak digital natural. Orang mengekspresikan opini aslinya di kolom komentar YouTube atau portal berita tanpa sadar sedang diteliti.
+                    </li>
+                    <li>
+                        <strong>Interdisipliner</strong><br>
+                        Riset tidak lagi bisa berdiri sendiri. Pakar komunikasi bertugas menyusun <strong>teori dan pertanyaan kritis</strong>, sementara teknik penyelesaiannya meminjam pisau analisis dari <strong>ilmu komputer</strong> (algoritma) dan <strong>statistika</strong> (probabilitas).
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tab-langkah" class="tab-pane">
+            <div class="card">
+                <h2>Alur Kerja (Workflow) Komputasional</h2>
+                <p>Riset komputasional bukanlah proses acak (<em>trial and error</em>) mengetik kode. Ada prosedur saintifik dan strategis yang ketat:</p>
+
+                <div class="info-box">
+                    <h4>1. Perumusan Masalah & Teori (Berpikir Kritis)</h4>
+                    <p>Algoritma secanggih apa pun tidak akan berguna jika pertanyaannya salah. Mulailah dari teori. <em>Contoh: "Bagaimana framing media daring memengaruhi sentimen publik terhadap kebijakan pajak baru?"</em></p>
+                </div>
+
+                <div class="info-box">
+                    <h4>2. Akuisisi Data (Data Collection)</h4>
+                    <p>Mengumpulkan jejak digital menggunakan teknik <em>Web Scraping</em> (menyapu data dari situs web) atau melalui API resmi yang disediakan oleh platform (seperti Google, Reddit, dsb).</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>3. Pra-Pemrosesan (Data Cleaning / Wrangling)</h4>
+                    <p>Data mentah dari internet sangat kotor. Langkah ini melibatkan pembuangan emoji, tautan rusak (URL), huruf kapital, dan kata sambung (<em>stop-words</em>) agar mesin bisa fokus pada kata kunci penting.</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>4. Analisis Komputasional</h4>
+                    <p>Menerapkan model matematis. Apakah kita ingin mengetahui emosi teks (<em>Sentiment Analysis</em>), menemukan topik tersembunyi (<em>Topic Modeling / LDA</em>), atau mencari aktor kunci (<em>Network Analysis</em>)?</p>
+                </div>
+
+                <div class="info-box">
+                    <h4>5. Interpretasi & Visualisasi</h4>
+                    <p>Mengubah deretan angka statistik menjadi grafik jaringan, <em>wordcloud</em>, atau peta interaktif yang dapat dipahami oleh masyarakat umum dan pembuat kebijakan.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-etika" class="tab-pane">
+            <div class="card">
+                <h2>Etika dan Perlindungan Data Pribadi</h2>
+                <p>Hanya karena sebuah data "tersedia gratis dan terbuka" (<em>publicly available</em>) di internet, bukan berarti data tersebut bebas dieksploitasi. Peneliti komunikasi memiliki tanggung jawab moral dan hukum.</p>
+                
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;"><i class="fas fa-user-secret"></i> 1. Prinsip Anonimisasi (De-identification)</h4>
+                    <p>Banyak pengguna medsos tidak sadar kicauannya bisa dijadikan bahan penelitian. Sebelum mempublikasikan hasil riset (terutama kutipan langsung dari komentar), peneliti <strong>wajib</strong> menyensor nama asli, <em>username</em>, foto profil, dan data sensitif lainnya yang bisa melacak balik ke individu tersebut.</p>
+                </div>
+
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;"><i class="fas fa-file-contract"></i> 2. Kepatuhan Ketentuan Layanan (Terms of Service)</h4>
+                    <p>Platform seperti Meta (IG/FB) atau X memiliki aturan ketat terkait <em>scraping</em>. Memaksa mengambil jutaan data menggunakan <em>bot</em> ilegal yang menyebabkan peladen (<em>server</em>) mereka melambat adalah bentuk pelanggaran etika akademik. Gunakan jalur API resmi yang diperbolehkan.</p>
+                </div>
+
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;"><i class="fas fa-balance-scale"></i> 3. Bias Representasi (Algorithmic Bias)</h4>
+                    <p>Peneliti harus sadar secara kritis bahwa <strong>data platform tidak mewakili seluruh populasi negara</strong>. Menyimpulkan "Inilah pendapat mayoritas rakyat Indonesia" hanya dari analisis data X (Twitter) adalah sebuah sesat pikir akademis, karena pengguna X hanya mewakili demografi tertentu (urban, melek digital, kelas menengah).</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-quiz" class="tab-pane">
+            <div class="card quiz-container">
+                <h2 style="color: var(--accent); margin-top: 0;"><i class="fas fa-question-circle"></i> Uji Pemahaman</h2>
+                <p>Seorang mahasiswa berhasil melakukan <em>web scraping</em> terhadap 50.000 ulasan pasien dari situs web sebuah rumah sakit swasta untuk melihat sentimen kepuasan layanan. Mahasiswa tersebut langsung mempublikasikan dataset mentah lengkap dengan nama pasien dan penyakit yang dideritanya ke repositori GitHub terbuka agar bisa direproduksi orang lain.</p>
+                <p>Tindakan mahasiswa ini melanggar prinsip etika komputasional yang mana?</p>
+                
+                <div class="quiz-option" onclick="checkAnswer(this, false)">A. Kepatuhan Ketentuan Layanan (Terms of Service)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">B. Bias Representasi Algoritma</div>
+                <div class="quiz-option" onclick="checkAnswer(this, true)">C. Prinsip Anonimisasi dan Perlindungan Data Sensitif</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">D. Validitas Perumusan Masalah Teoretis</div>
+
+                <div id="quiz-feedback"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <strong>Analisis Komputasional Komunikasi</strong><br>
+        &copy; 2026 Denny J. C. Sihombing<br>
+        Universitas Katolik Indonesia Atma Jaya
+    </footer>
+
+    <script>
+        function openTab(evt, tabId) {
+            const panes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < panes.length; i++) {
+                panes[i].classList.remove("active");
+            }
+            
+            const btns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        let quizAnswered = false;
+        function checkAnswer(element, isCorrect) {
+            if (quizAnswered) return;
+            
+            const options = document.getElementsByClassName("quiz-option");
+            const feedback = document.getElementById("quiz-feedback");
+            
+            for(let opt of options) { opt.style.pointerEvents = "none"; }
+
+            if (isCorrect) {
+                element.classList.add("correct");
+                feedback.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <strong>Tepat Sekali!</strong> Data medis dan nama adalah informasi sangat sensitif. Mahasiswa tersebut gagal melakukan anonimisasi sebelum membagikan dataset secara publik, yang berpotensi membahayakan privasi subjek.';
+                feedback.style.color = "#065f46";
+                feedback.style.backgroundColor = "#d1fae5";
+            } else {
+                element.classList.add("wrong");
+                options[2].classList.add("correct"); 
+                feedback.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <strong>Kurang Tepat.</strong> Jawaban yang benar adalah C. Mengunggah nama pasien dan riwayat medis secara terbuka adalah pelanggaran berat terhadap prinsip anonimisasi dan privasi.';
+                feedback.style.color = "#991b1b";
+                feedback.style.backgroundColor = "#fee2e2";
+            }
+            
+            feedback.style.display = "block";
+            quizAnswered = true;
+        }
+    </script>
+</body>
+</html>
