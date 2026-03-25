@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 3: Data Komunikasi Komputasional | Denny J. C. Sihombing</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004a8f; 
+            --primary-light: #0066cc;
+            --primary-dark: #002c5c;
+            --accent: #f26522; 
+            --bg-body: #f4f7fa; 
+            --bg-card: #ffffff; 
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-light: #e2e8f0;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .course-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .instructor { font-size: 0.9rem; color: var(--text-muted); font-weight: 500;}
+
+        /* --- Container --- */
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+        
+        .page-header { margin-bottom: 2rem; border-left: 5px solid var(--accent); padding-left: 1.5rem;}
+        .page-header h1 { color: var(--primary); margin-bottom: 0.5rem; font-size: 2.2rem;}
+        .page-header p { color: var(--text-muted); margin-top: 0; font-size: 1.1rem;}
+
+        /* --- Tabs Navigation --- */
+        .tab-nav {
+            display: flex; gap: 1rem;
+            border-bottom: 2px solid var(--border-light);
+            margin-bottom: 2rem; overflow-x: auto;
+        }
+        .tab-btn {
+            background: none; border: none;
+            padding: 1rem 1.5rem; font-size: 1rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer;
+            border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover, .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+
+        .tab-pane { display: none; animation: fadeIn 0.4s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Cards --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 10px; padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--bg-body); padding-bottom: 0.5rem;}
+        .card h3 { color: var(--primary-dark); margin-top: 1.5rem;}
+        
+        /* --- Alert/Highlight Box --- */
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 1.5rem; border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+        .info-box.warning {
+            background-color: #fff7ed;
+            border-left-color: var(--accent);
+        }
+
+        /* --- Code Blocks --- */
+        .code-wrapper { position: relative; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; }
+        pre { background-color: var(--code-bg); color: #d4d4d4; padding: 1.5rem; margin: 0; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.95rem; line-height: 1.5;}
+        
+        .copy-btn {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .copy-btn.copied { background: #10b981; border-color: #10b981; }
+
+        /* --- Kuis --- */
+        .quiz-container { border-left: 4px solid var(--accent); padding: 2rem; background-color: #fffafeb; border-radius: 0 8px 8px 0; }
+        .quiz-option { padding: 1rem 1.5rem; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; background: var(--bg-card); margin-bottom: 1rem; transition: all 0.2s; font-weight: 500;}
+        .quiz-option:hover { border-color: var(--accent); background-color: #fff7ed;}
+        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; color: #065f46; pointer-events: none;}
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; pointer-events: none;}
+        #quiz-feedback { font-weight: bold; margin-top: 1rem; display: none; padding: 1rem; border-radius: 8px;}
+
+        /* --- Footer --- */
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 3rem; background: var(--bg-card);}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <div class="course-title">Analisis Komputasional Komunikasi</div>
+            <div class="instructor">Modul 3 | Dosen: Denny J. C. Sihombing</div>
+        </div>
+        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> Beranda</a>
+    </header>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1>Data dalam Studi Komunikasi Komputasional</h1>
+            <p>Mengenal anatomi jejak digital, format pertukaran data, dan teknik dasar mengeksplorasi dataset menggunakan R dan Python.</p>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-jenis')"><i class="fas fa-database"></i> 1. Jenis Data</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-format')"><i class="fas fa-file-code"></i> 2. Format Data</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-import')"><i class="fas fa-download"></i> 3. Import Data</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-eksplorasi')"><i class="fas fa-search"></i> 4. Eksplorasi Data (EDA)</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-quiz')"><i class="fas fa-check-circle"></i> 5. Kuis</button>
+        </div>
+
+        <div id="tab-jenis" class="tab-pane active">
+            <div class="card">
+                <h2>Memahami Jejak Digital (Digital Traces)</h2>
+                <p>Dalam metode kuantitatif tradisional, peneliti menggunakan kuesioner yang menghasilkan data angka (skala Likert, dll). Dalam riset komputasional, kita meneliti <strong>jejak digital</strong> yang ditinggalkan pengguna secara sadar maupun tidak sadar di internet. Jejak ini secara umum terbagi menjadi dua kelompok besar:</p>
+                
+                <div class="info-box">
+                    <h4><i class="fas fa-table"></i> 1. Data Terstruktur (Structured Data)</h4>
+                    <p>Data yang sangat terorganisir, memiliki model yang tetap, dan mudah dimasukkan ke dalam basis data relasional atau tabel Excel. Komputer sangat menyukai data jenis ini karena mudah dihitung.</p>
+                    <p><strong>Contoh dalam Komunikasi:</strong> Jumlah <em>followers</em>, jumlah <em>likes</em>, <em>retweets</em>, tanggal pembuatan akun, dan durasi menonton video.</p>
+                </div>
+
+                <div class="info-box warning">
+                    <h4 style="color: #c2410c;"><i class="fas fa-align-left"></i> 2. Data Tidak Terstruktur (Unstructured Data)</h4>
+                    <p>Data yang tidak memiliki format baku, tidak bisa langsung dimasukkan ke dalam kolom angka Excel, dan membutuhkan pemrosesan bahasa alami (<em>Natural Language Processing</em>) atau <em>Computer Vision</em> agar bisa dianalisis.</p>
+                    <p><strong>Contoh dalam Komunikasi:</strong> Teks <em>caption</em> Instagram, artikel portal berita, foto meme politik, rekaman <em>podcast</em>, dan video TikTok.</p>
+                </div>
+                
+                <p><em>Catatan:</em> Data komunikasi modern hampir selalu bersifat <strong>Semi-Terstruktur</strong>. Sebuah postingan di platform X (Twitter) memuat teks opini (tidak terstruktur) yang menempel pada data jumlah retweets dan tanggal unggah (terstruktur).</p>
+            </div>
+        </div>
+
+        <div id="tab-format" class="tab-pane">
+            <div class="card">
+                <h2>Format Penyimpanan dan Pertukaran Data</h2>
+                <p>Ketika Anda mengambil data dari internet (melalui <em>Web Scraping</em> atau API), data tersebut akan diunduh dalam format-format tertentu. Tiga format yang paling sering dijumpai adalah:</p>
+
+                <h3>1. CSV (Comma-Separated Values)</h3>
+                <p>Format <em>plain-text</em> yang paling populer untuk menyimpan tabel data. Nilai pada setiap kolom dipisahkan oleh tanda koma (<code>,</code>). Ukuran filenya sangat kecil dan bisa dibuka langsung menggunakan Microsoft Excel, R, maupun Python.</p>
+                
+                <h3>2. JSON (JavaScript Object Notation)</h3>
+                <p>Format yang menyimpan data dalam bentuk <em>key-value pairs</em> (pasangan kunci dan nilai). Format ini sangat fleksibel untuk menyimpan data bersarang (hierarkis) dan merupakan <strong>standar emas yang digunakan oleh hampir seluruh API web modern</strong> (seperti API YouTube, Reddit, dan platform berita).</p>
+                <div class="code-wrapper" style="margin-top: 10px;">
+<pre><code class="language-json">{
+  "user": "Denny_JC",
+  "followers": 1500,
+  "tweet": {
+    "teks": "Belajar komputasional itu menyenangkan!",
+    "likes": 45
+  }
+}</code></pre>
+                </div>
+
+                <h3>3. XML (eXtensible Markup Language)</h3>
+                <p>Format lama yang menggunakan struktur <em>tag</em> yang mirip dengan HTML. Saat ini perlahan mulai ditinggalkan karena cukup berat dan memakan banyak karakter (<em>verbose</em>), namun masih sering dijumpai jika Anda menarik data dari <strong>RSS Feed portal berita</strong>.</p>
+            </div>
+        </div>
+
+        <div id="tab-import" class="tab-pane">
+            <div class="card">
+                <h2>Praktik: Membaca Data (Importing)</h2>
+                <p>Sebelum bisa dianalisis, data CSV atau JSON yang telah Anda unduh harus dimasukkan ke dalam memori perangkat lunak analitik Anda (menjadi <em>DataFrame</em>).</p>
+
+                <h3>A. Menggunakan R (Tidyverse)</h3>
+                <p>Di ekosistem R, paket <code>readr</code> (bagian dari <code>tidyverse</code>) adalah alat terbaik dan tercepat untuk membaca data tekstual.</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-r"># Memanggil pustaka utama
+library(tidyverse)
+
+# Mengimpor file CSV ke dalam variabel (DataFrame)
+# Kita anggap file bernama "data_berita.csv" ada di folder yang sama
+df_berita <- read_csv("data_berita.csv")
+
+# Mengimpor file CSV langsung dari URL/Internet
+df_covid <- read_csv("https://contoh-dataset.com/tweet_covid.csv")
+</code></pre>
+                </div>
+
+                <h3>B. Menggunakan Python (Pandas)</h3>
+                <p>Di Python, perpustakaan utama untuk mengolah data tabular adalah <code>pandas</code>.</p>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-python"># Memanggil pustaka pandas
+import pandas as pd
+
+# Mengimpor file CSV
+df_berita = pd.read_csv("data_berita.csv")
+
+# Pandas juga sangat handal untuk membaca file JSON
+df_komentar = pd.read_json("data_komentar.json")
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-eksplorasi" class="tab-pane">
+            <div class="card">
+                <h2>Exploratory Data Analysis (EDA) Dasar</h2>
+                <p>Setelah data berhasil diimpor, pantang bagi seorang peneliti untuk langsung melakukan analisis sentimen atau visualisasi. Anda harus <strong>"berkenalan"</strong> dengan anatomi data Anda terlebih dahulu untuk memastikan tidak ada kolom yang rusak atau kosong.</p>
+
+                <h3>Sintaks Pemeriksaan Cepat di R</h3>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-r"># 1. Melihat 6 baris pertama untuk mengintip isi data
+head(df_berita)
+
+# 2. Melihat struktur data (jumlah baris, jumlah kolom, dan tipe data per kolom)
+glimpse(df_berita)
+# atau menggunakan fungsi bawaan dasar: str(df_berita)
+
+# 3. Menghasilkan ringkasan statistik dasar (Nilai Min, Max, Rata-rata)
+summary(df_berita)
+</code></pre>
+                </div>
+
+                <h3>Sintaks Pemeriksaan Cepat di Python</h3>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Salin Kode</button>
+<pre><code class="language-python"># 1. Melihat 5 baris pertama
+print(df_berita.head())
+
+# 2. Melihat informasi ringkas tipe data dan keberadaan nilai kosong (Missing Values)
+print(df_berita.info())
+
+# 3. Menghasilkan ringkasan statistik deskriptif untuk kolom angka
+print(df_berita.describe())
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-quiz" class="tab-pane">
+            <div class="card quiz-container">
+                <h2 style="color: var(--accent); margin-top: 0;"><i class="fas fa-question-circle"></i> Uji Pemahaman</h2>
+                <p>Anda sedang meneliti gaya komunikasi tokoh publik. Anda mengunduh 10.000 <em>tweet</em> dari akun mereka menggunakan API resmi. Data yang dikembalikan oleh API memuat kolom teks opini, jumlah suka (<em>likes</em>), dan koordinat geolokasi.</p>
+                <p>Berdasarkan karakteristiknya, jenis format pertukaran data apa yang <strong>paling umum</strong> digunakan oleh API media sosial seperti kasus di atas untuk mengirimkan respons datanya kepada Anda?</p>
+                
+                <div class="quiz-option" onclick="checkAnswer(this, false)">A. XML (eXtensible Markup Language)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, true)">B. JSON (JavaScript Object Notation)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">C. CSV (Comma-Separated Values)</div>
+                <div class="quiz-option" onclick="checkAnswer(this, false)">D. PDF (Portable Document Format)</div>
+
+                <div id="quiz-feedback"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <strong>Analisis Komputasional Komunikasi</strong><br>
+        &copy; 2026 Denny J. C. Sihombing<br>
+        Universitas Katolik Indonesia Atma Jaya
+    </footer>
+
+    <script>
+        function openTab(evt, tabId) {
+            const panes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < panes.length; i++) {
+                panes[i].classList.remove("active");
+            }
+            
+            const btns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling.innerText;
+            navigator.clipboard.writeText(codeBlock).then(() => {
+                button.innerText = "Tersalin!";
+                button.classList.add("copied");
+                setTimeout(() => {
+                    button.innerText = "Salin Kode";
+                    button.classList.remove("copied");
+                }, 2000);
+            });
+        }
+
+        let quizAnswered = false;
+        function checkAnswer(element, isCorrect) {
+            if (quizAnswered) return;
+            
+            const options = document.getElementsByClassName("quiz-option");
+            const feedback = document.getElementById("quiz-feedback");
+            
+            for(let opt of options) { opt.style.pointerEvents = "none"; }
+
+            if (isCorrect) {
+                element.classList.add("correct");
+                feedback.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> <strong>Tepat Sekali!</strong> JSON adalah format standar yang digunakan oleh hampir seluruh API modern saat ini karena strukturnya yang ringan dan fleksibel dalam menangani data bersarang (seperti satu tweet yang memuat metrik, teks, dan data profil pengguna sekaligus).';
+                feedback.style.color = "#065f46";
+                feedback.style.backgroundColor = "#d1fae5";
+            } else {
+                element.classList.add("wrong");
+                options[1].classList.add("correct"); 
+                feedback.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i> <strong>Kurang Tepat.</strong> Jawaban yang benar adalah B (JSON). Meskipun CSV populer untuk menyimpan tabel, komunikasi pertukaran data mentah secara langsung melalui antarmuka API umumnya selalu dikirimkan dalam format JSON.';
+                feedback.style.color = "#991b1b";
+                feedback.style.backgroundColor = "#fee2e2";
+            }
+            
+            feedback.style.display = "block";
+            quizAnswered = true;
+        }
+    </script>
+</body>
+</html>
