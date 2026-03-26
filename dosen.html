@@ -24,13 +24,12 @@
         const db = firebase.firestore();
         const emailDosen = "djc.sihombing@gmail.com";
 
-        // AUTH GUARD KHUSUS DOSEN
         auth.onAuthStateChanged(user => {
             if (!user || user.email.toLowerCase() !== emailDosen) {
                 auth.signOut().then(() => window.location.replace("login.html"));
             } else {
                 document.getElementById('userNameDisplay').innerText = "Dosen: " + user.displayName;
-                muatDaftarModul();
+                muatSettingModul();
                 muatDaftarMahasiswa();
             }
         });
@@ -39,46 +38,40 @@
     </script>
 
     <style>
-        :root { --primary: #004a8f; --primary-dark: #002c5c; --bg-body: #f8fafc; --border: #e2e8f0; --accent: #f26522; }
+        :root { --primary: #004a8f; --primary-dark: #002c5c; --bg-body: #f8fafc; --border: #e2e8f0; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; color: #1e293b; line-height: 1.6;}
-        header { background: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
-        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
+        header { background: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:10;}
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
         .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 2rem; border: 1px solid var(--border); }
         .btn-logout { background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
-        /* FORM TAMBAH MODUL */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; color: var(--primary-dark); }
-        .form-group input, .form-group textarea { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); outline: none; }
-        .btn-submit { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; transition: 0.3s;}
-        .btn-submit:hover { background: var(--primary-dark); }
-
-        /* TABEL DATA */
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.95rem;}
-        th, td { text-align: left; padding: 15px 12px; border-bottom: 1px solid var(--border); }
-        th { background: #f1f5f9; color: var(--primary-dark); }
+        /* Modul List & Toggle */
+        .modul-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border); }
+        .modul-row:last-child { border-bottom: none; }
+        .modul-info h4 { margin: 0 0 5px 0; color: var(--primary-dark); font-size: 1.1rem;}
+        .modul-info p { margin: 0; font-size: 0.85rem; color: #64748b; }
+        .modul-info code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: var(--primary); }
         
-        .btn-hapus { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s;}
-        .btn-hapus:hover { background: #ef4444; color: white; }
-        .icon-preview { display: inline-block; width: 30px; height: 30px; background: #eff6ff; color: var(--primary); text-align: center; line-height: 30px; border-radius: 6px; margin-right: 10px;}
-
-        /* TOGGLE SWITCH */
-        .switch { position: relative; display: inline-block; width: 46px; height: 22px; margin-top: 5px;}
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #10b981; }
-        input:checked + .slider:before { transform: translateX(24px); }
-        .status-badge { font-size: 0.8rem; padding: 3px 8px; border-radius: 12px; font-weight: bold; }
-        .status-on { background: #d1fae5; color: #059669; }
-        .status-off { background: #f1f5f9; color: #64748b; }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* Table Mahasiswa */
+        .input-group { display: flex; gap: 10px; margin-bottom: 1rem; }
+        .input-group input { flex-grow: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; outline:none;}
+        .btn-add { background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: bold;}
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+        th { background: #f1f5f9; }
+        .btn-hapus { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight:bold;}
     </style>
 </head>
 <body>
     <header>
-        <h3 style="margin:0;"><i class="fas fa-chalkboard-teacher"></i> Dasbor Manajemen Dosen</h3>
+        <h3 style="margin:0;"><i class="fas fa-chalkboard-teacher"></i> Panel Kendali Dosen</h3>
         <div>
             <span id="userNameDisplay" style="margin-right: 15px; font-size: 0.9rem;"></span>
             <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button>
@@ -86,171 +79,73 @@
     </header>
 
     <div class="container">
-        
         <div class="card" style="border-top: 4px solid var(--primary);">
-            <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-folder-plus"></i> Buat Materi Pertemuan Baru</h2>
-            <p style="color:#64748b; margin-bottom: 20px;">Tambahkan modul pertemuan baru. Modul yang baru dibuat akan secara otomatis disembunyikan (Draft) hingga Anda menghidupkan sakelarnya.</p>
-            
-            <form id="formTambahModul" onsubmit="simpanModulBaru(event)">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Pertemuan Ke- (Angka)</label>
-                        <input type="number" id="modMinggu" placeholder="Contoh: 1" required min="1">
-                    </div>
-                    <div class="form-group">
-                        <label>Judul Modul</label>
-                        <input type="text" id="modJudul" placeholder="Contoh: Minggu 1: Pengantar CCS" required>
-                    </div>
-                    <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Deskripsi Singkat</label>
-                        <textarea id="modDesc" rows="2" placeholder="Tuliskan deskripsi atau capaian pembelajaran pertemuan ini..." required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Tautan File/HTML Target</label>
-                        <input type="text" id="modUrl" placeholder="Contoh: pertemuan1.html" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Ikon (FontAwesome Class)</label>
-                        <input type="text" id="modIcon" placeholder="Contoh: fa-book-reader" value="fa-book-reader" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit" id="btnSimpanModul"><i class="fas fa-save"></i> Simpan Modul ke Database</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-sliders-h"></i> Manajemen Visibilitas Modul</h2>
-            <p style="color:#64748b;">Daftar seluruh materi perkuliahan. Hidupkan sakelar agar modul tampil di layar mahasiswa secara <em>real-time</em>.</p>
-            
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 50px;">Pert.</th>
-                            <th>Detail Modul</th>
-                            <th>Tautan URL</th>
-                            <th style="width: 120px; text-align: center;">Tampil di Mhs?</th>
-                            <th style="width: 100px; text-align: center;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelModul">
-                        <tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Memuat modul dari database...</td></tr>
-                    </tbody>
-                </table>
+            <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-sliders-h"></i> Visibilitas Modul Mahasiswa</h2>
+            <p style="color:#64748b; margin-bottom: 20px;">Hidupkan sakelar (hijau) agar tautan modul tampil di layar mahasiswa. Matikan (abu-abu) untuk menyembunyikannya.</p>
+            <div id="moduleSettingsArea" style="border: 1px solid var(--border); border-radius: 8px;">
+                <div style="padding: 2rem; text-align: center;"><i class="fas fa-spinner fa-spin"></i> Memuat pengaturan...</div>
             </div>
         </div>
 
         <div class="card">
             <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-users-cog"></i> Daftar Putih (Whitelist) Mahasiswa</h2>
-            <p style="color:#64748b;">Hanya email yang terdaftar di bawah ini yang diizinkan mengakses portal mahasiswa.</p>
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
-                <input type="email" id="inputEmailBaru" placeholder="Masukkan email Google mahasiswa..." style="flex-grow: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; outline: none;">
-                <button onclick="tambahMahasiswa()" style="background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fas fa-user-plus"></i> Tambah Akses</button>
+            <p style="color:#64748b;">Hanya email yang terdaftar di bawah ini yang bisa mengakses halaman mahasiswa.</p>
+            <div class="input-group">
+                <input type="email" id="inputEmailBaru" placeholder="Masukkan email Google mahasiswa...">
+                <button class="btn-add" onclick="tambahMahasiswa()"><i class="fas fa-plus"></i> Tambah Akses</button>
             </div>
-            
             <table>
-                <thead><tr><th>Email Mahasiswa Terdaftar</th><th style="width:100px; text-align:center;">Aksi</th></tr></thead>
+                <thead><tr><th>Email Terdaftar</th><th style="width:100px;">Aksi</th></tr></thead>
                 <tbody id="tabelMahasiswa"></tbody>
             </table>
         </div>
-
     </div>
 
     <script>
-        // --- 1. FUNGSI CRUD MODUL ---
-        
-        function simpanModulBaru(event) {
-            event.preventDefault(); // Mencegah halaman reload
-            
-            const btn = document.getElementById('btnSimpanModul');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-            btn.disabled = true;
+        // MASTER DATA (Referensi ke file HTML fisik Anda)
+        const masterModul = [
+            { id: "modul_1", judul: "Minggu 1: Pengantar & Etika", desc: "Memahami The Computational Turn dan etika privasi.", url: "pertemuan1.html", icon: "fa-book-reader" },
+            { id: "modul_2", judul: "Minggu 2: Dasar Pemrograman", desc: "Logika sekuensial dan arsitektur DataFrame.", url: "pertemuan2.html", icon: "fa-terminal" },
+            { id: "modul_3", judul: "Minggu 3: Manajemen Data", desc: "Arsitektur JSON/CSV dan Analisis Data Eksploratif.", url: "pertemuan3.html", icon: "fa-database" },
+            { id: "modul_4", judul: "Minggu 4: Pra-pemrosesan Teks", desc: "Tokenisasi, lemmatisasi, dan stop-word removal.", url: "pertemuan4.html", icon: "fa-broom" },
+            { id: "modul_5", judul: "Minggu 5-6: Frekuensi & Sentimen", desc: "Ekstraksi N-Gram dan klasifikasi polaritas emosi.", url: "pertemuan5.html", icon: "fa-chart-bar" },
+            { id: "modul_7", judul: "Minggu 7: Topic Modeling", desc: "Ekstraksi tema laten tak terawasi via LDA.", url: "pertemuan7.html", icon: "fa-network-wired" },
+            { id: "modul_8", judul: "Minggu 8: UTS", desc: "Ujian Tengah Semester Komputasional.", url: "#", icon: "fa-file-signature" },
+            { id: "modul_9", judul: "Minggu 9: Web Scraping & API", desc: "Metodologi ekstraksi data digital dan API.", url: "pertemuan9.html", icon: "fa-spider" },
+            { id: "modul_10", judul: "Minggu 10-11: Analisis Jejaring (SNA)", desc: "Sentralitas aktor dan visualisasi graf jaringan.", url: "pertemuan10.html", icon: "fa-project-diagram" }
+        ];
 
-            const minggu = parseInt(document.getElementById('modMinggu').value);
-            
-            // Simpan ke koleksi 'daftar_modul' di Firestore
-            db.collection("daftar_modul").add({
-                minggu: minggu,
-                judul: document.getElementById('modJudul').value,
-                desc: document.getElementById('modDesc').value,
-                url: document.getElementById('modUrl').value,
-                icon: document.getElementById('modIcon').value,
-                isVisible: false, // Default mati agar mahasiswa tidak kaget
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                document.getElementById('formTambahModul').reset();
-                alert("Modul Pertemuan " + minggu + " berhasil ditambahkan!");
-            }).catch(error => {
-                alert("Gagal menyimpan modul: " + error.message);
-            }).finally(() => {
-                btn.innerHTML = '<i class="fas fa-save"></i> Simpan Modul ke Database';
-                btn.disabled = false;
-            });
-        }
-
-        function muatDaftarModul() {
-            // Tarik data modul, urutkan berdasarkan "minggu" dari terkecil ke terbesar
-            db.collection("daftar_modul").orderBy("minggu", "asc").onSnapshot(snapshot => {
-                const tbody = document.getElementById('tabelModul');
-                tbody.innerHTML = "";
+        function muatSettingModul() {
+            db.collection("app_settings").doc("modules_visibility").onSnapshot(doc => {
+                let state = doc.exists ? doc.data() : {};
+                let html = "";
                 
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #64748b;">Belum ada modul yang dibuat. Silakan tambahkan modul baru.</td></tr>';
-                    return;
-                }
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const docId = doc.id;
-                    const checked = data.isVisible ? "checked" : "";
-                    const statusBadge = data.isVisible ? '<span class="status-badge status-on">PUBLIK</span>' : '<span class="status-badge status-off">DRAFT</span>';
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="font-weight:bold; color:var(--primary); font-size:1.1rem; text-align:center;">${data.minggu}</td>
-                            <td>
-                                <div style="display:flex; align-items:center;">
-                                    <span class="icon-preview"><i class="fas ${data.icon}"></i></span>
-                                    <div>
-                                        <div style="font-weight:bold; color:var(--primary-dark);">${data.judul}</div>
-                                        <div style="font-size:0.85rem; color:var(--text-muted);">${data.desc}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><code style="background:#f1f5f9; padding:3px 6px; border-radius:4px; font-size:0.85rem;">${data.url}</code></td>
-                            <td style="text-align: center;">
-                                ${statusBadge}<br>
-                                <label class="switch">
-                                    <input type="checkbox" onchange="ubahVisibilitasModul('${docId}', this.checked)" ${checked}>
-                                    <span class="slider"></span>
-                                </label>
-                            </td>
-                            <td style="text-align: center;">
-                                <button class="btn-hapus" onclick="hapusModul('${docId}', '${data.judul}')"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
+                masterModul.forEach(m => {
+                    let checked = state[m.id] ? "checked" : "";
+                    html += `
+                        <div class="modul-row">
+                            <div class="modul-info">
+                                <h4><i class="fas ${m.icon}" style="color:var(--primary); margin-right:8px;"></i> ${m.judul}</h4>
+                                <p>${m.desc} | File: <code>${m.url}</code></p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" onchange="ubahVisibilitas('${m.id}', this.checked)" ${checked}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>`;
                 });
+                document.getElementById('moduleSettingsArea').innerHTML = html;
             });
         }
 
-        function ubahVisibilitasModul(docId, isVisible) {
-            db.collection("daftar_modul").doc(docId).update({
-                isVisible: isVisible
-            });
+        function ubahVisibilitas(id, isVisible) {
+            db.collection("app_settings").doc("modules_visibility").set({ [id]: isVisible }, { merge: true });
         }
 
-        function hapusModul(docId, judul) {
-            if(confirm("PERINGATAN! Anda yakin ingin menghapus permanen modul: " + judul + "?")) {
-                db.collection("daftar_modul").doc(docId).delete();
-            }
-        }
-
-        // --- 2. FUNGSI CRUD MAHASISWA ---
+        // --- MANAJEMEN MAHASISWA ---
         function tambahMahasiswa() {
             let email = document.getElementById('inputEmailBaru').value.toLowerCase().trim();
-            if(!email) return alert("Masukkan email!");
+            if(!email) return;
             db.collection("whitelist_mahasiswa").doc(email).set({ aktif: true })
               .then(() => document.getElementById('inputEmailBaru').value = "");
         }
@@ -261,9 +156,9 @@
 
         function muatDaftarMahasiswa() {
             db.collection("whitelist_mahasiswa").onSnapshot(snapshot => {
-                let html = `<tr><td><strong>arsip.denny@gmail.com</strong> <span style="font-size:0.8rem; color:#10b981;">(Bawaan Sistem)</span></td><td style="text-align:center;">-</td></tr>`;
+                let html = `<tr><td><strong>arsip.denny@gmail.com</strong> <span style="font-size:0.8rem; color:#10b981;">(Uji Coba)</span></td><td>-</td></tr>`;
                 snapshot.forEach(doc => {
-                    html += `<tr><td>${doc.id}</td><td style="text-align:center;"><button class="btn-hapus" onclick="hapusMahasiswa('${doc.id}')"><i class="fas fa-times"></i> Hapus</button></td></tr>`;
+                    html += `<tr><td>${doc.id}</td><td><button class="btn-hapus" onclick="hapusMahasiswa('${doc.id}')">Hapus</button></td></tr>`;
                 });
                 document.getElementById('tabelMahasiswa').innerHTML = html;
             });
