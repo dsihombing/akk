@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Dosen | Analisis Komputasional Komunikasi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBVXx_p9iTBFg1FdDVDLf7RNLJRfo31Mh4", authDomain: "akkds-83803.firebaseapp.com", projectId: "akkds-83803" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const emailDosen = "djc.sihombing@gmail.com";
+
+        // AUTH GUARD KHUSUS DOSEN
+        auth.onAuthStateChanged(user => {
+            if (!user || user.email.toLowerCase() !== emailDosen) {
+                auth.signOut().then(() => window.location.replace("login.html"));
+            } else {
+                document.getElementById('userNameDisplay').innerText = "Dosen: " + user.displayName;
+                muatSettingModul();
+                muatDaftarMahasiswa();
+            }
+        });
+        function logout() { auth.signOut().then(() => window.location.replace("login.html")); }
+    </script>
+
+    <style>
+        :root { --primary: #004a8f; --primary-dark: #002c5c; --bg-body: #f8fafc; --border: #e2e8f0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; color: #1e293b; }
+        header { background: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 2rem; border: 1px solid var(--border); }
+        .btn-logout { background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .modul-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border); }
+        
+        /* Table */
+        .input-group { display: flex; gap: 10px; margin-bottom: 1rem; }
+        .input-group input { flex-grow: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
+        .btn-add { background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; font-weight: bold;}
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+        th { background: #f1f5f9; }
+        .btn-hapus { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <h3 style="margin:0;"><i class="fas fa-chalkboard-teacher"></i> Panel Kendali Dosen</h3>
+        <div>
+            <span id="userNameDisplay" style="margin-right: 15px; font-size: 0.9rem;"></span>
+            <button onclick="logout()" class="btn-logout">Keluar</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-sliders-h"></i> Visibilitas Modul Mahasiswa</h2>
+            <p style="color:#64748b;">Hidupkan sakelar agar modul tampil di layar mahasiswa secara real-time.</p>
+            <div id="moduleSettingsArea"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-users-cog"></i> Daftar Putih (Whitelist) Mahasiswa</h2>
+            <p style="color:#64748b;">Hanya email yang terdaftar di bawah ini yang bisa masuk ke halaman mahasiswa.</p>
+            <div class="input-group">
+                <input type="email" id="inputEmailBaru" placeholder="Masukkan email Google mahasiswa...">
+                <button class="btn-add" onclick="tambahMahasiswa()">Tambah Akses</button>
+            </div>
+            <table>
+                <thead><tr><th>Email Terdaftar</th><th style="width:100px;">Aksi</th></tr></thead>
+                <tbody id="tabelMahasiswa"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const masterModul = [
+            { id: "modul_1", judul: "Minggu 1: Pengantar & Etika" },
+            { id: "modul_2", judul: "Minggu 2: Dasar Pemrograman" },
+            { id: "modul_3", judul: "Minggu 3: Manajemen Data" },
+            { id: "modul_4", judul: "Minggu 4: Pra-pemrosesan Teks" },
+            { id: "modul_5", judul: "Minggu 5-6: Frekuensi & Sentimen" },
+            { id: "modul_7", judul: "Minggu 7: Topic Modeling" },
+            { id: "modul_9", judul: "Minggu 9: Web Scraping & API" },
+            { id: "modul_10", judul: "Minggu 10-11: Analisis Jejaring (SNA)" }
+        ];
+
+        function muatSettingModul() {
+            db.collection("app_settings").doc("modules_visibility").onSnapshot(doc => {
+                let state = doc.exists ? doc.data() : {};
+                let html = "";
+                masterModul.forEach(m => {
+                    let checked = state[m.id] ? "checked" : "";
+                    html += `<div class="modul-row">
+                                <strong>${m.judul}</strong>
+                                <label class="switch"><input type="checkbox" onchange="ubahVisibilitas('${m.id}', this.checked)" ${checked}><span class="slider"></span></label>
+                             </div>`;
+                });
+                document.getElementById('moduleSettingsArea').innerHTML = html;
+            });
+        }
+
+        function ubahVisibilitas(id, isVisible) {
+            db.collection("app_settings").doc("modules_visibility").set({ [id]: isVisible }, { merge: true });
+        }
+
+        function tambahMahasiswa() {
+            let email = document.getElementById('inputEmailBaru').value.toLowerCase().trim();
+            if(!email) return;
+            db.collection("whitelist_mahasiswa").doc(email).set({ aktif: true })
+              .then(() => document.getElementById('inputEmailBaru').value = "");
+        }
+
+        function hapusMahasiswa(email) {
+            if(confirm("Hapus akses " + email + "?")) db.collection("whitelist_mahasiswa").doc(email).delete();
+        }
+
+        function muatDaftarMahasiswa() {
+            db.collection("whitelist_mahasiswa").onSnapshot(snapshot => {
+                let html = `<tr><td><strong>arsip.denny@gmail.com</strong> (Akun Uji Coba)</td><td>-</td></tr>`;
+                snapshot.forEach(doc => {
+                    html += `<tr><td>${doc.id}</td><td><button class="btn-hapus" onclick="hapusMahasiswa('${doc.id}')">Hapus</button></td></tr>`;
+                });
+                document.getElementById('tabelMahasiswa').innerHTML = html;
+            });
+        }
+    </script>
+</body>
+</html>
