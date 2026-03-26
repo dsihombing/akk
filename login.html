@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Analisis Komputasional Komunikasi</title>
+    <title>Login Terintegrasi | Analisis Komputasional Komunikasi</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -27,12 +27,33 @@
             border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
             width: 100%; max-width: 400px; text-align: center;
         }
-        .login-card i.fa-lock {
-            font-size: 3rem; color: var(--primary); margin-bottom: 1rem;
+        .login-card i.fa-university {
+            font-size: 3.5rem; color: var(--primary); margin-bottom: 1rem;
         }
         .login-card h2 { margin: 0 0 10px 0; color: var(--primary-dark); }
         .login-card p { color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.5; }
         
+        /* --- KOTAK PEMILIHAN PERAN --- */
+        .role-selector {
+            display: flex; gap: 10px; margin-bottom: 1.5rem;
+            background: #f1f5f9; padding: 5px; border-radius: 10px;
+        }
+        .role-option {
+            flex: 1; position: relative;
+        }
+        .role-option input[type="radio"] {
+            display: none;
+        }
+        .role-label {
+            display: block; padding: 10px; text-align: center;
+            border-radius: 8px; cursor: pointer; font-weight: 600;
+            color: #64748b; transition: all 0.3s; font-size: 0.9rem;
+        }
+        .role-option input[type="radio"]:checked + .role-label {
+            background: white; color: var(--primary-dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
         .btn-google {
             background: white; color: #475569; border: 1px solid #cbd5e1;
             padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 1rem;
@@ -40,24 +61,39 @@
             cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .btn-google:hover { background: #f8fafc; border-color: #94a3b8; }
-        .btn-google img { width: 20px; }
-
+        
         .error-msg {
             color: #ef4444; background: #fef2f2; border: 1px solid #fecaca;
-            padding: 10px; border-radius: 8px; font-size: 0.85rem;
-            margin-top: 1.5rem; display: none; font-weight: 500;
+            padding: 12px; border-radius: 8px; font-size: 0.85rem;
+            margin-top: 1.5rem; display: none; font-weight: 500; line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <i class="fas fa-lock"></i>
-        <h2>Portal Kelas Terbatas</h2>
+        <i class="fas fa-university"></i>
+        <h2>Portal Akademik</h2>
         <p>Analisis Komputasional Komunikasi<br>Universitas Katolik Indonesia Atma Jaya</p>
         
+        <div class="role-selector">
+            <div class="role-option">
+                <input type="radio" name="peran" id="roleMahasiswa" value="mahasiswa" checked>
+                <label for="roleMahasiswa" class="role-label"><i class="fas fa-user-graduate"></i> Mahasiswa</label>
+            </div>
+            <div class="role-option">
+                <input type="radio" name="peran" id="roleDosen" value="dosen">
+                <label for="roleDosen" class="role-label"><i class="fas fa-chalkboard-teacher"></i> Dosen</label>
+            </div>
+        </div>
+
         <button class="btn-google" id="btnLogin" onclick="loginDenganGoogle()">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
+                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+            </svg>
             Masuk dengan Akun Google
         </button>
 
@@ -74,15 +110,17 @@
             projectId: "akkds-83803",
             storageBucket: "akkds-83803.firebasestorage.app",
             messagingSenderId: "280144297960",
-            appId: "1:280144297960:web:9ceb89ac5029c72d09ee5d",
-            measurementId: "G-WGRWWNV3WE"
+            appId: "1:280144297960:web:9ceb89ac5029c72d09ee5d"
         };
 
-        // 2. Daftar Akses (Whitelist)
-        const daftarEmailTerdaftar = [
-            "djc.sihombing@gmail.com", // Ganti dengan email Google Anda
-            "mahasiswa1@gmail.com",    // Tambahkan email mahasiswa
-            "mahasiswa2@mhs.atmajaya.ac.id" 
+        // 2. Daftar Validasi Akses
+        const emailDosen = [
+            "djc.sihombing@gmail.com" // Hanya email ini yang diizinkan masuk sebagai Dosen
+        ];
+        
+        const domainKampus = "@mhs.atmajaya.ac.id"; // Syarat mahasiswa jika menggunakan email kampus
+        const pengecualianMahasiswa = [
+            "mahasiswa1@gmail.com" // Daftar mahasiswa yang diizinkan meski memakai gmail biasa
         ];
 
         // Inisialisasi Firebase
@@ -92,9 +130,10 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        // Cek jika pengguna sudah login sebelumnya
+        // Cek sesi otomatis
         auth.onAuthStateChanged(user => {
             if (user) {
+                // Jika sudah ada sesi, kita langsung cek perannya (default dari UI)
                 validasiAkses(user);
             }
         });
@@ -102,31 +141,49 @@
         // Fungsi Tombol Login
         function loginDenganGoogle() {
             document.getElementById('pesanEror').style.display = 'none';
-            document.getElementById('btnLogin').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi...';
+            document.getElementById('btnLogin').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi Identitas...';
+            
+            // Kita atur agar Google memaksa user memilih akun tiap kali login
+            provider.setCustomParameters({ prompt: 'select_account' });
             
             auth.signInWithPopup(provider)
                 .then((result) => {
                     validasiAkses(result.user);
                 })
                 .catch((error) => {
-                    tampilkanEror("Gagal memuat sistem otentikasi Google. Pastikan Pop-up diizinkan.");
+                    tampilkanEror("Sistem otentikasi dibatalkan atau gagal dimuat.");
                     resetTombol();
                 });
         }
 
-        // Fungsi Validasi Email
+        // Fungsi Validasi Berdasarkan Peran
         function validasiAkses(user) {
             const emailPengguna = user.email.toLowerCase();
+            const peranDipilih = document.querySelector('input[name="peran"]:checked').value;
             
-            if (daftarEmailTerdaftar.includes(emailPengguna)) {
-                // Jika terdaftar, arahkan ke Halaman Utama
-                window.location.href = "index.html";
-            } else {
-                // Jika tidak terdaftar, keluarkan (logout) secara paksa
-                auth.signOut().then(() => {
-                    tampilkanEror(`Akses Ditolak! Email ${emailPengguna} tidak terdaftar di kelas ini.`);
-                    resetTombol();
-                });
+            if (peranDipilih === 'dosen') {
+                // VALIDASI DOSEN
+                if (emailDosen.includes(emailPengguna)) {
+                    window.location.href = "index.html"; // Berhasil
+                } else {
+                    // Tendang jika mahasiswa mencoba masuk sebagai dosen
+                    auth.signOut().then(() => {
+                        tampilkanEror(`Akses Ditolak! Akun ${emailPengguna} tidak memiliki otorisasi sebagai Dosen.`);
+                        resetTombol();
+                    });
+                }
+            } 
+            else if (peranDipilih === 'mahasiswa') {
+                // VALIDASI MAHASISWA
+                if (emailPengguna.endsWith(domainKampus) || pengecualianMahasiswa.includes(emailPengguna) || emailDosen.includes(emailPengguna)) {
+                    window.location.href = "index.html"; // Berhasil
+                } else {
+                    // Tendang jika email bukan milik mahasiswa/kampus
+                    auth.signOut().then(() => {
+                        tampilkanEror(`Akses Ditolak! Gunakan email berakhiran ${domainKampus} atau hubungi dosen Anda.`);
+                        resetTombol();
+                    });
+                }
             }
         }
 
@@ -137,7 +194,7 @@
         }
 
         function resetTombol() {
-            document.getElementById('btnLogin').innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> Masuk dengan Akun Google';
+            document.getElementById('btnLogin').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg> Masuk dengan Akun Google';
         }
     </script>
 </body>
