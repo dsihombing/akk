@@ -24,12 +24,16 @@
         const db = firebase.firestore();
         const emailDosen = "djc.sihombing@gmail.com";
 
+        // Variabel global untuk menyimpan data log mentah
+        let dataLogGlobal = [];
+
         // AUTH GUARD KHUSUS DOSEN
         auth.onAuthStateChanged(user => {
             if (!user || user.email.toLowerCase() !== emailDosen) {
                 alert("Akses Ilegal! Anda bukan Dosen.");
                 window.location.replace("login.html");
             } else {
+                muatFilterMahasiswa();
                 muatLogAktivitas();
             }
         });
@@ -45,16 +49,22 @@
         :root { --primary: #004a8f; --primary-dark: #002c5c; --bg-body: #f8fafc; --border: #e2e8f0; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; color: #1e293b; line-height: 1.6;}
         header { background: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:10;}
-        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem; }
         .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); }
         .btn-kembali { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-flex; gap: 8px; align-items: center;}
         .btn-kembali:hover { background: rgba(255,255,255,0.2); }
         
+        /* Area Filter */
+        .filter-area { background: #f1f5f9; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border);}
+        .filter-area select { padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; flex-grow: 1; font-family: inherit; cursor: pointer;}
+        .filter-area select:focus { border-color: var(--primary); }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.95rem; }
         th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); }
-        th { background: #f1f5f9; color: var(--primary-dark); }
-        tr:hover { background: #f8fafc; }
+        th { background: #f8fafc; color: var(--primary-dark); }
+        tr:hover { background: #f1f5f9; }
         .badge-aksi { background: #eff6ff; color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .badge-email { background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-family: monospace;}
     </style>
 </head>
 <body>
@@ -66,7 +76,16 @@
     <div class="container">
         <div class="card" style="border-top: 4px solid var(--accent);">
             <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-history"></i> Log Aktivitas Real-Time</h2>
-            <p style="color:#64748b; margin-bottom: 20px;">Memantau 100 aktivitas terakhir mahasiswa secara langsung (CCTV Akademik).</p>
+            <p style="color:#64748b; margin-bottom: 20px;">Pantau jejak digital mahasiswa di dalam portal pembelajaran.</p>
+            
+            <div class="filter-area">
+                <i class="fas fa-filter" style="color: var(--primary); font-size: 1.2rem;"></i>
+                <label style="font-weight: bold; color: var(--primary-dark);">Filter Mahasiswa:</label>
+                <select id="pilihanMahasiswa" onchange="renderTabel()">
+                    <option value="semua">Tampilkan Semua Mahasiswa</option>
+                    <option value="arsip.denny@gmail.com">arsip.denny@gmail.com (Akun Uji Coba)</option>
+                    </select>
+            </div>
             
             <div style="overflow-x: auto;">
                 <table>
@@ -74,7 +93,7 @@
                         <tr>
                             <th style="width: 180px;">Waktu (WIB)</th>
                             <th>Nama Mahasiswa</th>
-                            <th>Email</th>
+                            <th>Email Terdaftar</th>
                             <th>Aktivitas Terdeteksi</th>
                         </tr>
                     </thead>
@@ -87,23 +106,68 @@
     </div>
 
     <script>
+        // 1. Tarik daftar mahasiswa dari Whitelist untuk mengisi menu Dropdown
+        function muatFilterMahasiswa() {
+            db.collection("whitelist_mahasiswa").get().then((querySnapshot) => {
+                const selectElement = document.getElementById('pilihanMahasiswa');
+                querySnapshot.forEach((doc) => {
+                    const email = doc.id;
+                    // Hindari duplikasi akun uji coba yang sudah di-hardcode di HTML
+                    if (email !== "arsip.denny@gmail.com") {
+                        selectElement.innerHTML += `<option value="${email}">${email}</option>`;
+                    }
+                });
+            });
+        }
+
+        // 2. Tarik 200 data aktivitas terbaru dari database dan simpan ke memori
         function muatLogAktivitas() {
-            // Mengambil data dari koleksi "log_aktivitas", diurutkan dari yang paling baru
             db.collection("log_aktivitas")
               .orderBy("waktu", "desc")
-              .limit(100) // Batasi 100 data terakhir agar tidak berat
+              .limit(200) // Ambil 200 data terakhir
               .onSnapshot(snapshot => {
-                  const tbody = document.getElementById('tabelLog');
-                  tbody.innerHTML = "";
-                  
-                  if (snapshot.empty) {
-                      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:2rem;">Belum ada aktivitas terekam.</td></tr>';
-                      return;
-                  }
-
+                  dataLogGlobal = []; // Kosongkan memori setiap ada pembaruan
                   snapshot.forEach(doc => {
-                      const data = doc.data();
-                      tbody.innerHTML += `
-                          <tr>
-                              <td style="color:#64748b; font-size:0.85rem;">${formatWaktu(data.waktu)}</td>
-                              <td style="font-weight:bold; color:var
+                      dataLogGlobal.push(doc.data());
+                  });
+                  // Setelah data ditarik, langsung render/gambar tabelnya
+                  renderTabel();
+              });
+        }
+
+        // 3. Fungsi untuk menggambar tabel berdasarkan filter yang dipilih
+        function renderTabel() {
+            const tbody = document.getElementById('tabelLog');
+            const emailFilter = document.getElementById('pilihanMahasiswa').value; // Ambil nilai dropdown
+            
+            tbody.innerHTML = "";
+            let jumlahTampil = 0;
+
+            if (dataLogGlobal.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:2rem; color:#64748b;">Belum ada aktivitas terekam di sistem.</td></tr>';
+                return;
+            }
+
+            dataLogGlobal.forEach(data => {
+                // Logika Filter: Tampilkan jika "semua" dipilih, ATAU jika emailnya cocok dengan dropdown
+                if (emailFilter === "semua" || data.email === emailFilter) {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="color:#64748b; font-size:0.85rem;">${formatWaktu(data.waktu)}</td>
+                            <td style="font-weight:bold; color:var(--primary-dark);">${data.nama}</td>
+                            <td><span class="badge-email">${data.email}</span></td>
+                            <td><span class="badge-aksi">${data.aksi}</span></td>
+                        </tr>
+                    `;
+                    jumlahTampil++;
+                }
+            });
+
+            // Jika setelah difilter ternyata kosong
+            if (jumlahTampil === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:#64748b;">Tidak ada catatan aktivitas untuk mahasiswa dengan email <strong>${emailFilter}</strong>.</td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>
