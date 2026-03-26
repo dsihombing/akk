@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Analisis Komputasional Komunikasi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #004a8f; 
+            --primary-dark: #002c5c; 
+            --accent: #f26522; 
+            --bg-body: #f8fafc; 
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            height: 100vh; margin: 0; display: flex;
+            justify-content: center; align-items: center; color: #1e293b;
+        }
+        .login-card {
+            background: white; padding: 3rem 2.5rem;
+            border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            width: 100%; max-width: 400px; text-align: center;
+        }
+        .login-card i.fa-lock {
+            font-size: 3rem; color: var(--primary); margin-bottom: 1rem;
+        }
+        .login-card h2 { margin: 0 0 10px 0; color: var(--primary-dark); }
+        .login-card p { color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.5; }
+        
+        .btn-google {
+            background: white; color: #475569; border: 1px solid #cbd5e1;
+            padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 1rem;
+            width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;
+            cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn-google:hover { background: #f8fafc; border-color: #94a3b8; }
+        .btn-google img { width: 20px; }
+
+        .error-msg {
+            color: #ef4444; background: #fef2f2; border: 1px solid #fecaca;
+            padding: 10px; border-radius: 8px; font-size: 0.85rem;
+            margin-top: 1.5rem; display: none; font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <i class="fas fa-lock"></i>
+        <h2>Portal Kelas Terbatas</h2>
+        <p>Analisis Komputasional Komunikasi<br>Universitas Katolik Indonesia Atma Jaya</p>
+        
+        <button class="btn-google" id="btnLogin" onclick="loginDenganGoogle()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
+            Masuk dengan Akun Google
+        </button>
+
+        <div id="pesanEror" class="error-msg">
+            <i class="fas fa-exclamation-triangle"></i> <span id="teksEror"></span>
+        </div>
+    </div>
+
+    <script>
+        // 1. Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVXx_p9iTBFg1FdDVDLf7RNLJRfo31Mh4",
+            authDomain: "akkds-83803.firebaseapp.com",
+            projectId: "akkds-83803",
+            storageBucket: "akkds-83803.firebasestorage.app",
+            messagingSenderId: "280144297960",
+            appId: "1:280144297960:web:9ceb89ac5029c72d09ee5d",
+            measurementId: "G-WGRWWNV3WE"
+        };
+
+        // 2. Daftar Akses (Whitelist)
+        const daftarEmailTerdaftar = [
+            "djc.sihombing@gmail.com", // Ganti dengan email Google Anda
+            "mahasiswa1@gmail.com",    // Tambahkan email mahasiswa
+            "mahasiswa2@mhs.atmajaya.ac.id" 
+        ];
+
+        // Inisialisasi Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        // Cek jika pengguna sudah login sebelumnya
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                validasiAkses(user);
+            }
+        });
+
+        // Fungsi Tombol Login
+        function loginDenganGoogle() {
+            document.getElementById('pesanEror').style.display = 'none';
+            document.getElementById('btnLogin').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi...';
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    validasiAkses(result.user);
+                })
+                .catch((error) => {
+                    tampilkanEror("Gagal memuat sistem otentikasi Google. Pastikan Pop-up diizinkan.");
+                    resetTombol();
+                });
+        }
+
+        // Fungsi Validasi Email
+        function validasiAkses(user) {
+            const emailPengguna = user.email.toLowerCase();
+            
+            if (daftarEmailTerdaftar.includes(emailPengguna)) {
+                // Jika terdaftar, arahkan ke Halaman Utama
+                window.location.href = "index.html";
+            } else {
+                // Jika tidak terdaftar, keluarkan (logout) secara paksa
+                auth.signOut().then(() => {
+                    tampilkanEror(`Akses Ditolak! Email ${emailPengguna} tidak terdaftar di kelas ini.`);
+                    resetTombol();
+                });
+            }
+        }
+
+        function tampilkanEror(pesan) {
+            const kotakEror = document.getElementById('pesanEror');
+            document.getElementById('teksEror').innerText = pesan;
+            kotakEror.style.display = 'block';
+        }
+
+        function resetTombol() {
+            document.getElementById('btnLogin').innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> Masuk dengan Akun Google';
+        }
+    </script>
+</body>
+</html>
