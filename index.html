@@ -6,20 +6,22 @@
     <title>Analisis Komputasional Komunikasi | Denny J. C. Sihombing</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* --- VARIABEL TEMA ATMA JAYA --- */
         :root {
-            --primary: #004a8f; /* Biru Atma Jaya */
+            --primary: #004a8f; 
             --primary-dark: #002c5c; 
-            --primary-light: #0066cc; 
-            --accent: #f26522; /* Oranye Atma Jaya */
+            --primary-light: #eff6ff; 
+            --accent: #f26522; 
             --accent-hover: #d95316; 
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --bg-body: #f4f7fa; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc; 
             --bg-card: #ffffff; 
+            --border-color: #e2e8f0;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 0;
             background-color: var(--bg-body);
@@ -27,345 +29,412 @@
             line-height: 1.6;
         }
 
-        /* --- Header / Hero Section --- */
+        /* --- HERO SECTION --- */
         .hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 5rem 2rem 6rem 2rem;
+            padding: 6rem 2rem 8rem 2rem;
             text-align: center;
-            border-bottom: 5px solid var(--accent); 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 5px;
+            background: var(--accent);
         }
 
         .hero-badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 0.5rem 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
             border-radius: 50px;
             font-size: 0.85rem;
+            font-weight: 600;
             letter-spacing: 1px;
             margin-bottom: 1.5rem;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-transform: uppercase;
-            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .hero h1 {
-            font-size: 2.8rem;
+            font-size: 3rem;
             margin: 0 0 1rem 0;
-            font-weight: 800;
+            font-weight: 900;
             line-height: 1.2;
+            letter-spacing: -0.5px;
         }
 
         .hero p {
-            font-size: 1.15rem;
-            max-width: 700px;
+            font-size: 1.2rem;
+            max-width: 750px;
             margin: 0 auto;
-            color: #e2e8f0;
+            color: #cbd5e1;
+            font-weight: 400;
         }
 
-        /* --- Main Container --- */
+        /* --- MAIN CONTAINER --- */
         .container {
-            max-width: 1000px;
-            margin: -3rem auto 3rem auto;
+            max-width: 1100px;
+            margin: -4rem auto 4rem auto;
             padding: 0 1.5rem;
             position: relative;
             z-index: 10;
         }
 
-        /* --- Info Dosen & Deskripsi Card --- */
-        .info-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 3rem;
-            display: flex;
-            gap: 2rem;
-            align-items: center;
+        /* --- INFO BOXES (Dosen & Deskripsi) --- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 2.5fr;
+            gap: 1.5rem;
+            margin-bottom: 4rem;
         }
 
-        @media (max-width: 768px) {
-            .info-card { flex-direction: column; text-align: center; }
-            .hero h1 { font-size: 2.2rem; }
+        .info-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
 
         .instructor-profile {
-            flex-shrink: 0;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
 
-        /* Style baru untuk foto profil */
         .instructor-image {
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--accent);
-            padding: 3px;
+            border: 4px solid var(--primary-light);
+            padding: 4px;
             background-color: var(--bg-card);
-            margin: 0 auto 1rem auto;
-            display: block;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
-        .instructor-name { font-weight: 700; font-size: 1.2rem; color: var(--primary); }
-        .instructor-univ { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;}
+        .instructor-name { font-weight: 800; font-size: 1.25rem; color: var(--primary-dark); line-height: 1.3;}
+        .instructor-univ { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;}
         
-        /* Style untuk caption website */
         .instructor-website {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 0.85rem;
-            color: var(--primary-light);
+            color: var(--primary);
             text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s;
-            background: #eff6ff;
-            padding: 4px 12px;
+            font-weight: 700;
+            transition: all 0.3s;
+            background: var(--primary-light);
+            padding: 6px 16px;
             border-radius: 20px;
         }
-        .instructor-website:hover { color: var(--primary-dark); background: #e0f2fe; }
+        .instructor-website:hover { background: var(--primary); color: white; }
 
         .course-desc h2 {
             margin-top: 0;
-            color: var(--primary);
-            font-size: 1.5rem;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 0.5rem;
+            color: var(--primary-dark);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
         }
 
-        /* --- Modul Grid --- */
+        .course-desc p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 0;
+        }
+
+        /* --- MODULES GRID --- */
         .section-title {
             text-align: center;
-            color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 2rem;
+            color: var(--primary-dark);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 2.5rem;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 1.5rem;
         }
 
         .module-card {
             background: var(--bg-card);
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             padding: 2rem;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
         }
 
         .module-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
-            border-color: var(--accent);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--primary-light);
         }
 
         .module-card::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
+            top: 0; left: 0; width: 5px; height: 100%;
             background-color: var(--primary);
+            transition: background-color 0.3s;
         }
 
-        .module-card:hover::before {
-            background-color: var(--accent);
-        }
+        .module-card:hover::before { background-color: var(--accent); }
         
-        .exam-card { background-color: #fdf2f8; border-color: #fbcfe8; }
-        .exam-card::before { background-color: #ec4899; }
-        .exam-card:hover { border-color: #ec4899; }
-        .exam-icon { color: #ec4899 !important; }
-
         .module-icon {
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: var(--primary);
-            margin-bottom: 1rem;
-            transition: color 0.3s;
+            margin-bottom: 1.2rem;
+            background: var(--primary-light);
+            width: 60px; height: 60px;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 12px;
+            transition: all 0.3s;
         }
 
         .module-card:hover .module-icon {
-            color: var(--accent);
+            background: var(--accent);
+            color: white;
         }
 
         .module-card h3 {
-            margin: 0 0 0.5rem 0;
-            color: var(--primary);
-            font-size: 1.1rem;
+            margin: 0 0 0.8rem 0;
+            color: var(--primary-dark);
+            font-size: 1.2rem;
+            font-weight: 700;
         }
-        
-        .exam-card h3 { color: #be185d; }
 
         .module-card p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             flex-grow: 1;
+            line-height: 1.6;
         }
 
-        /* --- Buttons --- */
+        /* --- BUTTONS --- */
         .btn {
-            display: inline-block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
             width: 100%;
-            text-align: center;
-            background-color: var(--accent); 
+            background-color: var(--primary); 
             color: white;
             padding: 0.8rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: background 0.3s;
+            font-size: 0.95rem;
+            transition: all 0.3s;
             box-sizing: border-box;
+            border: none;
+            cursor: pointer;
         }
 
-        .btn:hover { background-color: var(--accent-hover); }
+        .btn:hover { background-color: var(--primary-dark); box-shadow: 0 4px 12px rgba(0, 74, 143, 0.3); }
+        
+        /* Tema khusus tombol Modul Ekstra */
+        .btn-extra { background-color: var(--accent); }
+        .btn-extra:hover { background-color: var(--accent-hover); box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3); }
+        
+        /* Tema khusus tombol Suplemen Hijau */
+        .btn-green { background-color: #10b981; }
+        .btn-green:hover { background-color: #059669; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+
+        /* --- LOCKED & EXAM CARDS --- */
+        .locked-card { border-color: var(--border-color); opacity: 0.8; }
+        .locked-card::before { background-color: #cbd5e1; }
+        .locked-card:hover { transform: none; box-shadow: none; border-color: var(--border-color); }
+        .locked-card .module-icon { background: #f1f5f9; color: #94a3b8; }
+        .locked-card h3 { color: #64748b; }
         
         .btn-disabled {
-            background-color: #f1f5f9;
-            color: #94a3b8;
-            cursor: not-allowed;
-            border: 1px solid #e2e8f0;
-            display: inline-block;
-            width: 100%;
-            text-align: center;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            box-sizing: border-box;
+            display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
+            background-color: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0;
+            padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+            box-sizing: border-box; cursor: not-allowed;
         }
-        .btn-disabled:hover { background-color: #f1f5f9; }
 
-        /* --- Footer --- */
+        .exam-card { background-color: #fdf2f8; border-color: #fbcfe8; opacity: 1;}
+        .exam-card::before { background-color: #ec4899; }
+        .exam-card:hover { transform: translateY(-5px); border-color: #ec4899; }
+        .exam-card .module-icon { background: #fce7f3; color: #ec4899; }
+        .exam-card h3 { color: #be185d; }
+        .btn-exam { background-color: #fce7f3; color: #db2777; border: 1px solid #fbcfe8; }
+
+        /* --- FOOTER --- */
         footer {
             text-align: center;
-            padding: 2rem;
+            padding: 2.5rem;
             color: var(--text-muted);
             font-size: 0.9rem;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border-color);
             background: var(--bg-card);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .instructor-profile { padding-bottom: 2rem; border-bottom: 1px dashed var(--border-color); }
         }
     </style>
 </head>
 <body>
 
     <div class="hero">
-        <div class="hero-badge"><i class="fas fa-laptop-code"></i> Mata Kuliah</div>
+        <div class="hero-badge"><i class="fas fa-university"></i> Mata Kuliah Inti Keilmuan</div>
         <h1>Analisis Komputasional Komunikasi</h1>
-        <p>Memadukan teori komunikasi, metode analisis data, dan keterampilan pemrograman untuk memahami fenomena interaksi di era digital.</p>
+        <p>Memadukan teori komunikasi manusia dengan kekuatan ilmu komputer dan statistika untuk memahami fenomena interaksi sosial di era Mahadata (<i>Big Data</i>).</p>
     </div>
 
     <div class="container">
         
-        <div class="info-card">
-            <div class="instructor-profile">
-                <img src="denny.png" alt="Denny J. C. Sihombing" class="instructor-image">
+        <div class="info-grid">
+            <div class="info-card instructor-profile">
+                <img src="denny.png" alt="Denny J. C. Sihombing" class="instructor-image" onerror="this.src='https://ui-avatars.com/api/?name=Denny+Sihombing&background=004a8f&color=fff&size=128'">
                 <div class="instructor-name">Denny J. C. Sihombing</div>
                 <div class="instructor-univ">Universitas Katolik<br>Indonesia Atma Jaya</div>
-                <a href="https://dsihombing.github.io" target="_blank" class="instructor-website"><i class="fas fa-globe"></i> dsihombing.github.io</a>
+                <a href="https://dsihombing.github.io" target="_blank" class="instructor-website"><i class="fas fa-link"></i> dsihombing.github.io</a>
             </div>
-            <div class="course-desc">
-                <h2>Deskripsi Mata Kuliah</h2>
-                <p>Mata kuliah ini memperkenalkan pendekatan komputasional dalam studi komunikasi. Mahasiswa akan mempelajari cara mengumpulkan, mengolah, dan menganalisis data jejak digital dari media sosial, berita daring, dan platform lainnya. Pembelajaran mengombinasikan teori komunikasi klasik, pengantar pemrograman (R/Python), hingga teknik analisis tingkat lanjut seperti <em>Topic Modeling</em> dan <em>Social Network Analysis</em>.</p>
+            
+            <div class="info-card course-desc">
+                <h2><i class="fas fa-book-open"></i> Deskripsi Mata Kuliah</h2>
+                <p>Mata kuliah ini memperkenalkan pendekatan komputasional mutakhir dalam studi komunikasi. Mahasiswa akan dilatih untuk mengumpulkan, memproses, dan menganalisis data jejak digital (<em>digital traces</em>) dari media sosial maupun portal berita daring. Pembelajaran dirancang untuk mengombinasikan landasan teori komunikasi klasik, pengantar pemrograman bahasa R/Python, hingga implementasi teknik analisis tingkat lanjut seperti Pemodelan Topik (<em>Topic Modeling</em>) dan Analisis Jejaring Sosial (<em>SNA</em>).</p>
             </div>
         </div>
 
-        <h2 class="section-title"><i class="fas fa-layer-group"></i> Modul Pembelajaran Interaktif</h2>
+        <h2 class="section-title">Modul Pembelajaran Interaktif</h2>
         
         <div class="grid">
+
+            <div class="module-card" style="border-color: #fed7aa; background-color: #fffbeb;">
+                <div class="module-icon" style="background: #ffedd5; color: var(--accent);"><i class="fas fa-rocket"></i></div>
+                <h3 style="color: #9a3412;">Praktikum Dasar: Persiapan IDE</h3>
+                <p>Pengenalan ekosistem Cloud Computing (Google Colab), lingkungan IDE lokal (RStudio/Jupyter), dan translasi logika pemrograman.</p>
+                <a href="colab_dasar.html" class="btn btn-extra"><i class="fas fa-play-circle"></i> Mulai Orientasi</a>
+            </div>
+
+            <div class="module-card" style="border-color: #a7f3d0; background-color: #f0fdf4;">
+                <div class="module-icon" style="background: #d1fae5; color: #10b981;"><i class="fas fa-file-code"></i></div>
+                <h3 style="color: #065f46;">Suplemen: Kompilasi Skrip</h3>
+                <p>Direktori referensi (<em>cheat sheet</em>) berisi potongan kode <em>Python</em> dan <em>R</em> yang siap disalin untuk eksperimentasi di Google Colab.</p>
+                <a href="praktikum_skrip_dasar.html" class="btn btn-green"><i class="fas fa-code"></i> Akses Skrip Dasar</a>
+            </div>
             
             <div class="module-card">
-                <i class="fas fa-book module-icon"></i>
+                <div class="module-icon"><i class="fas fa-book-reader"></i></div>
                 <h3>Minggu 1: Pengantar & Etika</h3>
-                <p>Memahami teori komputasional, langkah-langkah analisis, serta etika privasi dan anonimisasi data.</p>
-                <a href="pertemuan1.html" class="btn"><i class="fas fa-play-circle"></i> Mulai Belajar</a>
+                <p>Memahami <em>The Computational Turn</em>, karakteristik jejak digital, alur riset integratif, serta etika privasi di era Post-API.</p>
+                <a href="pertemuan1.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
             </div>
 
             <div class="module-card">
-                <i class="fas fa-code module-icon"></i>
+                <div class="module-icon"><i class="fas fa-terminal"></i></div>
                 <h3>Minggu 2: Dasar Pemrograman</h3>
-                <p>Pengenalan logika pemrograman dasar, tipe variabel, struktur data, dan pengenalan R/Python.</p>
-                <a href="pertemuan2.html" class="btn"><i class="fas fa-play-circle"></i> Mulai Belajar</a>
+                <p>Penguasaan logika sekuensial, taksonomi variabel, konstruksi <em>DataFrame</em>, dan simulasi penulisan skrip R/Python.</p>
+                <a href="pertemuan2.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-database module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 3: Data Komunikasi</h3>
-                <p>Mengidentifikasi jenis data (terstruktur/tidak terstruktur), format data (CSV/JSON), dan membaca data jejak digital.</p>
-                <a href="pertemuan3.html" class="btn"><i class="fas fa-play-circle"></i> Mulai Belajar</a>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-database"></i></div>
+                <h3>Minggu 3: Manajemen Data</h3>
+                <p>Mendiagnosis bias <em>invisible engagement</em>, arsitektur JSON/CSV, dan implementasi Analisis Data Eksploratif (EDA).</p>
+                <a href="pertemuan3.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-broom module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 4: Pra-pemrosesan Teks</h3>
-                <p>Teknik tokenisasi, lemmatisasi, penghapusan stop-word, dan pembersihan data teks komunikasi.</p>
-                <a href="pertemuan4.html" class="btn"><i class="fas fa-play-circle"></i> Mulai Belajar</a>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-broom"></i></div>
+                <h3>Minggu 4: Pra-pemrosesan Teks</h3>
+                <p>Implementasi NLP: tokenisasi, lemmatisasi, <em>stop-word removal</em>, dan transisi paradigma menuju <em>Transfer Learning</em>.</p>
+                <a href="pertemuan4.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-chart-bar module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 5-6: Frekuensi & Sentimen</h3>
-                <p>Analisis frekuensi kata, perhitungan n-gram, TF-IDF, serta penerapan analisis sentimen dasar pada teks.</p>
-                <a href="pertemuan5.html" class="btn"><i class="fas fa-play-circle"></i> Mulai Belajar</a>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-chart-bar"></i></div>
+                <h3>Minggu 5-6: Frekuensi & Sentimen</h3>
+                <p>Ekstraksi wacana via N-Gram, kalibrasi algoritma TF-IDF, serta klasifikasi polaritas emosi publik (Analisis Sentimen).</p>
+                <a href="pertemuan5.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
             </div>
             
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-comments module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 7: Topic Modeling</h3>
-                <p>Mengekstraksi dan menemukan tema/topik pembicaraan tersembunyi dari teks skala besar menggunakan metode LDA.</p>
-                <a href="pertemuan7.html" class="btn"><i class="fas fa-play-circle"></i> Mulai Belajar</a>
+            <div class="module-card">
+                <div class="module-icon"><i class="fas fa-network-wired"></i></div>
+                <h3>Minggu 7: Topic Modeling</h3>
+                <p>Ekstraksi tema laten tak terawasi (<em>Unsupervised</em>) menggunakan LDA, serta disrupsi pemodelan topik visual (gambar/video).</p>
+                <a href="pertemuan7.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
             </div>
 
             <div class="module-card exam-card">
-                <i class="fas fa-file-signature module-icon exam-icon"></i>
+                <div class="module-icon"><i class="fas fa-file-signature"></i></div>
                 <h3>Minggu 8: UTS</h3>
-                <p>Ujian Tengah Semester: Evaluasi pemahaman konsep dan praktik pemrograman dasar yang telah dipelajari.</p>
-                <span class="btn-disabled" style="background-color: #fce7f3; color: #db2777; border-color: #fbcfe8;"><i class="fas fa-clock"></i> Jadwal Menyusul</span>
+                <p>Ujian Tengah Semester: Evaluasi komprehensif atas penguasaan teoretis dan kapabilitas praktikum pemrograman dasar.</p>
+                <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-spider module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 9: Web Scraping & API</h3>
-                <p>Teknik pengambilan data dari situs berita dan penarikan otomatis jejak digital melalui API media sosial.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Segera Hadir</span>
+            <div class="module-card locked-card">
+                <div class="module-icon"><i class="fas fa-spider"></i></div>
+                <h3>Minggu 9: Web Scraping & API</h3>
+                <p>Teknik ekstraksi data dari situs berita daring dan penarikan otomatis jejak digital melalui API media sosial resmi.</p>
+                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-project-diagram module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 10-11: Analisis Jejaring Sosial</h3>
-                <p>SNA (Social Network Analysis): Memahami graf, aktor kunci (sentralitas), dan visualisasi jaringan wacana.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Segera Hadir</span>
+            <div class="module-card locked-card">
+                <div class="module-icon"><i class="fas fa-project-diagram"></i></div>
+                <h3>Minggu 10-11: Analisis Jejaring</h3>
+                <p>Social Network Analysis (SNA): Mengalkulasi sentralitas aktor, mendeteksi komunitas, dan visualisasi graf jaringan.</p>
+                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-robot module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 12-13: Machine Learning</h3>
-                <p>Pengantar pembelajaran mesin untuk komunikasi: klasifikasi data, klasterisasi, dan prediksi otomatis berbasis algoritma.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Segera Hadir</span>
+            <div class="module-card locked-card">
+                <div class="module-icon"><i class="fas fa-robot"></i></div>
+                <h3>Minggu 12-13: Machine Learning</h3>
+                <p>Pengantar pembelajaran mesin untuk klasifikasi data, klasterisasi opini publik, dan prediksi algoritma otomatis.</p>
+                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-file-alt module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 14: Publikasi Karya</h3>
-                <p>Menyusun temuan hasil analisis ke dalam bentuk laporan penelitian, artikel ilmiah, atau dokumen interaktif.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Segera Hadir</span>
+            <div class="module-card locked-card">
+                <div class="module-icon"><i class="fas fa-file-alt"></i></div>
+                <h3>Minggu 14: Publikasi Karya</h3>
+                <p>Translasi temuan komputasional ke dalam manuskrip artikel ilmiah, laporan penelitian, atau presentasi visual interaktif.</p>
+                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
             </div>
 
-            <div class="module-card" style="border-left-color: #cbd5e1;">
-                <i class="fas fa-chalkboard-teacher module-icon" style="color: #cbd5e1;"></i>
-                <h3 style="color: #64748b;">Minggu 15: Presentasi Proyek</h3>
-                <p>Presentasi proyek komputasional mahasiswa, diskusi kelas, dan sesi refleksi proses pembelajaran.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Segera Hadir</span>
+            <div class="module-card locked-card">
+                <div class="module-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <h3>Minggu 15: Presentasi Proyek</h3>
+                <p>Diseminasi akhir proyek komputasional mahasiswa, proses telaah sejawat (<em>peer-review</em>), dan refleksi akademis.</p>
+                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
             </div>
 
             <div class="module-card exam-card">
-                <i class="fas fa-graduation-cap module-icon exam-icon"></i>
+                <div class="module-icon"><i class="fas fa-graduation-cap"></i></div>
                 <h3>Minggu 16: UAS</h3>
-                <p>Ujian Akhir Semester: Validasi akhir kemampuan mahasiswa secara komprehensif dalam riset berbasis data.</p>
-                <span class="btn-disabled" style="background-color: #fce7f3; color: #db2777; border-color: #fbcfe8;"><i class="fas fa-clock"></i> Jadwal Menyusul</span>
+                <p>Ujian Akhir Semester: Validasi pamungkas atas kemampuan mahasiswa dalam mengeksekusi riset komunikasi komputasional.</p>
+                <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
             </div>
 
         </div>
@@ -373,8 +442,8 @@
 
     <footer>
         <strong>Analisis Komputasional Komunikasi</strong><br>
-        &copy; 2026 Denny J. C. Sihombing<br>
-        Universitas Katolik Indonesia Atma Jaya
+        &copy; 2026 Denny J. C. Sihombing | Universitas Katolik Indonesia Atma Jaya<br>
+        <span style="font-size: 0.8rem; margin-top: 10px; display: inline-block;">Fakultas Ilmu Administrasi Bisnis dan Ilmu Komunikasi (FIABIKOM)</span>
     </footer>
 
 </body>
