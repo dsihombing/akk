@@ -5,6 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analisis Komputasional Komunikasi | Denny J. C. Sihombing</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVXx_p9iTBFg1FdDVDLf7RNLJRfo31Mh4",
+            authDomain: "akkds-83803.firebaseapp.com",
+            projectId: "akkds-83803",
+            storageBucket: "akkds-83803.firebasestorage.app",
+            messagingSenderId: "280144297960",
+            appId: "1:280144297960:web:9ceb89ac5029c72d09ee5d"
+        };
+        
+        // Inisialisasi Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Deteksi Sesi Login
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (!user) {
+                // JIKA TIDAK ADA SESI LOGIN: Alihkan paksa ke login.html
+                window.location.replace("login.html");
+            }
+        });
+
+        // Fungsi Keluar (Logout)
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.replace("login.html");
+            });
+        }
+    </script>
     <style>
         /* --- VARIABEL TEMA ATMA JAYA --- */
         :root {
@@ -29,11 +63,28 @@
             line-height: 1.6;
         }
 
+        /* --- HEADER & LOGOUT --- */
+        header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-title { font-size: 1.2rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 10px;}
+        
+        .btn-logout {
+            background-color: #ef4444; color: white; border: none;
+            padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-logout:hover { background-color: #dc2626; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); }
+
         /* --- HERO SECTION --- */
         .hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 6rem 2rem 8rem 2rem;
+            padding: 5rem 2rem 7rem 2rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -81,7 +132,7 @@
 
         /* --- MAIN CONTAINER --- */
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: -4rem auto 4rem auto;
             padding: 0 1.5rem;
             position: relative;
@@ -93,7 +144,7 @@
             display: grid;
             grid-template-columns: 1fr 2.5fr;
             gap: 1.5rem;
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
         }
 
         .info-card {
@@ -159,18 +210,28 @@
             margin-bottom: 0;
         }
 
-        /* --- MODULES GRID --- */
-        .section-title {
-            text-align: center;
-            color: var(--primary-dark);
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 2.5rem;
+        /* --- DASHBOARD LAYOUT (2 COLUMNS) --- */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+            align-items: start;
         }
 
-        .grid {
+        .section-title {
+            color: var(--primary-dark);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* --- LEFT PANEL: MODULES GRID --- */
+        .modules-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
@@ -178,7 +239,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 2rem;
+            padding: 1.5rem;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -188,15 +249,15 @@
         }
 
         .module-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.08);
             border-color: var(--primary-light);
         }
 
         .module-card::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; width: 5px; height: 100%;
+            top: 0; left: 0; width: 4px; height: 100%;
             background-color: var(--primary);
             transition: background-color 0.3s;
         }
@@ -204,13 +265,13 @@
         .module-card:hover::before { background-color: var(--accent); }
         
         .module-icon {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: var(--primary);
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
             background: var(--primary-light);
-            width: 60px; height: 60px;
+            width: 50px; height: 50px;
             display: flex; justify-content: center; align-items: center;
-            border-radius: 12px;
+            border-radius: 10px;
             transition: all 0.3s;
         }
 
@@ -220,51 +281,74 @@
         }
 
         .module-card h3 {
-            margin: 0 0 0.8rem 0;
+            margin: 0 0 0.5rem 0;
             color: var(--primary-dark);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
         }
 
         .module-card p {
             color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
             flex-grow: 1;
             line-height: 1.6;
         }
 
-        /* --- BUTTONS --- */
-        .btn {
+        /* --- RIGHT PANEL: WIDGETS --- */
+        .side-panel {
+            position: sticky;
+            top: 2rem;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            background-color: var(--primary); 
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-            box-sizing: border-box;
-            border: none;
-            cursor: pointer;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
+        .widget-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .widget-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Widget Khusus Portal Tugas (Premium Highlight) */
+        .widget-highlight {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+        }
+        .widget-highlight h3 { color: white; margin: 0 0 0.5rem 0; font-size: 1.2rem;}
+        .widget-highlight p { color: #d1fae5; font-size: 0.9rem; margin-bottom: 1.2rem;}
+        .widget-highlight .widget-icon { font-size: 2rem; color: rgba(255,255,255,0.9); margin-bottom: 10px;}
+
+        /* Widget Biasa */
+        .widget-card h3 { color: var(--primary-dark); margin: 0 0 0.5rem 0; font-size: 1.1rem;}
+        .widget-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; line-height: 1.5;}
+        .widget-card .widget-icon { font-size: 1.8rem; color: var(--accent); margin-bottom: 10px;}
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
+            background-color: var(--primary); color: white; padding: 0.7rem 1rem;
+            border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem;
+            transition: all 0.3s; box-sizing: border-box; border: none; cursor: pointer;
+        }
         .btn:hover { background-color: var(--primary-dark); box-shadow: 0 4px 12px rgba(0, 74, 143, 0.3); }
         
-        /* Tema khusus tombol */
-        .btn-extra { background-color: var(--accent); }
-        .btn-extra:hover { background-color: var(--accent-hover); box-shadow: 0 4px 12px rgba(242, 101, 34, 0.3); }
-        
-        .btn-green { background-color: #10b981; }
-        .btn-green:hover { background-color: #059669; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-white { background-color: white; color: #059669; }
+        .btn-white:hover { background-color: #f8fafc; color: #047857; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+
+        .btn-outline { background-color: transparent; color: var(--accent); border: 2px solid var(--accent); }
+        .btn-outline:hover { background-color: var(--accent); color: white; }
 
         /* --- LOCKED & EXAM CARDS --- */
-        .locked-card { border-color: var(--border-color); opacity: 0.8; }
+        .locked-card { border-color: var(--border-color); opacity: 0.7; }
         .locked-card::before { background-color: #cbd5e1; }
         .locked-card:hover { transform: none; box-shadow: none; border-color: var(--border-color); }
         .locked-card .module-icon { background: #f1f5f9; color: #94a3b8; }
@@ -273,13 +357,13 @@
         .btn-disabled {
             display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
             background-color: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0;
-            padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+            padding: 0.7rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem;
             box-sizing: border-box; cursor: not-allowed;
         }
 
         .exam-card { background-color: #fdf2f8; border-color: #fbcfe8; opacity: 1;}
         .exam-card::before { background-color: #ec4899; }
-        .exam-card:hover { transform: translateY(-5px); border-color: #ec4899; }
+        .exam-card:hover { transform: translateY(-3px); border-color: #ec4899; }
         .exam-card .module-icon { background: #fce7f3; color: #ec4899; }
         .exam-card h3 { color: #be185d; }
         .btn-exam { background-color: #fce7f3; color: #db2777; border: 1px solid #fbcfe8; }
@@ -292,12 +376,16 @@
             font-size: 0.9rem;
             border-top: 1px solid var(--border-color);
             background: var(--bg-card);
+            margin-top: 3rem;
         }
 
         /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+            .side-panel { position: relative; top: 0; }
+        }
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.2rem; }
-            .hero p { font-size: 1rem; }
             .info-grid { grid-template-columns: 1fr; }
             .instructor-profile { padding-bottom: 2rem; border-bottom: 1px dashed var(--border-color); }
         }
@@ -305,8 +393,16 @@
 </head>
 <body>
 
+    <header>
+        <h2 class="header-title"><i class="fas fa-university"></i> Dasbor Mahasiswa</h2>
+        
+        <button onclick="logout()" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </header>
+
     <div class="hero">
-        <div class="hero-badge"><i class="fas fa-university"></i> Mata Kuliah Inti Keilmuan</div>
+        <div class="hero-badge"><i class="fas fa-laptop-code"></i> Mata Kuliah Inti Keilmuan</div>
         <h1>Analisis Komputasional Komunikasi</h1>
         <p>Memadukan teori komunikasi manusia dengan kekuatan ilmu komputer dan statistika untuk memahami fenomena interaksi sosial di era Mahadata (<i>Big Data</i>).</p>
     </div>
@@ -327,121 +423,139 @@
             </div>
         </div>
 
-        <h2 class="section-title">Modul Pembelajaran Interaktif</h2>
-        
-        <div class="grid">
-
-            <div class="module-card" style="border-color: #60a5fa; background-color: #f0fdf4;">
-                <div class="module-icon" style="background: #d1fae5; color: #059669;"><i class="fas fa-cloud-upload-alt"></i></div>
-                <h3 style="color: #064e3b;">Portal Pengumpulan Tugas</h3>
-                <p>Akses repositori terpusat untuk mengunggah tautan Google Colab, skrip R/Python, dan menyerahkan laporan praktikum Anda di sini.</p>
-                <a href="pengumpulan_tugas.html" class="btn btn-green" style="background-color: #059669;"><i class="fas fa-paper-plane"></i> Akses Portal Tugas</a>
-            </div>
-
-            <div class="module-card" style="border-color: #fed7aa; background-color: #fffbeb;">
-                <div class="module-icon" style="background: #ffedd5; color: var(--accent);"><i class="fas fa-rocket"></i></div>
-                <h3 style="color: #9a3412;">Praktikum Dasar: Persiapan IDE</h3>
-                <p>Pengenalan ekosistem Cloud Computing (Google Colab), lingkungan IDE lokal (RStudio/Jupyter), dan translasi logika pemrograman.</p>
-                <a href="colab_dasar.html" class="btn btn-extra"><i class="fas fa-play-circle"></i> Mulai Orientasi</a>
-            </div>
-
-            <div class="module-card" style="border-color: #a7f3d0; background-color: #f8fafc;">
-                <div class="module-icon" style="background: #d1fae5; color: #10b981;"><i class="fas fa-file-code"></i></div>
-                <h3 style="color: #065f46;">Suplemen: Kompilasi Skrip</h3>
-                <p>Direktori referensi (<em>cheat sheet</em>) berisi potongan kode <em>Python</em> dan <em>R</em> yang siap disalin untuk eksperimentasi di Google Colab.</p>
-                <a href="praktikum_skrip_dasar.html" class="btn btn-green"><i class="fas fa-code"></i> Akses Skrip Dasar</a>
-            </div>
+        <div class="dashboard-layout">
             
-            <div class="module-card">
-                <div class="module-icon"><i class="fas fa-book-reader"></i></div>
-                <h3>Minggu 1: Pengantar & Etika</h3>
-                <p>Memahami <em>The Computational Turn</em>, karakteristik jejak digital, alur riset integratif, serta etika privasi di era Post-API.</p>
-                <a href="pertemuan1.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+            <div class="main-panel">
+                <h2 class="section-title"><i class="fas fa-layer-group"></i> Modul Pembelajaran</h2>
+                <div class="modules-grid">
+                    
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-book-reader"></i></div>
+                        <h3>Minggu 1: Pengantar & Etika</h3>
+                        <p>Memahami <em>The Computational Turn</em>, karakteristik jejak digital, alur riset integratif, serta etika privasi.</p>
+                        <a href="pertemuan1.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-terminal"></i></div>
+                        <h3>Minggu 2: Dasar Pemrograman</h3>
+                        <p>Penguasaan logika sekuensial, taksonomi variabel, dan arsitektur <em>DataFrame</em> di R/Python.</p>
+                        <a href="pertemuan2.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-database"></i></div>
+                        <h3>Minggu 3: Manajemen Data</h3>
+                        <p>Mendiagnosis bias <em>invisible engagement</em>, arsitektur JSON/CSV, dan Analisis Data Eksploratif (EDA).</p>
+                        <a href="pertemuan3.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-broom"></i></div>
+                        <h3>Minggu 4: Pra-pemrosesan Teks</h3>
+                        <p>Implementasi NLP: tokenisasi, lemmatisasi, <em>stop-word removal</em>, dan transisi ke <em>Transfer Learning</em>.</p>
+                        <a href="pertemuan4.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-chart-bar"></i></div>
+                        <h3>Minggu 5-6: Frekuensi & Sentimen</h3>
+                        <p>Ekstraksi N-Gram, algoritma TF-IDF, serta klasifikasi polaritas emosi publik (Analisis Sentimen).</p>
+                        <a href="pertemuan5.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+                    </div>
+                    
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-network-wired"></i></div>
+                        <h3>Minggu 7: Topic Modeling</h3>
+                        <p>Ekstraksi tema laten tak terawasi (<em>Unsupervised</em>) via LDA, serta disrupsi pemodelan visual.</p>
+                        <a href="pertemuan7.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+                    </div>
+
+                    <div class="module-card exam-card">
+                        <div class="module-icon"><i class="fas fa-file-signature"></i></div>
+                        <h3>Minggu 8: UTS</h3>
+                        <p>Ujian Tengah Semester: Evaluasi komprehensif atas penguasaan teoretis dan kapabilitas praktikum.</p>
+                        <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-icon"><i class="fas fa-spider"></i></div>
+                        <h3>Minggu 9: Web Scraping & API</h3>
+                        <p>Metodologi ekstraksi data digital, arsitektur Scraping, dan paradigma Data Donation.</p>
+                        <a href="pertemuan9.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
+                    </div>
+
+                    <div class="module-card locked-card">
+                        <div class="module-icon"><i class="fas fa-project-diagram"></i></div>
+                        <h3>Minggu 10-11: Analisis Jejaring</h3>
+                        <p>Social Network Analysis (SNA): Sentralitas aktor, deteksi komunitas, dan visualisasi graf jaringan.</p>
+                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
+                    </div>
+
+                    <div class="module-card locked-card">
+                        <div class="module-icon"><i class="fas fa-robot"></i></div>
+                        <h3>Minggu 12-13: Machine Learning</h3>
+                        <p>Pengantar pembelajaran mesin untuk klasifikasi data, klasterisasi opini, dan prediksi algoritma.</p>
+                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
+                    </div>
+
+                    <div class="module-card locked-card">
+                        <div class="module-icon"><i class="fas fa-file-alt"></i></div>
+                        <h3>Minggu 14: Publikasi Karya</h3>
+                        <p>Translasi temuan komputasional ke dalam manuskrip artikel ilmiah, atau presentasi interaktif.</p>
+                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
+                    </div>
+
+                    <div class="module-card locked-card">
+                        <div class="module-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <h3>Minggu 15: Presentasi Proyek</h3>
+                        <p>Diseminasi proyek akhir mahasiswa, proses telaah sejawat (<em>peer-review</em>), dan refleksi akademis.</p>
+                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
+                    </div>
+
+                    <div class="module-card exam-card">
+                        <div class="module-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <h3>Minggu 16: UAS</h3>
+                        <p>Ujian Akhir Semester: Validasi pamungkas atas kemampuan riset komunikasi komputasional.</p>
+                        <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
+                    </div>
+
+                </div>
             </div>
 
-            <div class="module-card">
-                <div class="module-icon"><i class="fas fa-terminal"></i></div>
-                <h3>Minggu 2: Dasar Pemrograman</h3>
-                <p>Penguasaan logika sekuensial, taksonomi variabel, konstruksi <em>DataFrame</em>, dan simulasi penulisan skrip R/Python.</p>
-                <a href="pertemuan2.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-            </div>
+            <aside class="side-panel">
+                
+                <h2 class="section-title" style="border-bottom:none; margin-bottom: 0;"><i class="fas fa-tools"></i> Utilitas Praktikum</h2>
 
-            <div class="module-card">
-                <div class="module-icon"><i class="fas fa-database"></i></div>
-                <h3>Minggu 3: Manajemen Data</h3>
-                <p>Mendiagnosis bias <em>invisible engagement</em>, arsitektur JSON/CSV, dan implementasi Analisis Data Eksploratif (EDA).</p>
-                <a href="pertemuan3.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-            </div>
+                <div class="widget-card widget-highlight">
+                    <div class="widget-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <h3>Portal Pengumpulan Tugas</h3>
+                    <p>Akses repositori aman untuk mengunggah tautan Google Colab dan menyerahkan laporan skrip Anda.</p>
+                    <a href="pengumpulan_tugas.html" class="btn btn-white"><i class="fas fa-paper-plane"></i> Unggah Tugas</a>
+                </div>
 
-            <div class="module-card">
-                <div class="module-icon"><i class="fas fa-broom"></i></div>
-                <h3>Minggu 4: Pra-pemrosesan Teks</h3>
-                <p>Implementasi NLP: tokenisasi, lemmatisasi, <em>stop-word removal</em>, dan transisi paradigma menuju <em>Transfer Learning</em>.</p>
-                <a href="pertemuan4.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-            </div>
+                <div class="widget-card">
+                    <div class="widget-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h3>Praktikum Dasar (IDE)</h3>
+                    <p>Pengenalan ekosistem komputasi awan, instalasi RStudio lokal, dan uji translasi logika.</p>
+                    <a href="colab_dasar.html" class="btn btn-outline"><i class="fas fa-rocket"></i> Mulai Orientasi</a>
+                </div>
 
-            <div class="module-card">
-                <div class="module-icon"><i class="fas fa-chart-bar"></i></div>
-                <h3>Minggu 5-6: Frekuensi & Sentimen</h3>
-                <p>Ekstraksi wacana via N-Gram, kalibrasi algoritma TF-IDF, serta klasifikasi polaritas emosi publik (Analisis Sentimen).</p>
-                <a href="pertemuan5.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-            </div>
-            
-            <div class="module-card">
-                <div class="module-icon"><i class="fas fa-network-wired"></i></div>
-                <h3>Minggu 7: Topic Modeling</h3>
-                <p>Ekstraksi tema laten tak terawasi (<em>Unsupervised</em>) menggunakan LDA, serta disrupsi pemodelan topik visual (gambar/video).</p>
-                <a href="pertemuan7.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-            </div>
+                <div class="widget-card">
+                    <div class="widget-icon"><i class="fas fa-file-code"></i></div>
+                    <h3>Kompilasi Skrip (Source)</h3>
+                    <p>Direktori referensi <em>cheat sheet</em> berisi potongan kode Python dan R siap pakai untuk Colab.</p>
+                    <a href="praktikum_skrip_dasar.html" class="btn btn-outline"><i class="fas fa-code"></i> Akses Source Code</a>
+                </div>
+                
+                <div class="widget-card" style="border-left: 4px solid #8b5cf6;">
+                    <div class="widget-icon" style="color: #8b5cf6;"><i class="fas fa-users-cog"></i></div>
+                    <h3 style="color: #6d28d9;">Studi Kasus Integratif</h3>
+                    <p>Simulasi investigasi RUU Penyiaran untuk menguji logika metodologis dan etika data Modul 1-3.</p>
+                    <a href="studi_kasus_1.html" class="btn" style="background-color: #8b5cf6; color: white; border: none;"><i class="fas fa-microscope"></i> Buka Skenario</a>
+                </div>
 
-            <div class="module-card exam-card">
-                <div class="module-icon"><i class="fas fa-file-signature"></i></div>
-                <h3>Minggu 8: UTS</h3>
-                <p>Ujian Tengah Semester: Evaluasi komprehensif atas penguasaan teoretis dan kapabilitas praktikum pemrograman dasar.</p>
-                <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
-            </div>
-
-            <div class="module-card locked-card">
-                <div class="module-icon"><i class="fas fa-spider"></i></div>
-                <h3>Minggu 9: Web Scraping & API</h3>
-                <p>Teknik ekstraksi data dari situs berita daring dan penarikan otomatis jejak digital melalui API media sosial resmi.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-            </div>
-
-            <div class="module-card locked-card">
-                <div class="module-icon"><i class="fas fa-project-diagram"></i></div>
-                <h3>Minggu 10-11: Analisis Jejaring</h3>
-                <p>Social Network Analysis (SNA): Mengalkulasi sentralitas aktor, mendeteksi komunitas, dan visualisasi graf jaringan.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-            </div>
-
-            <div class="module-card locked-card">
-                <div class="module-icon"><i class="fas fa-robot"></i></div>
-                <h3>Minggu 12-13: Machine Learning</h3>
-                <p>Pengantar pembelajaran mesin untuk klasifikasi data, klasterisasi opini publik, dan prediksi algoritma otomatis.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-            </div>
-
-            <div class="module-card locked-card">
-                <div class="module-icon"><i class="fas fa-file-alt"></i></div>
-                <h3>Minggu 14: Publikasi Karya</h3>
-                <p>Translasi temuan komputasional ke dalam manuskrip artikel ilmiah, laporan penelitian, atau presentasi visual interaktif.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-            </div>
-
-            <div class="module-card locked-card">
-                <div class="module-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                <h3>Minggu 15: Presentasi Proyek</h3>
-                <p>Diseminasi akhir proyek komputasional mahasiswa, proses telaah sejawat (<em>peer-review</em>), dan refleksi akademis.</p>
-                <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-            </div>
-
-            <div class="module-card exam-card">
-                <div class="module-icon"><i class="fas fa-graduation-cap"></i></div>
-                <h3>Minggu 16: UAS</h3>
-                <p>Ujian Akhir Semester: Validasi pamungkas atas kemampuan mahasiswa dalam mengeksekusi riset komunikasi komputasional.</p>
-                <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
-            </div>
+            </aside>
 
         </div>
     </div>
