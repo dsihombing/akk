@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Mahasiswa | Analisis Komputasional Komunikasi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBVXx_p9iTBFg1FdDVDLf7RNLJRfo31Mh4", authDomain: "akkds-83803.firebaseapp.com", projectId: "akkds-83803" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // AUTH GUARD MAHASISWA
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.replace("login.html"); return; }
+            const email = user.email.toLowerCase();
+
+            // Cek Whitelist di Database
+            if (email === "arsip.denny@gmail.com" || email === "djc.sihombing@gmail.com") {
+                izinkanMasuk(user);
+            } else {
+                db.collection("whitelist_mahasiswa").doc(email).get().then(doc => {
+                    if (doc.exists) izinkanMasuk(user);
+                    else {
+                        alert("Akses Ditolak! Email Anda belum didaftarkan oleh Dosen.");
+                        auth.signOut().then(() => window.location.replace("login.html"));
+                    }
+                });
+            }
+        });
+
+        function izinkanMasuk(user) {
+            document.getElementById('userNameDisplay').innerHTML = '<i class="fas fa-user-graduate"></i> ' + user.displayName;
+            muatModulAktif();
+        }
+        function logout() { auth.signOut().then(() => window.location.replace("login.html")); }
+    </script>
+
+    <style>
+        :root { --primary: #004a8f; --primary-dark: #002c5c; --bg-body: #f8fafc; --border: #e2e8f0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; color: #1e293b; }
+        header { background: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .btn-logout { background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 2rem; align-items: start; }
+        
+        .grid-modul { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .card-modul { background: white; border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column;}
+        .card-modul i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+        .btn { display: block; text-align: center; background: var(--primary); color: white; padding: 10px; border-radius: 6px; text-decoration: none; margin-top: auto; font-weight: bold;}
+        
+        .side-panel { display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 2rem;}
+        .widget { background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); }
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 2px dashed var(--border); color: #64748b; }
+    </style>
+</head>
+<body>
+    <header>
+        <h3 style="margin:0;"><i class="fas fa-university"></i> Dasbor Mahasiswa UAJ</h3>
+        <div>
+            <span id="userNameDisplay" style="margin-right: 15px; font-size: 0.9rem;">Memuat...</span>
+            <button onclick="logout()" class="btn-logout">Keluar</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div>
+            <h2 style="color:var(--primary-dark); border-bottom: 2px solid var(--border); padding-bottom:10px;">Modul Tersedia</h2>
+            <div class="grid-modul" id="areaModul"><i class="fas fa-spinner fa-spin"></i> Memuat modul dari server...</div>
+        </div>
+
+        <div class="side-panel">
+            <div class="widget" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border:none;">
+                <h3 style="margin-top:0;"><i class="fas fa-cloud-upload-alt"></i> Pengumpulan Tugas</h3>
+                <p style="font-size: 0.9rem;">Akses repositori untuk mengunggah laporan praktikum.</p>
+                <a href="pengumpulan_tugas.html" class="btn" style="background: white; color: #059669;">Unggah Tugas</a>
+            </div>
+            <div class="widget">
+                <h3 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-file-code"></i> Skrip Dasar</h3>
+                <p style="font-size: 0.9rem; color:#64748b;">Referensi kode R/Python siap pakai untuk Google Colab.</p>
+                <a href="praktikum_skrip_dasar.html" class="btn" style="background: transparent; border: 2px solid var(--primary); color: var(--primary);">Buka Referensi</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dataModul = [
+            { id: "modul_1", judul: "Minggu 1: Pengantar & Etika", icon: "fa-book-reader", url: "pertemuan1.html" },
+            { id: "modul_2", judul: "Minggu 2: Dasar Pemrograman", icon: "fa-terminal", url: "pertemuan2.html" },
+            { id: "modul_3", judul: "Minggu 3: Manajemen Data", icon: "fa-database", url: "pertemuan3.html" },
+            { id: "modul_4", judul: "Minggu 4: Pra-pemrosesan Teks", icon: "fa-broom", url: "pertemuan4.html" },
+            { id: "modul_5", judul: "Minggu 5-6: Frekuensi & Sentimen", icon: "fa-chart-bar", url: "pertemuan5.html" },
+            { id: "modul_7", judul: "Minggu 7: Topic Modeling", icon: "fa-network-wired", url: "pertemuan7.html" },
+            { id: "modul_9", judul: "Minggu 9: Web Scraping & API", icon: "fa-spider", url: "pertemuan9.html" },
+            { id: "modul_10", judul: "Minggu 10-11: Analisis Jejaring (SNA)", icon: "fa-project-diagram", url: "pertemuan10.html" }
+        ];
+
+        function muatModulAktif() {
+            db.collection("app_settings").doc("modules_visibility").onSnapshot(doc => {
+                const grid = document.getElementById('areaModul');
+                grid.innerHTML = "";
+                
+                if (doc.exists) {
+                    let state = doc.data();
+                    let count = 0;
+                    dataModul.forEach(m => {
+                        if (state[m.id] === true) {
+                            grid.innerHTML += `
+                                <div class="card-modul">
+                                    <i class="fas ${m.icon}"></i>
+                                    <h3>${m.judul}</h3>
+                                    <a href="${m.url}" class="btn">Mulai Belajar</a>
+                                </div>`;
+                            count++;
+                        }
+                    });
+                    if (count === 0) grid.innerHTML = `<div class="empty-state">Belum ada modul yang dibuka oleh Dosen.</div>`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
