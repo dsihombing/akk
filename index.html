@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisis Komputasional Komunikasi | Denny J. C. Sihombing</title>
+    <title>Portal Akademik | Analisis Komputasional Komunikasi</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // --- KONFIGURASI FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyBVXx_p9iTBFg1FdDVDLf7RNLJRfo31Mh4",
             authDomain: "akkds-83803.firebaseapp.com",
@@ -19,552 +21,227 @@
             appId: "1:280144297960:web:9ceb89ac5029c72d09ee5d"
         };
         
-        // Inisialisasi Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        // Deteksi Sesi Login
-        firebase.auth().onAuthStateChanged(function(user) {
+        // --- PENGATURAN PERAN (ROLE) ---
+        const emailDosen = "djc.sihombing@gmail.com";
+        const emailMahasiswaDefault = "arsip.denny@gmail.com";
+
+        // --- PENJAGA GERBANG (AUTH GUARD) ---
+        auth.onAuthStateChanged(function(user) {
             if (!user) {
-                // JIKA TIDAK ADA SESI LOGIN: Alihkan paksa ke login.html
                 window.location.replace("login.html");
+                return;
+            }
+
+            const userEmail = user.email.toLowerCase();
+            document.getElementById('loadingScreen').style.display = 'none';
+
+            if (userEmail === emailDosen) {
+                // TAMPILKAN DASBOR DOSEN
+                document.getElementById('teacherDashboard').style.display = 'block';
+                document.getElementById('userNameDisplay').innerText = "Dosen: " + user.displayName;
+                muatDaftarMahasiswa();
+            } else {
+                // TAMPILKAN DASBOR MAHASISWA (Cek Database / Default)
+                if (userEmail === emailMahasiswaDefault) {
+                    berikanAksesMahasiswa(user);
+                } else {
+                    // Cek di Firestore apakah email mahasiswa ini sudah ditambahkan oleh Dosen
+                    db.collection("whitelist_mahasiswa").doc(userEmail).get().then((doc) => {
+                        if (doc.exists) {
+                            berikanAksesMahasiswa(user);
+                        } else {
+                            alert("Akses Ditolak! Email Anda belum didaftarkan oleh Dosen.");
+                            logout();
+                        }
+                    }).catch(err => {
+                        alert("Gagal memverifikasi database. Hubungi Dosen.");
+                        logout();
+                    });
+                }
             }
         });
 
-        // Fungsi Keluar (Logout)
+        function berikanAksesMahasiswa(user) {
+            document.getElementById('studentDashboard').style.display = 'block';
+            document.getElementById('userNameDisplay').innerText = "Mahasiswa: " + user.displayName;
+        }
+
         function logout() {
-            firebase.auth().signOut().then(() => {
-                window.location.replace("login.html");
+            auth.signOut().then(() => window.location.replace("login.html"));
+        }
+
+        // --- FUNGSI MANAJEMEN MAHASISWA (KHUSUS DOSEN) ---
+        function tambahMahasiswa() {
+            const inputEmail = document.getElementById('inputEmailBaru').value.toLowerCase().trim();
+            if (!inputEmail) return alert("Masukkan email mahasiswa!");
+
+            document.getElementById('btnTambah').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            db.collection("whitelist_mahasiswa").doc(inputEmail).set({
+                ditambahkan_pada: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('inputEmailBaru').value = "";
+                document.getElementById('btnTambah').innerHTML = '<i class="fas fa-plus"></i> Tambah';
+                muatDaftarMahasiswa();
+            }).catch(err => alert("Gagal menambah: " + err.message));
+        }
+
+        function hapusMahasiswa(email) {
+            if(confirm("Cabut akses untuk " + email + "?")) {
+                db.collection("whitelist_mahasiswa").doc(email).delete().then(() => {
+                    muatDaftarMahasiswa();
+                });
+            }
+        }
+
+        function muatDaftarMahasiswa() {
+            const tbody = document.getElementById('tabelMahasiswaBody');
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Memuat data...</td></tr>';
+            
+            db.collection("whitelist_mahasiswa").get().then((querySnapshot) => {
+                tbody.innerHTML = "";
+                
+                // Tambahkan email default (Hardcoded) agar selalu terlihat
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${emailMahasiswaDefault}</strong> <span style="font-size:0.8rem; color:green;">(Bawaan Sistem)</span></td>
+                        <td><button class="btn-hapus disabled" disabled><i class="fas fa-lock"></i> Permanen</button></td>
+                    </tr>
+                `;
+
+                querySnapshot.forEach((doc) => {
+                    if (doc.id !== emailMahasiswaDefault) {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${doc.id}</td>
+                                <td><button class="btn-hapus" onclick="hapusMahasiswa('${doc.id}')"><i class="fas fa-trash"></i> Hapus Akses</button></td>
+                            </tr>
+                        `;
+                    }
+                });
             });
         }
     </script>
+
     <style>
-        /* --- VARIABEL TEMA ATMA JAYA --- */
-        :root {
-            --primary: #004a8f; 
-            --primary-dark: #002c5c; 
-            --primary-light: #eff6ff; 
-            --accent: #f26522; 
-            --accent-hover: #d95316; 
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --bg-body: #f8fafc; 
-            --bg-card: #ffffff; 
-            --border-color: #e2e8f0;
-        }
-
-        body {
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            line-height: 1.6;
-        }
-
-        /* --- HEADER & LOGOUT --- */
-        header {
-            background-color: var(--primary-dark);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header-title { font-size: 1.2rem; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 10px;}
+        /* --- CSS STYLING DASAR --- */
+        :root { --primary: #004a8f; --primary-dark: #002c5c; --primary-light: #eff6ff; --accent: #f26522; --bg-body: #f8fafc; --bg-card: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; background-color: var(--bg-body); color: var(--text-main); }
         
-        .btn-logout {
-            background-color: #ef4444; color: white; border: none;
-            padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.9rem;
-            cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;
-        }
-        .btn-logout:hover { background-color: #dc2626; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 5rem 2rem 7rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 5px;
-            background: var(--accent);
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin-bottom: 1.5rem;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-transform: uppercase;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin: 0 0 1rem 0;
-            font-weight: 900;
-            line-height: 1.2;
-            letter-spacing: -0.5px;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 750px;
-            margin: 0 auto;
-            color: #cbd5e1;
-            font-weight: 400;
-        }
-
-        /* --- MAIN CONTAINER --- */
-        .container {
-            max-width: 1200px;
-            margin: -4rem auto 4rem auto;
-            padding: 0 1.5rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* --- INFO BOXES (Dosen & Deskripsi) --- */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 2.5fr;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .info-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border-color);
-        }
-
-        .instructor-profile {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .instructor-image {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--primary-light);
-            padding: 4px;
-            background-color: var(--bg-card);
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        }
-
-        .instructor-name { font-weight: 800; font-size: 1.25rem; color: var(--primary-dark); line-height: 1.3;}
-        .instructor-univ { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;}
+        header { background-color: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header-title { font-size: 1.2rem; font-weight: bold; margin: 0; }
+        .user-badge { background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 20px; font-size: 0.9rem; margin-right: 15px;}
+        .btn-logout { background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         
-        .instructor-website {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            transition: all 0.3s;
-            background: var(--primary-light);
-            padding: 6px 16px;
-            border-radius: 20px;
-        }
-        .instructor-website:hover { background: var(--primary); color: white; }
-
-        .course-desc h2 {
-            margin-top: 0;
-            color: var(--primary-dark);
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 1rem;
-        }
-
-        .course-desc p {
-            color: var(--text-muted);
-            line-height: 1.8;
-            margin-bottom: 0;
-        }
-
-        /* --- DASHBOARD LAYOUT (2 COLUMNS) --- */
-        .dashboard-layout {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        .section-title {
-            color: var(--primary-dark);
-            font-size: 1.6rem;
-            font-weight: 800;
-            margin-top: 0;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        /* --- LEFT PANEL: MODULES GRID --- */
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .module-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-        }
-
-        .module-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.08);
-            border-color: var(--primary-light);
-        }
-
-        .module-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-            background-color: var(--primary);
-            transition: background-color 0.3s;
-        }
-
-        .module-card:hover::before { background-color: var(--accent); }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+        .section-title { color: var(--primary-dark); border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 1.5rem; }
         
-        .module-icon {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            background: var(--primary-light);
-            width: 50px; height: 50px;
-            display: flex; justify-content: center; align-items: center;
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-
-        .module-card:hover .module-icon {
-            background: var(--accent);
-            color: white;
-        }
-
-        .module-card h3 {
-            margin: 0 0 0.5rem 0;
-            color: var(--primary-dark);
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .module-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            flex-grow: 1;
-            line-height: 1.6;
-        }
-
-        /* --- RIGHT PANEL: WIDGETS --- */
-        .side-panel {
-            position: sticky;
-            top: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .widget-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s ease;
-        }
-
-        .widget-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Widget Khusus Portal Tugas (Premium Highlight) */
-        .widget-highlight {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border: none;
-        }
-        .widget-highlight h3 { color: white; margin: 0 0 0.5rem 0; font-size: 1.2rem;}
-        .widget-highlight p { color: #d1fae5; font-size: 0.9rem; margin-bottom: 1.2rem;}
-        .widget-highlight .widget-icon { font-size: 2rem; color: rgba(255,255,255,0.9); margin-bottom: 10px;}
-
-        /* Widget Biasa */
-        .widget-card h3 { color: var(--primary-dark); margin: 0 0 0.5rem 0; font-size: 1.1rem;}
-        .widget-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; line-height: 1.5;}
-        .widget-card .widget-icon { font-size: 1.8rem; color: var(--accent); margin-bottom: 10px;}
-
-        /* --- BUTTONS --- */
-        .btn {
-            display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
-            background-color: var(--primary); color: white; padding: 0.7rem 1rem;
-            border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem;
-            transition: all 0.3s; box-sizing: border-box; border: none; cursor: pointer;
-        }
-        .btn:hover { background-color: var(--primary-dark); box-shadow: 0 4px 12px rgba(0, 74, 143, 0.3); }
+        /* --- KARTU MODUL (STUDENT) --- */
+        .dashboard-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start; }
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .module-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .module-icon { font-size: 1.8rem; color: var(--primary); background: var(--primary-light); width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; border-radius: 10px; margin-bottom: 1rem;}
+        .btn { display: inline-block; background: var(--primary); color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box;}
         
-        .btn-white { background-color: white; color: #059669; }
-        .btn-white:hover { background-color: #f8fafc; color: #047857; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-
-        .btn-outline { background-color: transparent; color: var(--accent); border: 2px solid var(--accent); }
-        .btn-outline:hover { background-color: var(--accent); color: white; }
-
-        /* --- LOCKED & EXAM CARDS --- */
-        .locked-card { border-color: var(--border-color); opacity: 0.7; }
-        .locked-card::before { background-color: #cbd5e1; }
-        .locked-card:hover { transform: none; box-shadow: none; border-color: var(--border-color); }
-        .locked-card .module-icon { background: #f1f5f9; color: #94a3b8; }
-        .locked-card h3 { color: #64748b; }
+        /* --- PANEL DOSEN (ADMIN) --- */
+        .admin-panel { background: white; border-radius: 12px; border: 1px solid var(--border-color); padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .input-group { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        .input-group input { flex-grow: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; }
+        .btn-add { background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        .btn-disabled {
-            display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
-            background-color: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0;
-            padding: 0.7rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem;
-            box-sizing: border-box; cursor: not-allowed;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-color); }
+        th { background: #f8fafc; color: var(--primary-dark); }
+        .btn-hapus { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;}
+        .btn-hapus:hover { background: #ef4444; color: white; }
+        .btn-hapus.disabled { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; cursor: not-allowed; }
 
-        .exam-card { background-color: #fdf2f8; border-color: #fbcfe8; opacity: 1;}
-        .exam-card::before { background-color: #ec4899; }
-        .exam-card:hover { transform: translateY(-3px); border-color: #ec4899; }
-        .exam-card .module-icon { background: #fce7f3; color: #ec4899; }
-        .exam-card h3 { color: #be185d; }
-        .btn-exam { background-color: #fce7f3; color: #db2777; border: 1px solid #fbcfe8; }
-
-        /* --- FOOTER --- */
-        footer {
-            text-align: center;
-            padding: 2.5rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-card);
-            margin-top: 3rem;
-        }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 992px) {
-            .dashboard-layout { grid-template-columns: 1fr; }
-            .side-panel { position: relative; top: 0; }
-        }
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.2rem; }
-            .info-grid { grid-template-columns: 1fr; }
-            .instructor-profile { padding-bottom: 2rem; border-bottom: 1px dashed var(--border-color); }
-        }
+        /* Loader */
+        #loadingScreen { text-align: center; padding: 5rem; font-size: 1.2rem; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
     <header>
-        <h2 class="header-title"><i class="fas fa-university"></i> Dasbor Mahasiswa</h2>
-        
-        <button onclick="logout()" class="btn-logout">
-            <i class="fas fa-sign-out-alt"></i> Keluar
-        </button>
+        <h2 class="header-title"><i class="fas fa-university"></i> Portal Akademik UAJ</h2>
+        <div>
+            <span class="user-badge" id="userNameDisplay"><i class="fas fa-spinner fa-spin"></i> Memuat identitas...</span>
+            <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+        </div>
     </header>
 
-    <div class="hero">
-        <div class="hero-badge"><i class="fas fa-laptop-code"></i> Mata Kuliah Inti Keilmuan</div>
-        <h1>Analisis Komputasional Komunikasi</h1>
-        <p>Memadukan teori komunikasi manusia dengan kekuatan ilmu komputer dan statistika untuk memahami fenomena interaksi sosial di era Mahadata (<i>Big Data</i>).</p>
+    <div id="loadingScreen">
+        <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem; display: block;"></i>
+        Memverifikasi Otorisasi Akses...
     </div>
 
-    <div class="container">
-        
-        <div class="info-grid">
-            <div class="info-card instructor-profile">
-                <img src="denny.png" alt="Denny J. C. Sihombing" class="instructor-image" onerror="this.src='https://ui-avatars.com/api/?name=Denny+Sihombing&background=004a8f&color=fff&size=128'">
-                <div class="instructor-name">Denny J. C. Sihombing</div>
-                <div class="instructor-univ">Universitas Katolik<br>Indonesia Atma Jaya</div>
-                <a href="https://dsihombing.github.io" target="_blank" class="instructor-website"><i class="fas fa-link"></i> dsihombing.github.io</a>
-            </div>
-            
-            <div class="info-card course-desc">
-                <h2><i class="fas fa-book-open"></i> Deskripsi Mata Kuliah</h2>
-                <p>Mata kuliah ini memperkenalkan pendekatan komputasional mutakhir dalam studi komunikasi. Mahasiswa akan dilatih untuk mengumpulkan, memproses, dan menganalisis data jejak digital (<em>digital traces</em>) dari media sosial maupun portal berita daring. Pembelajaran dirancang untuk mengombinasikan landasan teori komunikasi klasik, pengantar pemrograman bahasa R/Python, hingga implementasi teknik analisis tingkat lanjut seperti Pemodelan Topik (<em>Topic Modeling</em>) dan Analisis Jejaring Sosial (<em>SNA</em>).</p>
-            </div>
-        </div>
-
+    <div class="container" id="studentDashboard" style="display: none;">
         <div class="dashboard-layout">
-            
             <div class="main-panel">
-                <h2 class="section-title"><i class="fas fa-layer-group"></i> Modul Pembelajaran</h2>
+                <h2 class="section-title">Modul Pembelajaran</h2>
                 <div class="modules-grid">
-                    
                     <div class="module-card">
                         <div class="module-icon"><i class="fas fa-book-reader"></i></div>
                         <h3>Minggu 1: Pengantar & Etika</h3>
-                        <p>Memahami <em>The Computational Turn</em>, karakteristik jejak digital, alur riset integratif, serta etika privasi.</p>
+                        <p>Memahami The Computational Turn dan etika privasi.</p>
                         <a href="pertemuan1.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
                     </div>
-
                     <div class="module-card">
                         <div class="module-icon"><i class="fas fa-terminal"></i></div>
                         <h3>Minggu 2: Dasar Pemrograman</h3>
-                        <p>Penguasaan logika sekuensial, taksonomi variabel, dan arsitektur <em>DataFrame</em> di R/Python.</p>
+                        <p>Penguasaan logika sekuensial di R/Python.</p>
                         <a href="pertemuan2.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
                     </div>
-
                     <div class="module-card">
                         <div class="module-icon"><i class="fas fa-database"></i></div>
                         <h3>Minggu 3: Manajemen Data</h3>
-                        <p>Mendiagnosis bias <em>invisible engagement</em>, arsitektur JSON/CSV, dan Analisis Data Eksploratif (EDA).</p>
+                        <p>Arsitektur JSON/CSV dan Analisis Data Eksploratif.</p>
                         <a href="pertemuan3.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
                     </div>
-
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-broom"></i></div>
-                        <h3>Minggu 4: Pra-pemrosesan Teks</h3>
-                        <p>Implementasi NLP: tokenisasi, lemmatisasi, <em>stop-word removal</em>, dan transisi ke <em>Transfer Learning</em>.</p>
-                        <a href="pertemuan4.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
                     </div>
-
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-chart-bar"></i></div>
-                        <h3>Minggu 5-6: Frekuensi & Sentimen</h3>
-                        <p>Ekstraksi N-Gram, algoritma TF-IDF, serta klasifikasi polaritas emosi publik (Analisis Sentimen).</p>
-                        <a href="pertemuan5.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-                    </div>
-                    
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-network-wired"></i></div>
-                        <h3>Minggu 7: Topic Modeling</h3>
-                        <p>Ekstraksi tema laten tak terawasi (<em>Unsupervised</em>) via LDA, serta disrupsi pemodelan visual.</p>
-                        <a href="pertemuan7.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-                    </div>
-
-                    <div class="module-card exam-card">
-                        <div class="module-icon"><i class="fas fa-file-signature"></i></div>
-                        <h3>Minggu 8: UTS</h3>
-                        <p>Ujian Tengah Semester: Evaluasi komprehensif atas penguasaan teoretis dan kapabilitas praktikum.</p>
-                        <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
-                    </div>
-
-                    <div class="module-card">
-                        <div class="module-icon"><i class="fas fa-spider"></i></div>
-                        <h3>Minggu 9: Web Scraping & API</h3>
-                        <p>Metodologi ekstraksi data digital, arsitektur Scraping, dan paradigma Data Donation.</p>
-                        <a href="pertemuan9.html" class="btn"><i class="fas fa-play-circle"></i> Akses Modul</a>
-                    </div>
-
-                    <div class="module-card locked-card">
-                        <div class="module-icon"><i class="fas fa-project-diagram"></i></div>
-                        <h3>Minggu 10-11: Analisis Jejaring</h3>
-                        <p>Social Network Analysis (SNA): Sentralitas aktor, deteksi komunitas, dan visualisasi graf jaringan.</p>
-                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-                    </div>
-
-                    <div class="module-card locked-card">
-                        <div class="module-icon"><i class="fas fa-robot"></i></div>
-                        <h3>Minggu 12-13: Machine Learning</h3>
-                        <p>Pengantar pembelajaran mesin untuk klasifikasi data, klasterisasi opini, dan prediksi algoritma.</p>
-                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-                    </div>
-
-                    <div class="module-card locked-card">
-                        <div class="module-icon"><i class="fas fa-file-alt"></i></div>
-                        <h3>Minggu 14: Publikasi Karya</h3>
-                        <p>Translasi temuan komputasional ke dalam manuskrip artikel ilmiah, atau presentasi interaktif.</p>
-                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-                    </div>
-
-                    <div class="module-card locked-card">
-                        <div class="module-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                        <h3>Minggu 15: Presentasi Proyek</h3>
-                        <p>Diseminasi proyek akhir mahasiswa, proses telaah sejawat (<em>peer-review</em>), dan refleksi akademis.</p>
-                        <span class="btn-disabled"><i class="fas fa-lock"></i> Modul Terkunci</span>
-                    </div>
-
-                    <div class="module-card exam-card">
-                        <div class="module-icon"><i class="fas fa-graduation-cap"></i></div>
-                        <h3>Minggu 16: UAS</h3>
-                        <p>Ujian Akhir Semester: Validasi pamungkas atas kemampuan riset komunikasi komputasional.</p>
-                        <span class="btn-disabled btn-exam"><i class="fas fa-clock"></i> Menunggu Jadwal</span>
-                    </div>
-
-                </div>
             </div>
 
             <aside class="side-panel">
-                
-                <h2 class="section-title" style="border-bottom:none; margin-bottom: 0;"><i class="fas fa-tools"></i> Utilitas Praktikum</h2>
-
-                <div class="widget-card widget-highlight">
-                    <div class="widget-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <h3>Portal Pengumpulan Tugas</h3>
-                    <p>Akses repositori aman untuk mengunggah tautan Google Colab dan menyerahkan laporan skrip Anda.</p>
-                    <a href="pengumpulan_tugas.html" class="btn btn-white"><i class="fas fa-paper-plane"></i> Unggah Tugas</a>
+                <div class="module-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border:none;">
+                    <h3 style="color:white;"><i class="fas fa-cloud-upload-alt"></i> Pengumpulan Tugas</h3>
+                    <p style="color:#d1fae5;">Akses repositori untuk mengunggah skrip.</p>
+                    <a href="pengumpulan_tugas.html" class="btn" style="background:white; color:#059669;">Unggah Tugas</a>
                 </div>
-
-                <div class="widget-card">
-                    <div class="widget-icon"><i class="fas fa-laptop-code"></i></div>
-                    <h3>Praktikum Dasar (IDE)</h3>
-                    <p>Pengenalan ekosistem komputasi awan, instalasi RStudio lokal, dan uji translasi logika.</p>
-                    <a href="colab_dasar.html" class="btn btn-outline"><i class="fas fa-rocket"></i> Mulai Orientasi</a>
+                <div class="module-card">
+                    <h3><i class="fas fa-file-code" style="color: var(--accent);"></i> Kompilasi Skrip</h3>
+                    <a href="praktikum_skrip_dasar.html" class="btn" style="background: transparent; border: 2px solid var(--accent); color: var(--accent);">Akses Source Code</a>
                 </div>
-
-                <div class="widget-card">
-                    <div class="widget-icon"><i class="fas fa-file-code"></i></div>
-                    <h3>Kompilasi Skrip (Source)</h3>
-                    <p>Direktori referensi <em>cheat sheet</em> berisi potongan kode Python dan R siap pakai untuk Colab.</p>
-                    <a href="praktikum_skrip_dasar.html" class="btn btn-outline"><i class="fas fa-code"></i> Akses Source Code</a>
-                </div>
-                
-                <div class="widget-card" style="border-left: 4px solid #8b5cf6;">
-                    <div class="widget-icon" style="color: #8b5cf6;"><i class="fas fa-users-cog"></i></div>
-                    <h3 style="color: #6d28d9;">Studi Kasus Integratif</h3>
-                    <p>Simulasi investigasi RUU Penyiaran untuk menguji logika metodologis dan etika data Modul 1-3.</p>
-                    <a href="studi_kasus_1.html" class="btn" style="background-color: #8b5cf6; color: white; border: none;"><i class="fas fa-microscope"></i> Buka Skenario</a>
-                </div>
-
             </aside>
-
         </div>
     </div>
 
-    <footer>
-        <strong>Analisis Komputasional Komunikasi</strong><br>
-        &copy; 2026 Denny J. C. Sihombing | Universitas Katolik Indonesia Atma Jaya<br>
-        <span style="font-size: 0.8rem; margin-top: 10px; display: inline-block;">Fakultas Ilmu Administrasi Bisnis dan Ilmu Komunikasi (FIABIKOM)</span>
-    </footer>
+    <div class="container" id="teacherDashboard" style="display: none;">
+        <h2 class="section-title"><i class="fas fa-chalkboard-teacher"></i> Panel Kontrol Dosen</h2>
+        
+        <div class="admin-panel">
+            <h3 style="margin-top:0; color: var(--primary-dark);">Manajemen Akses Mahasiswa</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Tambahkan alamat email Google mahasiswa agar mereka diizinkan masuk ke portal materi dan tugas.</p>
+            
+            <div class="input-group">
+                <input type="email" id="inputEmailBaru" placeholder="Ketik email mahasiswa (contoh: budi@gmail.com)">
+                <button class="btn-add" id="btnTambah" onclick="tambahMahasiswa()"><i class="fas fa-plus"></i> Tambah Akses</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alamat Email Mahasiswa</th>
+                        <th style="width: 150px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelMahasiswaBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 
 </body>
 </html>
