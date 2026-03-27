@@ -16,7 +16,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // AUTH GUARD MAHASISWA
+        // AUTH GUARD MAHASISWA ini adalah contoh
         auth.onAuthStateChanged(user => {
             if (!user) { window.location.replace("login.html"); return; }
             const email = user.email.toLowerCase();
