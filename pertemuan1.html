@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Observasi Mahasiswa | Analisis Komputasional Komunikasi</title>
+    <title>Modul 1: Pengantar CCS | Analisis Komputasional Komunikasi</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -11,143 +11,247 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyBVXx_p9iTBFg1FdDVDLf7RNLJRfo31Mh4", authDomain: "akkds-83803.firebaseapp.com", projectId: "akkds-83803" };
-        firebase.initializeApp(firebaseConfig);
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVXx_p9iTBFg1FdDVDLf7RNLJRfo31Mh4",
+            authDomain: "akkds-83803.firebaseapp.com",
+            projectId: "akkds-83803",
+            storageBucket: "akkds-83803.firebasestorage.app",
+            messagingSenderId: "280144297960",
+            appId: "1:280144297960:web:9ceb89ac5029c72d09ee5d"
+        };
+        
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
-        const db = firebase.firestore();
-        const emailDosen = "djc.sihombing@gmail.com";
 
-        let dataLogGlobal = [];
-
-        auth.onAuthStateChanged(user => {
-            if (!user || user.email.toLowerCase() !== emailDosen) {
-                alert("Akses Ilegal!"); window.location.replace("login.html");
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.replace("login.html");
             } else {
-                muatFilterMahasiswa();
-                muatLogAktivitas();
+                document.getElementById('userNameDisplay').innerHTML = '<i class="fas fa-user"></i> ' + user.displayName;
             }
         });
 
-        function formatWaktu(timestamp) {
-            if (!timestamp) return "Baru saja...";
-            const date = timestamp.toDate();
-            return date.toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        function logout() { auth.signOut().then(() => window.location.replace("login.html")); }
+        function kembaliKeDasbor() {
+            const userEmail = auth.currentUser.email.toLowerCase();
+            if (userEmail === "djc.sihombing@gmail.com") { window.location.href = "dosen.html"; } 
+            else { window.location.href = "mahasiswa.html"; }
         }
     </script>
 
     <style>
-        :root { --primary: #004a8f; --primary-dark: #002c5c; --bg-body: #f8fafc; --border: #e2e8f0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; color: #1e293b; line-height: 1.6;}
-        header { background: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:10;}
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
-        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); }
-        .btn-kembali { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-flex; gap: 8px; align-items: center;}
+        /* --- VARIABEL TEMA & RESET --- */
+        :root { --primary: #004a8f; --primary-dark: #002c5c; --primary-light: #eff6ff; --accent: #f26522; --bg-body: #f8fafc; --bg-card: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; background-color: var(--bg-body); color: var(--text-main); line-height: 1.7; scroll-behavior: smooth;}
         
-        .filter-area { background: #f1f5f9; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border);}
-        .filter-area select { padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; flex-grow: 1; cursor: pointer;}
+        /* --- HEADER NAVBAR --- */
+        header { background-color: var(--primary-dark); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        .btn-nav { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;}
+        .btn-nav:hover { background: rgba(255,255,255,0.2); }
+        .btn-logout { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-left: 10px; transition: 0.3s;}
+        .btn-logout:hover { background: #dc2626; }
+
+        /* --- TATA LETAK BACA (READING LAYOUT) --- */
+        .layout-wrapper { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; display: grid; grid-template-columns: 280px 1fr; gap: 3rem; align-items: start; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.95rem; }
-        th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); }
-        th { background: #f8fafc; color: var(--primary-dark); }
-        tr:hover { background: #f1f5f9; }
+        /* --- SIDEBAR DAFTAR ISI --- */
+        .toc-sidebar { position: sticky; top: 6rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
+        .toc-sidebar h4 { margin-top: 0; color: var(--primary-dark); font-size: 1.1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;}
+        .toc-list { list-style: none; padding: 0; margin: 0; }
+        .toc-list li { margin-bottom: 10px; }
+        .toc-list a { text-decoration: none; color: var(--text-muted); font-size: 0.95rem; display: block; padding: 5px 10px; border-radius: 6px; transition: 0.2s;}
+        .toc-list a:hover { background: var(--primary-light); color: var(--primary); font-weight: bold;}
+
+        /* --- AREA KONTEN UTAMA --- */
+        .content-area { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 3rem 4rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
         
-        .badge-aksi { background: #eff6ff; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
-        .badge-status-aktif { background: #fef3c7; color: #047857; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;}
-        .badge-status-selesai { background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;}
+        .modul-header { border-bottom: 3px solid var(--primary-light); padding-bottom: 1.5rem; margin-bottom: 2.5rem; }
+        .modul-badge { display: inline-block; background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; letter-spacing: 1px;}
+        .modul-header h1 { margin: 0 0 15px 0; color: var(--primary-dark); font-size: 2.5rem; line-height: 1.2;}
+        .modul-header p.lead { font-size: 1.2rem; color: var(--text-muted); margin: 0;}
+
+        /* Elemen Tipografi Konten */
+        h2 { color: var(--primary-dark); font-size: 1.8rem; margin-top: 3rem; margin-bottom: 1rem; scroll-margin-top: 6rem;}
+        h3 { color: var(--primary); font-size: 1.3rem; margin-top: 2rem; margin-bottom: 1rem; }
+        p { font-size: 1.05rem; color: #334155; margin-bottom: 1.5rem; }
+        
+        .info-box { background: #f0fdf4; border-left: 4px solid #10b981; padding: 1.5rem; border-radius: 0 8px 8px 0; margin: 2rem 0; }
+        .info-box h4 { color: #065f46; margin: 0 0 10px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;}
+        .info-box p { margin: 0; color: #064e3b; font-size: 0.95rem;}
+
+        .warning-box { background: #fff7ed; border-left: 4px solid var(--accent); padding: 1.5rem; border-radius: 0 8px 8px 0; margin: 2rem 0; }
+        .warning-box h4 { color: #9a3412; margin: 0 0 10px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;}
+        .warning-box p { margin: 0; color: #7c2d12; font-size: 0.95rem;}
+
+        .citation { display: block; font-style: italic; color: var(--text-muted); font-size: 0.9rem; border-left: 2px solid var(--border-color); padding-left: 15px; margin-top: 10px;}
+
+        /* Pipeline List */
+        .pipeline-list { counter-reset: pipeline-counter; list-style: none; padding: 0; margin: 2rem 0;}
+        .pipeline-list li { position: relative; padding-left: 3rem; margin-bottom: 1.5rem; font-size: 1.05rem;}
+        .pipeline-list li::before { counter-increment: pipeline-counter; content: counter(pipeline-counter); position: absolute; left: 0; top: 0; background: var(--primary); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.9rem;}
+        .pipeline-list li strong { color: var(--primary-dark); display: block; margin-bottom: 5px;}
+
+        @media (max-width: 992px) {
+            .layout-wrapper { grid-template-columns: 1fr; }
+            .toc-sidebar { display: none; } /* Sembunyikan sidebar di mobile */
+            .content-area { padding: 2rem; }
+        }
     </style>
 </head>
 <body>
+
     <header>
-        <h3 style="margin:0;"><i class="fas fa-satellite-dish"></i> Analitik Pembelajaran Mahasiswa</h3>
-        <a href="dosen.html" class="btn-kembali"><i class="fas fa-arrow-left"></i> Kembali ke Dasbor</a>
+        <h3 style="margin:0;"><i class="fas fa-university"></i> e-Learning UAJ</h3>
+        <div>
+            <button onclick="kembaliKeDasbor()" class="btn-nav"><i class="fas fa-home"></i> Dasbor Utama</button>
+            <span id="userNameDisplay" class="btn-nav" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); cursor:default;"></span>
+            <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="card" style="border-top: 4px solid #10b981;">
-            <h2 style="margin-top:0; color:var(--primary-dark);"><i class="fas fa-stopwatch"></i> Pemantauan Durasi Baca Modul</h2>
-            <p style="color:#64748b; margin-bottom: 20px;">Memantau jejak modul yang diakses mahasiswa beserta waktu yang mereka habiskan di halaman tersebut.</p>
+    <div class="layout-wrapper">
+        
+        <aside class="toc-sidebar">
+            <h4><i class="fas fa-list-ul"></i> Daftar Isi Modul</h4>
+            <ul class="toc-list">
+                <li><a href="#sec-pendahuluan">1. Pengantar: The Computational Turn</a></li>
+                <li><a href="#sec-konvergensi">2. Konvergensi Interdisipliner</a></li>
+                <li><a href="#sec-pipeline">3. Pipeline Riset 6 Tahapan</a></li>
+                <li><a href="#sec-tantangan">4. Tantangan "Three Gaps"</a></li>
+                <li><a href="#sec-etika">5. Etika Riset & Deklarasi Privasi</a></li>
+            </ul>
+        </aside>
+
+        <main class="content-area">
             
-            <div class="filter-area">
-                <i class="fas fa-filter" style="color: var(--primary);"></i>
-                <label style="font-weight: bold; color: var(--primary-dark);">Filter Mahasiswa:</label>
-                <select id="pilihanMahasiswa" onchange="renderTabel()">
-                    <option value="semua">Tampilkan Semua Mahasiswa</option>
-                </select>
+            <div class="modul-header">
+                <span class="modul-badge">PERTEMUAN 1</span>
+                <h1>Pengantar Analisis Komputasional Komunikasi & Etika Riset</h1>
+                <p class="lead">Memahami lanskap baru ilmu komunikasi di era Mahadata (Big Data), metodologi hibrida, serta tanggung jawab moral peneliti komputasional.</p>
             </div>
-            
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 150px;">Waktu Akses</th>
-                            <th>Nama Mahasiswa</th>
-                            <th>Modul Diakses</th>
-                            <th>Status / Durasi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelLog">
-                        <tr><td colspan="4" style="text-align:center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Menghubungkan ke database...</td></tr>
-                    </tbody>
-                </table>
+
+            <section id="sec-pendahuluan">
+                <h2>1. Pengantar: <em>The Computational Turn</em></h2>
+                <p>Selama beberapa dekade, ilmu komunikasi sangat bergantung pada metodologi tradisional seperti survei, wawancara mendalam, dan analisis isi manual. Namun, seiring dengan masifnya digitalisasi aktivitas manusia, disiplin ini tengah mengalami pergeseran paradigma yang radikal, yang dikenal sebagai <strong>The Computational Turn</strong> (Hase et al., 2023).</p>
+                <p>Dalam paradigma baru ini, objek studi kita tidak lagi terbatas pada jawaban kuesioner yang sering kali bias, melainkan beralih pada <strong>Jejak Digital (Digital Traces)</strong>—residu organik dari interaksi aktual manusia di media sosial, portal berita, dan platform daring lainnya.</p>
+            </section>
+
+            <section id="sec-konvergensi">
+                <h2>2. Konvergensi Interdisipliner</h2>
+                <p><em>Computational Communication Science</em> (CCS) bukanlah ilmu komputer yang berdiri sendiri. Ia adalah hibridisasi dari tiga pilar keilmuan yang saling melengkapi:</p>
+                
+                <div class="info-box">
+                    <h4><i class="fas fa-cube"></i> Trilogi Pilar CCS</h4>
+                    <p><strong>1. Ilmu Komunikasi:</strong> Menyediakan lensa teoretis (misal: <em>Agenda Setting, Framing, Spiral of Silence</em>) untuk memaknai fenomena sosial.<br>
+                    <strong>2. Ilmu Komputer:</strong> Menyediakan kekuatan komputasi dan algoritma (seperti R dan Python) untuk mengekstraksi jutaan data teks/gambar dalam hitungan detik.<br>
+                    <strong>3. Statistika & Data Science:</strong> Menyediakan metode inferensi probabilistik untuk membuktikan validitas temuan pola-pola laten.</p>
+                </div>
+            </section>
+
+            <section id="sec-pipeline">
+                <h2>3. Pipeline Riset 6 Tahapan</h2>
+                <p>Penelitian komputasional mewajibkan kepatuhan pada alur metodologis yang sangat sistematis. Berbeda dengan penelitian kualitatif yang bersifat sirkuler, CCS beroperasi layaknya pabrik perakitan data:</p>
+
+                <ul class="pipeline-list">
+                    <li>
+                        <strong>Formulasi Masalah (Problem Formulation)</strong>
+                        Dimulai dengan pertanyaan riset sosial. (Contoh: "Bagaimana wacana RUU Penyiaran dibingkai oleh media X dibandingkan media Y?").
+                    </li>
+                    <li>
+                        <strong>Akuisisi Data (Data Acquisition)</strong>
+                        Proses ekstraksi <em>Big Data</em> melalui antarmuka API, teknik <em>Web Scraping</em>, atau <em>Data Donation</em>.
+                    </li>
+                    <li>
+                        <strong>Pra-Pemrosesan (Pre-processing)</strong>
+                        Membersihkan karakter pengganggu, mengubah teks menjadi huruf kecil (<em>case folding</em>), dan mentransformasi bahasa alami manusia menjadi matriks matematika yang bisa dihitung mesin.
+                    </li>
+                    <li>
+                        <strong>Analisis Algoritmik</strong>
+                        Menerapkan model komputasi (Misal: <em>Topic Modeling, Sentiment Analysis, atau Social Network Analysis</em>).
+                    </li>
+                    <li>
+                        <strong>Validasi (Tahap Paling Kritis)</strong>
+                        Mengingat mesin tidak memiliki empati atau pemahaman budaya, peneliti <strong>wajib</strong> memverifikasi ulang hasil klasifikasi mesin (Human-in-the-loop) untuk memastikan tidak ada kesalahan logika.
+                    </li>
+                    <li>
+                        <strong>Interpretasi Teoretis</strong>
+                        Mengembalikan angka-angka statistik menjadi bahasa ilmu sosial untuk menjawab rumusan masalah.
+                    </li>
+                </ul>
+            </section>
+
+            <section id="sec-tantangan">
+                <h2>4. Tantangan Epistemologis: Fenomena <em>Three Gaps</em></h2>
+                <p>Pendekatan komputasional memang menawarkan kecepatan dan skala, namun ia bukannya tanpa rintangan. Para akademisi (misal: Baden et al., 2021) memperingatkan kita tentang tiga kesenjangan (<em>gaps</em>) fatal yang sering menjebak peneliti pemula:</p>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Diagnosis "Three Gaps"</h4>
+                    <p style="margin-bottom: 10px;"><strong>1. Kesenjangan Semantik (Semantic Gap):</strong> Kegagalan algoritma mesin dalam memahami nuansa bahasa manusia tingkat tinggi, seperti sarkasme, ironi, atau konteks kultural lokal.</p>
+                    <p style="margin-bottom: 10px;"><strong>2. Kesenjangan Teoretis (Theoretical Gap):</strong> Kesulitan dalam menerjemahkan konsep teori komunikasi yang abstrak (misal: "Kebebasan Berpendapat") menjadi variabel matematis/kode yang kaku.</p>
+                    <p><strong>3. Kesenjangan Validitas (Validity Gap):</strong> Kecenderungan bias di mana peneliti terlalu "percaya buta" pada hasil mesin tanpa melakukan validasi manual yang memadai.</p>
+                </div>
+            </section>
+
+            <section id="sec-etika">
+                <h2>5. Etika Privasi di Era Post-API</h2>
+                <p>Ketika "Data adalah minyak baru" (Possler et al., 2019), kita dihadapkan pada dilema moral. Pengguna internet umumnya tidak menyadari bahwa keluh-kesah mereka di Twitter atau Facebook sedang disedot dan dianalisis oleh akademisi universitas.</p>
+                
+                <p>Oleh karena itu, setiap penelitian komputasional wajib mengadopsi standar emas etika berikut:</p>
+                <ul>
+                    <li><strong>De-identifikasi (Anonimisasi):</strong> Semua nama pengguna (<em>username</em>), foto profil, dan lokasi absolut harus disamarkan atau dihapus dari *dataset* sebelum dipublikasikan.</li>
+                    <li><strong>Kepatuhan ToS (Terms of Service):</strong> Tidak melakukan peretasan (*hacking*) atau perayapan (*crawling*) destruktif yang membebani server platform target.</li>
+                    <li><strong>Reproduksibilitas (Open Science):</strong> Peneliti wajib melampirkan skrip kode R/Python mereka saat publikasi jurnal, agar peneliti lain dapat memverifikasi proses tanpa perlu mengakses data mentah yang sensitif.</li>
+                </ul>
+            </section>
+
+            <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Selamat! Anda telah menyelesaikan Modul 1. Silakan kembali ke Dasbor Utama untuk melanjutkan ke modul berikutnya.</p>
+                <button onclick="kembaliKeDasbor()" class="btn-nav" style="background: var(--primary); color: white;"><i class="fas fa-check-circle"></i> Selesai & Kembali ke Dasbor</button>
             </div>
-        </div>
+
+        </main>
     </div>
 
     <script>
-        function muatFilterMahasiswa() {
-            db.collection("whitelist_mahasiswa").get().then((querySnapshot) => {
-                const selectElement = document.getElementById('pilihanMahasiswa');
-                querySnapshot.forEach((doc) => {
-                    selectElement.innerHTML += `<option value="${doc.id}">${doc.id}</option>`;
+        // Skrip ini akan merekam berapa lama mahasiswa membaca halaman ini ke Firestore (CCTV Dosen)
+        let waktuMulai = Date.now();
+        let idDokumenLog = null;
+        let judulModul = document.title.split('|')[0].trim(); 
+
+        auth.onAuthStateChanged(user => {
+            if (user && user.email.toLowerCase() !== "djc.sihombing@gmail.com") {
+                const db = firebase.firestore();
+                db.collection("log_aktivitas").add({
+                    email: user.email.toLowerCase(),
+                    nama: user.displayName || "Mahasiswa",
+                    aksi: "Membaca: " + judulModul,
+                    waktu_masuk: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: "Sedang membaca...",
+                    durasi_teks: "-"
+                }).then(docRef => {
+                    idDokumenLog = docRef.id; 
                 });
-            });
-        }
-
-        function muatLogAktivitas() {
-            // Ambil 300 data terbaru
-            db.collection("log_aktivitas").orderBy("waktu_masuk", "desc").limit(300).onSnapshot(snapshot => {
-                  dataLogGlobal = [];
-                  snapshot.forEach(doc => dataLogGlobal.push(doc.data()));
-                  renderTabel();
-              });
-        }
-
-        function renderTabel() {
-            const tbody = document.getElementById('tabelLog');
-            const emailFilter = document.getElementById('pilihanMahasiswa').value;
-            tbody.innerHTML = "";
-            let jumlahTampil = 0;
-
-            dataLogGlobal.forEach(data => {
-                if (emailFilter === "semua" || data.email === emailFilter) {
-                    
-                    // Cek apakah mahasiswa masih online di halaman tersebut atau sudah selesai
-                    let statusDurasi = "";
-                    if (data.status === "Selesai") {
-                        statusDurasi = `<span class="badge-status-selesai"><i class="fas fa-clock"></i> ${data.durasi_teks}</span>`;
-                    } else {
-                        statusDurasi = `<span class="badge-status-aktif"><i class="fas fa-eye fa-fade"></i> Sedang Aktif...</span>`;
-                    }
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="color:#64748b; font-size:0.85rem;">${formatWaktu(data.waktu_masuk)}</td>
-                            <td>
-                                <div style="font-weight:bold; color:var(--primary-dark);">${data.nama}</div>
-                                <div style="font-size:0.8rem; color:#64748b;">${data.email}</div>
-                            </td>
-                            <td><span class="badge-aksi">${data.aksi}</span></td>
-                            <td>${statusDurasi}</td>
-                        </tr>
-                    `;
-                    jumlahTampil++;
-                }
-            });
-
-            if (jumlahTampil === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:#64748b;">Tidak ada catatan durasi untuk email ini.</td></tr>`;
             }
-        }
+        });
+
+        window.addEventListener("beforeunload", function() {
+            if (idDokumenLog) {
+                const db = firebase.firestore();
+                let waktuSelesai = Date.now();
+                let totalDetik = Math.floor((waktuSelesai - waktuMulai) / 1000);
+                let menit = Math.floor(totalDetik / 60);
+                let detik = totalDetik % 60;
+                
+                db.collection("log_aktivitas").doc(idDokumenLog).update({
+                    status: "Selesai",
+                    waktu_keluar: firebase.firestore.FieldValue.serverTimestamp(),
+                    durasi_teks: `${menit} m ${detik} d`,
+                    durasi_detik: totalDetik
+                });
+            }
+        });
     </script>
+
 </body>
 </html>
